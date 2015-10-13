@@ -23,7 +23,7 @@ classdef (Abstract) manifold < handle
     %    midPoint(x,z)        : Compute the mid point between x and z.
     %
     % ---
-    % ManImRes 1.0, R. Bergmann ~ 2014-10-18 | 2015-01-25
+    % ManImRes 1.0 ~ R. Bergmann ~ 2014-10-18 | 2015-01-25
     
     properties
         useMex = true; %Whether or not to use mex-files in the manifold-functions
