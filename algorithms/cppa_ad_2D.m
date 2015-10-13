@@ -35,15 +35,15 @@ function [x,fctValSeq] = cppa_ad_2D(varargin)
 %                     (0) fixed. RegMask is of the same size
 %                         the data point set, i.e. [n,m].
 %     'EvalFct'      : ([]) specify a function to be evaluated in every
-%                      iteration and accepts one parameter, the x_k
-%                      take 'Epsilon' to record the stopping criterion
-%                      this is only performed if a second return value
-%                      is specified.
+%                          iteration and accepts two parameter, the x_k
+%                          and the distance image from x_k to x_{k-1}
+%                          measured on the manifold
 %
 % See also:
 %    manifold.proxad, cppa_ad_1D, cppa_ad_nD
 % ---
-% ManImRes 1.0, R. Bergmann ~ 2014-10-22 | 2015-06-19
+% Manifold Valued Image Restoration 1.0
+% R. Bergmann ~ 2014-10-22 | 2015-06-19
 
 %
 % Change log
@@ -198,10 +198,9 @@ else % Parse Variables and check input
     evalFct = vars.EvalFct;
 end %end parser & checks
 % record l2TV & eps?
-recordFct = (nargout==2) && ( sum(size(evalFct)) > 0);
+recordFct = (nargout==2) && ( sum(size(evalFct)) > 0) && isa(evalFct,'function_handle');
 if recordFct
     fctValSeq = [];
-    isaFct = isa(evalFct,'function_handle');
 end
 i=0;
 lambdait=vars.lambda;
@@ -356,14 +355,20 @@ while ( (any(isnan(itD(:))) || (max(itD(~isnan(itD)))>=epsilon)) && (i<maxiter))
     lambdait = vars.lambda/(i);
     % revert (A) (roughly line 199)
     x = reshape(x,[manDim,imgDim]); %expand manifold dimensions from first dim
-        itD = vars.M.dist(x,xold);
+    itD = NaN*zeros(imgDim);
+    Inds = ~permute(any(isnan(reshape(xold,[prod(manDim),imgDim])),1),[2:(length(imgDim)+1),1]);
+    % only DIst nonNan-ones
+    itD(Inds) = vars.M.dist(...
+            reshape(x(repmat(permute(Inds,[length(imgDim)+1:length(imgDim)+length(manDim),1:length(imgDim)]),...
+            [manDim,ones(1,length(imgDim))])),...
+            [manDim,sum(Inds(:))]),...
+            reshape(xold(repmat(permute(Inds,[length(imgDim)+1:length(imgDim)+length(manDim),1:length(imgDim)]),...
+            [manDim,ones(1,length(imgDim))])),...
+            [manDim,sum(Inds(:))])...
+        );
     % Record ?
     if recordFct
-        if ischar(evalFct) && strcmp(evalFct,'Epsilon')
-            fctValSeq = [fctValSeq,max(itD(:))]; %#ok<AGROW>
-        elseif isaFct
-            fctValSeq = [fctValSeq,[evalFct(x);max(itD(:))]]; %#ok<AGROW>
-        end
+           fctValSeq = [fctValSeq,evalFct(x,itD)]; %#ok<AGROW>
     end
     if mod(i,getDebugLevel('IterationStep'))==0
         debug('text',3,'text',...

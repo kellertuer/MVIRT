@@ -1,4 +1,4 @@
-function x = cppa_ad_nD(varargin)
+function [x,fctValSeq] = cppa_ad_nD(varargin)
 % cppa_ad_nD(M,f,alpha,beta,lambda)
 %      Compute the cyclic proximal point algorithm for first and
 %      second order absolute differences, weighted by alpha and
@@ -36,10 +36,15 @@ function x = cppa_ad_nD(varargin)
 %                  (1) they are regularized, i.e. moved (or active, say)
 %                  (0) fixed. RegMask is of the same size
 %                      the data point set, i.e. [m_1,...,n_m].
+%  'EvalFct'    : ([]) specify a function to be evaluated in every
+%                          iteration and accepts two parameter, the x_k
+%                          and the distance data array from x_k to x_{k-1} measured on
+%                          the manifold
 % See also:
 %   manifold.proxad, cppa_ad_1D, cppa_ad_2D
 % ---
-% ManImRes 1.0, R. Bergmann ~ 2014-10-22 | 2014-05-09
+% Manifold Valued Image Restoration 1.0
+% R. Bergmann ~ 2014-10-22 | 2014-05-09
 
 %
 % Changelog
@@ -78,6 +83,11 @@ if (length(varargin)==1 && isstruct(varargin{1}))
     else
         epsilon = vars.Epsilon;
     end    % Fill optionals
+    if ~isfield(vars,'EvalFct')
+        evalFct = [];
+    else
+        evalFct = vars.EvalFct;
+    end
     alphanum = imgDims + (imgDims-1)*imgDims;
     alpha = vars.alpha;
     betanum = imgDims + (imgDims-1)*imgDims/2;
@@ -93,6 +103,7 @@ else % Parse Variables
     addParameter(ip,'UnknownMask',[]);
     addParameter(ip,'MaxIterations',400);
     addParameter(ip,'Epsilon',10^(-6));
+    addParameter(ip,'EvalFct',[]);
     parse(ip, varargin{:});
     vars = ip.Results;
     %
@@ -191,6 +202,10 @@ if useRegMask&&useUnknownMask
     assert( ~any(fixedAndUnknown(:)), 'There exists at least one pixel that is unknown and fixed by the two masks, which is not allowed.');
 end
 % init values for the loop
+recordFct = (nargout==2) && ( sum(size(evalFct)) > 0) && isa(evalFct,'function_handle');
+if recordFct
+    fctValSeq = [];
+end
 i=0;
 lambdait=vars.lambda;
 itD = [Inf, NaN]; %iteration Distances
@@ -362,6 +377,9 @@ while ( (any(isnan(itD(:))) || (max(itD(~isnan(itD)))>=epsilon)) && (i<maxiter))
     lambdait = vars.lambda/(i);
     x = reshape(x,[manDim,imgDim]); %expand manifold dimensions from first dim
     itD = vars.M.dist(x,xold);
+    if recordFct
+        fctValSeq = [fctValSeq,evalFct(x,itD)]; %#ok<AGROW>
+    end
     %
     % shift back
     debug('text',3,'text',...

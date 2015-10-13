@@ -1,4 +1,4 @@
-function x = cppa_ad_1D(varargin)
+function [x,fctValSeq] = cppa_ad_1D(varargin)
 % cppa_ad_1D(M,f,alpha,beta,lambda)
 %   Compute the cyclic proximal point algorithm for first and
 %   second order absolute differences, weighted by alpha and
@@ -31,11 +31,17 @@ function x = cppa_ad_1D(varargin)
 % 'UnknownMask' : ([]) Specify a mask, which values of f are unknown
 %                      (1) and initialized in the cycles, when possible.
 %
+%   'EvalFct'   : ([]) specify a function to be evaluated in every
+%                          iteration and accepts two parameter, the x_k
+%                          and the distance array from x_k to x_{k-1} measured on
+%                          the manifold
+%
 %  See also:
 %     manifold, manifold.proxad, cppa_ad_2D, cppa_ad_nD
 %
 % ---
-% ManImRes 1.0, R. Bergmann ~ 2014-10-22 | 2015-01-30
+% Manifold Valued Image Restoration 1.0
+% R. Bergmann ~ 2014-10-22 | 2015-01-30
 
 %
 % Changelog
@@ -74,6 +80,11 @@ if (length(varargin)==1 && isstruct(varargin{1}))
     if ~isfield(vars,'Epsilon')
         vars.Epsilon = 10^(-6);
     end
+    if ~isfield(vars,'EvalFct')
+        evalFct = [];
+    else
+        evalFct = vars.EvalFct;
+    end
     epsilon = vars.Epsilon;
 else % Parse Variables & check
     ip = inputParser;
@@ -86,6 +97,7 @@ else % Parse Variables & check
     addParameter(ip,'UnknownMask',[]);
     addParameter(ip,'MaxIterations',400);
     addParameter(ip,'Epsilon',10^(-6));
+    addParameter(ip,'EvalFct',[]);
     parse(ip, varargin{:});
     vars = ip.Results;
     % Validate
@@ -167,6 +179,10 @@ end
 if (useUnknownMask) %kill unknown pixels completely
     x(repmat(uM==1,[k,1])) = NaN;
 end
+recordFct = (nargout==2) && ( sum(size(evalFct)) > 0) && isa(evalFct,'function_handle');
+if recordFct
+    fctValSeq = [];
+end
 i=0;
 lambdait=vars.lambda;
 itD = [Inf,NaN];
@@ -212,6 +228,9 @@ while ( (any(isnan(itD(:))) || (max(itD(~isnan(itD)))>epsilon)) && (i<maxiter))
     i = i + 1;
     lambdait = vars.lambda/(i);
     itD = vars.M.dist(x,xold);
+    if recordFct
+        fctValSeq = [fctValSeq,evalFct(x,itD)]; %#ok<AGROW>
+    end
     if mod(i,getDebugLevel('IterationStep'))==0
         debug('text',3,'text',...
             ['i=',num2str(i),' where lastdiff is ',num2str(max(itD(~isnan(itD)))...
