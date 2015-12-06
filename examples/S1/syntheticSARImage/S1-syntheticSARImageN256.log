@@ -1,0 +1,30 @@
+ --- Logfile of Experiment S1-syntheticSARImageN256 started 12-Oct-2015 18:12:02 ---
+Using File Data generated 20-Jun-2015 17:49:37.
+Timer started for Cyclic proximal point algorithm on manifolds
+i=1000 where lastdiff is 2.0228e-05 and lambdait=0.0031416
+i=2000 where lastdiff is 1.2063e-05 and lambdait=0.0015708
+i=3000 where lastdiff is 3.5865e-06 and lambdait=0.0010472
+i=4000 where lastdiff is 2.4131e-06 and lambdait=0.0007854
+Timer stopped for Cyclic proximal point algorithm on manifolds.
+Computation for Cyclic proximal point algorithm on manifolds took 122.91018830 sec.
+4000 iterations, last difference:2.4131e-06
+On 0.375        0.25           0           0           0           0           0 the error is ME:0.008271292
+Timer started for Cyclic proximal point algorithm on manifolds
+i=1000 where lastdiff is 2.1886e-05 and lambdait=0.0031416
+i=2000 where lastdiff is 7.3841e-06 and lambdait=0.0015708
+i=3000 where lastdiff is 3.642e-06 and lambdait=0.0010472
+i=4000 where lastdiff is 2.2062e-06 and lambdait=0.0007854
+Timer stopped for Cyclic proximal point algorithm on manifolds.
+Computation for Cyclic proximal point algorithm on manifolds took 250.12340873 sec.
+4000 iterations, last difference:2.2062e-06
+On 0           0           0           0       0.125       0.125       0.125 the error is ME:0.007552984
+Timer started for Cyclic proximal point algorithm on manifolds
+i=1000 where lastdiff is 2.5604e-05 and lambdait=0.0031416
+i=2000 where lastdiff is 9.433e-06 and lambdait=0.0015708
+i=3000 where lastdiff is 5.0423e-06 and lambdait=0.0010472
+i=4000 where lastdiff is 2.9285e-06 and lambdait=0.0007854
+Timer stopped for Cyclic proximal point algorithm on manifolds.
+Computation for Cyclic proximal point algorithm on manifolds took 272.78152969 sec.
+4000 iterations, last difference:2.9285e-06
+On 0.25       0.125           0           0       0.125       0.125           0 the error is ME:0.007304515
+ --- Logfile of Experiment S1-syntheticSARImageN256 ended 12-Oct-2015 18:22:50 ---
