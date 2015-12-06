@@ -9,7 +9,8 @@ function p = symMod(v,T)
 %       p : the congruence class representant w.r.t. [-T/2, T/2)
 %
 % ---
-% ManImRes ~ R. Bergmann ~ 2014-02-12 | 2014-11-29
+% Manifold Valued Image Restoration 1.0
+% R. Bergmann ~ 2014-02-12 | 2014-11-29
 
 %
 % Change Log

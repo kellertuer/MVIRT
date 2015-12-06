@@ -17,7 +17,8 @@
 % This file can be started without any changes; it initializes the Toolbox
 % itself
 % ---
-% ManImRes 1.0, R. Bergmann ~ 2015-10-05
+% Manifold Valued Image Restoration 1.0
+% R. Bergmann ~ 2015-10-05
 
 % Init Toolbox
 start = pwd;
@@ -31,7 +32,7 @@ run('../../initManImRes.m')
 setDebugLevel('LevelMin',0);
 setDebugLevel('LevelMax',1000);
 setDebugLevel('text',3); %verbose, but...
-setDebugLevel('IterationStep',1000); %only every 50th iteration
+setDebugLevel('IterationStep',1000); %only every 1000th iteration
 setDebugLevel('WriteImages',1); %0: no file writing, 1: file writing
 setDebugLevel('time',3); %many time measurements
 setDebugLevel('Figures',1); %0: no figure display, 1: figures are displayed (disable e.g. for cluster/console work)
@@ -85,11 +86,11 @@ Mexthalf = (((abs(Y+0.25)>0.125)&(abs(Y+0.25)<=0.2))...
 Mext = (abs(Y+0.25)>0.2) & (abs(Y-0.25)>0.2);
 Mask = Mexthalf|Mext|Mint;
 % here, 1 means keeping data, 0 means destroyd
-V = V.*Mask; %Just loose data
+img = V.*Mask; %Just loose data
 if getDebugLevel('Figures')
     figure(2); imagesc(Mask,[0,1]); colormap(gray); axis square
     title(['Mask: White pixels are kept, black ones are destroyed.']);
-    figure(3); imagesc(V,[-pi,pi]);  colormap(hsv(1024)); axis image; axis off;
+    figure(3); imagesc(img,[-pi,pi]);  colormap(hsv(1024)); axis image; axis off;
     title('input data with destroyed points');
 end
 if getDebugLevel('WriteImages')
@@ -103,7 +104,7 @@ end
 problem.alpha = 2*[1,1,1,1];
 problem.beta=[1,1,1];
 problem.lambda = pi;
-problem.f = permute(V,[3,1,2]);
+problem.f = permute(img,[3,1,2]);
 problem.MaxIterations = 4000;
 problem.Epsilon = 10^(-9);
 problem.M = S1mRn(0,1);

@@ -1,21 +1,30 @@
- --- Logfile of Experiment S1-syntheticSignalN500 started 12-Oct-2015 18:05:16 ---
-Using File Data generated 19-Jun-2015 15:27:25.
+ --- Logfile of Experiment S1-syntheticSignalN500 started 06-Dec-2015 13:36:05 ---
+Using File Data generated 06-Dec-2015 11:00:22.
 - TV1&2 Minimization by CPPA, alpha=0.75, beta=0 -
-i=1000 where lastdiff is 4.225e-05 and lambdait=0.0031416
-i=2000 where lastdiff is 1.2386e-05 and lambdait=0.0015708
-i=3000 where lastdiff is 4.9882e-06 and lambdait=0.0010472
-i=4000 where lastdiff is 2.8733e-06 and lambdait=0.0007854
-4000 iterations, last difference:2.8733e-06
+Timer started for Cyclic proximal point algorithm on manifolds
+i=1000 where lastdiff is 1.3513e-05 and lambdait=0.0031416
+i=2000 where lastdiff is 3.8817e-06 and lambdait=0.0015708
+i=3000 where lastdiff is 1.8112e-06 and lambdait=0.0010472
+i=4000 where lastdiff is 1.0443e-06 and lambdait=0.0007854
+Timer stopped for Cyclic proximal point algorithm on manifolds.
+Computation for Cyclic proximal point algorithm on manifolds took 4.11943549 sec.
+4000 iterations, last difference:1.0443e-06
 - TV1&2 Minimization by CPPA, alpha=0, beta=1.5 -
-i=1000 where lastdiff is 8.9298e-05 and lambdait=0.0031416
-i=2000 where lastdiff is 2.9453e-05 and lambdait=0.0015708
-i=3000 where lastdiff is 1.8687e-05 and lambdait=0.0010472
-i=4000 where lastdiff is 1.4076e-05 and lambdait=0.0007854
-4000 iterations, last difference:1.4076e-05
+Timer started for Cyclic proximal point algorithm on manifolds
+i=1000 where lastdiff is 5.6086e-05 and lambdait=0.0031416
+i=2000 where lastdiff is 2.4914e-05 and lambdait=0.0015708
+i=3000 where lastdiff is 1.3725e-05 and lambdait=0.0010472
+i=4000 where lastdiff is 6.1746e-06 and lambdait=0.0007854
+Timer stopped for Cyclic proximal point algorithm on manifolds.
+Computation for Cyclic proximal point algorithm on manifolds took 6.48606427 sec.
+4000 iterations, last difference:6.1746e-06
 - TV1&2 Minimization by CPPA, alpha=0.25, beta=0.5 -
-i=1000 where lastdiff is 3.5876e-05 and lambdait=0.0031416
-i=2000 where lastdiff is 1.8982e-05 and lambdait=0.0015708
-i=3000 where lastdiff is 1.0352e-05 and lambdait=0.0010472
-i=4000 where lastdiff is 6.3048e-06 and lambdait=0.0007854
-4000 iterations, last difference:6.3048e-06
- --- Logfile of Experiment S1-syntheticSignalN500 ended 12-Oct-2015 18:05:43 ---
+Timer started for Cyclic proximal point algorithm on manifolds
+i=1000 where lastdiff is 2.2509e-05 and lambdait=0.0031416
+i=2000 where lastdiff is 7.8133e-06 and lambdait=0.0015708
+i=3000 where lastdiff is 4.3931e-06 and lambdait=0.0010472
+i=4000 where lastdiff is 2.5779e-06 and lambdait=0.0007854
+Timer stopped for Cyclic proximal point algorithm on manifolds.
+Computation for Cyclic proximal point algorithm on manifolds took 7.45304179 sec.
+4000 iterations, last difference:2.5779e-06
+ --- Logfile of Experiment S1-syntheticSignalN500 ended 06-Dec-2015 13:36:23 ---

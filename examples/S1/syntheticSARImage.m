@@ -16,7 +16,8 @@
 % This file can be started without any changes; it initialized the Toolbox
 % itself
 % ---
-% ManImRes 1.0 ~ R. Bergmann ~ 2014-04-06 | 2015-10-12
+% Manifold Valued Image Restoration 1.0
+% R. Bergmann ~ 2014-04-06 | 2015-10-12
 
 % Init Toolbox
 start = pwd;
@@ -25,17 +26,17 @@ if ~isempty(fileparts(which(mfilename)))
 end
 run('../../initManImRes.m')
 % Global settings
-setDebugLevel('LevelMin',0);
-setDebugLevel('LevelMax',1000);
-setDebugLevel('text',3); %verbose, but...
-setDebugLevel('IterationStep',1000); %only every 50th iteration
-setDebugLevel('time',2);
-setDebugLevel('WriteImages',1); %0: no file writing, 1: file writing
-setDebugLevel('time',3); %many time measurements
-setDebugLevel('LoadData',1); %0: generate new data 1: load existing data (if it exists), (other wise it is generated)
-setDebugLevel('WriteData',0); %0: do not write data to file 1: write data to file (overwrites last experiment data!)
-setDebugLevel('Figures',1); %0: no figure display, 1: figures are displayed (disable e.g. for cluster/console work)
-setDebugLevel('logfile',1); %0: no logfile 1: logfile
+setDebugLevel('LevelMin',0);        % Minimal Value of all global Values
+setDebugLevel('LevelMax',1000);     % Maximal Value ...
+setDebugLevel('text',3);            % quite verbose text, but...
+setDebugLevel('IterationStep',1000);% only every 100th iteration
+setDebugLevel('WriteImages',1);     % 0: no file writing, 1: file writing
+setDebugLevel('time',3);            % verbose time
+setDebugLevel('LoadData',1);        % 0: generate new data 1: load existing data (if it exists), (other wise it is generated)
+setDebugLevel('WriteData',0);       % 0: do not write data to file 1: write data to file (overwrites last experiment data!)
+setDebugLevel('Figures',1);         % 0: no figure display, 1: figures are displayed
+setDebugLevel('logfile',1);         % 0: no logfile 1: logfile
+
 
 dataFolder = ['syntheticSARImage',filesep];
 folder = ['examples',filesep,'S1',filesep];
@@ -96,6 +97,7 @@ beta1s = [0,1/8,1/8];
 beta2s = [0,1/8,1/8];
 gammas = [0,1/8,0];
 
+clear problem
 problem.MaxIterations = iter;
 problem.Epsilon = epsilon;
 problem.lambda=pi;
@@ -106,7 +108,7 @@ for i=1:length(alpha1s)
     problem.alpha = [alpha1s(i),alpha2s(i) 0 0];
     problem.beta = [beta1s(i),beta2s(i),gammas(i)];
     Zr = permute(cppa_ad_2D(problem),[2,3,1]); %permute back for imaging
-    ME = sum(sum(problem.M.dist(Zr,Z).^2))/numel(Z);
+    ME = sum(sum(problem.M.dist(Zr,Z).^2))/length(Z(:));
 debug('text',2,'Text',...
     ['On ',num2str([problem.alpha problem.beta]),' the error is ME:',sprintf('%3.7G',ME)]);
     if getDebugLevel('WriteImages')

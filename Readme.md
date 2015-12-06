@@ -1,6 +1,15 @@
 # ManImRes – MANifold-valued IMage REStoration
 
-This collection of functions dealing with processing of manifold valued data.
+In many applications data is constrained to certain manifolds. The simplest
+example is the circle \(\mathbb S^1\), i.e. phase valued data like in InSAR
+imaging. Every pixel of an image is here given as an angle or a point on the
+circle. Combining these with real valued data we obtain data like in the HSV
+color space, where the first value is phase/angle valued and the other two are
+real valued. We obtain the product manifold of
+\(\mathbb S^1\times \mathbb R^2\)-valued data. 
+
+This `MatLab` package provides algorthms for restoring, i.e. denoising and inpainting images
+
 
 ## Available Manifolds
 * The Circle `S1` for phase valued data
@@ -16,3 +25,15 @@ to the MATLAB path and initializes the debug helping functions.
 ## Getting Started
 To get started with the remaining features have a look at the `examples/` folder
 or take a look at the `algorithms/` and `manifolds/` functions and classes.
+
+## Authors
+The package was initialized by Ronny Bergmann <bergmann@mathematik.uni-kl.de>.
+
+## References
+The examples provided in this toolbox are published in the following articles
+
+### Journal Papers
+1. R. Bergmann, F. Laus, G. Steidl, A. Weinmann: *Second Order Differences of S1-valued Data and Applications in Variational Image Denoising.*, J. SIAM Imaging Sci. 7(4), 2916–2953, 2015. [DOI](http://dx.doi.org/10.1137/140969993), [arXiv](http://arxiv.org/pdf/1405.5349v1.pdf).
+
+### Conference Proceedings
+1. R. Bergmann, A. Weinmann: *Inpainting of Cyclic Data Using First and Second Order Differences Second Order Differences, in: EMMCVPR 2015.*, 2015. [DOI](http://dx.doi.org/10.1007/978-3-319-14612-6_12), [arXiv](http://arxiv.org/pdf/1410.1998v1.pdf)

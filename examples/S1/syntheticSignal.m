@@ -14,7 +14,8 @@
 % This file can be started without any changes; it initializes the Toolbox
 % itself
 % ---
-% ManImRes 1.0, R. Bergmann ~ 2014-03-24 | 2015-06-19
+% Manifold Valued Image Restoration 1.0
+% R. Bergmann ~ 2014-03-24 | 2015-06-19
 
 % Init Toolbox
 start = pwd;
@@ -25,18 +26,17 @@ run('../../initManImRes.m')
 %
 %
 %% Settings
-setDebugLevel('LevelMin',0);
-setDebugLevel('LevelMax',1000);
-setDebugLevel('text',3); %verbose, but...
-setDebugLevel('IterationStep',1000); %only every 50th iteration
-setDebugLevel('time',2);
-setDebugLevel('WriteImages',1); %0: no file writing, 1: file writing
-% The following two variables do the following
-% LoadData: If this is set to 1,
-setDebugLevel('LoadData',1); %0: generate new data 1: load existing data (if it exists), (other wise it is generated)
-setDebugLevel('WriteData',0); %0: do not write data to file 1: write data to file (overwrites last experiment data!)
-setDebugLevel('Figures',1); %0: no figure display, 1: figures are displayed (disable e.g. for cluster/console work)
-setDebugLevel('logfile',1); %0: no logfile 1: logfile
+setDebugLevel('LevelMin',0);        % Minimal Value of all global Values
+setDebugLevel('LevelMax',1000);     % Maximal Value ...
+setDebugLevel('text',3);            % quite verbose text, but...
+setDebugLevel('IterationStep',1000);% only every 100th iteration
+setDebugLevel('WriteImages',1);     % 0: no file writing, 1: file writing
+setDebugLevel('time',3);            % verbose time
+setDebugLevel('LoadData',1);        % 0: generate new data 1: load existing data (if it exists), (other wise it is generated)
+setDebugLevel('WriteData',0);       % 0: do not write data to file 1: write data to file (overwrites last experiment data!)
+setDebugLevel('Figures',1);         % 0: no figure display, 1: figures are displayed
+setDebugLevel('logfile',1);         % 0: no logfile 1: logfile
+
 format compact
 %
 %
@@ -98,7 +98,7 @@ if getDebugLevel('Figures')
         plot(t,fo,'.b',t,fresults(i,:),'.k');
         ylim([-pi,pi]);
         title(['Result of parameters \alpha=',num2str(alphas(i)),', \beta=',num2str(betas(i)),...
-            ' MSE ',num2str(sum(M.dist(fo,fresults(i,:)).^2)*1/numel(fo),'%6.5f')]);
+            ' MSE ',num2str(sum(M.dist(fo,fresults(i,:)).^2)*1/length(fo(:)),'%6.5f')]);
     end
 end
 %% End logfile

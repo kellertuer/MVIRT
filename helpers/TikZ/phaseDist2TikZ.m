@@ -23,7 +23,9 @@ function s = phaseDist2TikZ(f,r,varargin)
 %           (formated string with escaped \, \n, and \t which are _not_ escaped)
 %
 % ---
-%   R. Bergmann ~ 2014-04-24 
+% Manifold Valued Image Restoration 1.0
+% R. Bergmann ~ 2014-04-24 
+
 [n,m] = size(f); %m is the number of data sets we have, n their length
 if length(r)~=m
     error('There has to be an r for each data f');

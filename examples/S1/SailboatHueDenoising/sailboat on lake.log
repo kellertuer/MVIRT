@@ -1,5 +1,10 @@
- --- Logfile of Experiment sailboat on lake started 12-Oct-2015 20:02:08 ---
-Using File Data generated 21-Jun-2015 19:16:59.
+ --- Logfile of Experiment sailboat on lake started 06-Dec-2015 11:39:41 ---
+Using File Data generated 06-Dec-2015 11:00:22.
+[Warning: Key 'Cyclic proximal point algorithm on manifolds' already in use for a running time measurement; restarting
+timer.] 
+[> In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('debug', '/Users/bergmann/Dropbox/Repositories/ManImRes/debug/debug.m', 61)" style="font-weight:bold">debug</a> (<a href="matlab: opentoline('/Users/bergmann/Dropbox/Repositories/ManImRes/debug/debug.m',61,0)">line 61</a>)
+  In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('cppa_ad_2D', '/Users/bergmann/Dropbox/Repositories/ManImRes/algorithms/cppa_ad_2D.m', 212)" style="font-weight:bold">cppa_ad_2D</a> (<a href="matlab: opentoline('/Users/bergmann/Dropbox/Repositories/ManImRes/algorithms/cppa_ad_2D.m',212,0)">line 212</a>)
+  In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('sailboat_Hue_Denoising', '/Users/bergmann/Dropbox/Repositories/ManImRes/examples/S1/sailboat_Hue_Denoising.m', 103)" style="font-weight:bold">sailboat_Hue_Denoising</a> (<a href="matlab: opentoline('/Users/bergmann/Dropbox/Repositories/ManImRes/examples/S1/sailboat_Hue_Denoising.m',103,0)">line 103</a>)] 
 Timer started for Cyclic proximal point algorithm on manifolds
 i=100 where lastdiff is 0.80208 and lambdait=0.031416
 i=200 where lastdiff is 0.17781 and lambdait=0.015708
@@ -42,7 +47,7 @@ i=3800 where lastdiff is 0.00043668 and lambdait=0.00082673
 i=3900 where lastdiff is 0.022669 and lambdait=0.00080554
 i=4000 where lastdiff is 0.023894 and lambdait=0.0007854
 Timer stopped for Cyclic proximal point algorithm on manifolds.
-Computation for Cyclic proximal point algorithm on manifolds took 1691.09495913 sec.
+Computation for Cyclic proximal point algorithm on manifolds took 1878.41724294 sec.
 4000 iterations, last difference:0.023894
 Timer started for Cyclic proximal point algorithm on manifolds
 i=100 where lastdiff is 0.0034674 and lambdait=0.031416
@@ -86,6 +91,6 @@ i=3800 where lastdiff is 4.2889e-05 and lambdait=0.00082673
 i=3900 where lastdiff is 4.1438e-05 and lambdait=0.00080554
 i=4000 where lastdiff is 4.0052e-05 and lambdait=0.0007854
 Timer stopped for Cyclic proximal point algorithm on manifolds.
-Computation for Cyclic proximal point algorithm on manifolds took 1112.41693842 sec.
+Computation for Cyclic proximal point algorithm on manifolds took 1749.86646163 sec.
 4000 iterations, last difference:4.0052e-05
- --- Logfile of Experiment sailboat on lake ended 12-Oct-2015 20:48:53 ---
+ --- Logfile of Experiment sailboat on lake ended 06-Dec-2015 12:40:13 ---

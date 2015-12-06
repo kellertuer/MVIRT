@@ -4,7 +4,8 @@ function folder = getManImResPath()
 %    message, if the Toolbox is not initialized yet.
 %
 % ---
-% ManImRes 1.0, R. Bergmann ~ 2014-11-29
+% Manifold Valued Image Restoration 1.0
+% R. Bergmann ~ 2014-11-29
 
 folder = fileparts(which('initManImRes.m'));
 assert(~isempty(folder),...

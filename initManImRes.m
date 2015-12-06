@@ -5,11 +5,12 @@ function initManImRes(varargin)
 %   reside and compile cpp-source files (optional).
 %
 % OPTIONAL PARAMETERS
-%   'CompileMex? : (false) Set this flag to compile all mex-files
-%   'UseMex'     : (true) Set this flag to false to disable the usage of
+%   'Make'   : (false) Set this flag to compile all mex-files
+%   'UseMex' : (true) Set this flag to false to disable the usage of
 %   C++Algorithms and use the (fallback) Matlab implementations
 % ---
-% ManImRes 1.0 ~ R. Bergmann ~ 2014-11-29 | 2015-04-09
+% Manifold Valued Image Restoration 1.0
+% R. Bergmann ~ 2014-11-29 | 2015-04-09
 
 ip = inputParser;
 addParameter(ip,'Make',false);

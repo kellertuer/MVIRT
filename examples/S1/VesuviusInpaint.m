@@ -16,7 +16,8 @@
 % This file can be started without any changes; it initialized the Toolbox
 % itself
 % ---
-% ManImRes 1.0, R. Bergmann ~ 2015-10-12
+% Manifold Valued Image Restoration 1.0
+% R. Bergmann ~ 2015-10-12
 
 % Init Toolbox
 start = pwd;
@@ -26,16 +27,16 @@ end
 run('../../initManImRes.m')
 
 %% Settings
-setDebugLevel('LevelMin',0);
-setDebugLevel('LevelMax',1000);
-setDebugLevel('text',3); %verbose, but...
-setDebugLevel('IterationStep',1000); %only every 50th iteration
-setDebugLevel('WriteImages',1); %0: no file writing, 1: file writing
-setDebugLevel('time',3); %many time measurements
-setDebugLevel('LoadData',1); %0: generate new data 1: load existing data (if it exists), (other wise it is generated)
-setDebugLevel('WriteData',0); %0: do not write data to file 1: write data to file (overwrites last experiment data!)
-setDebugLevel('Figures',1); %0: no figure display, 1: figures are displayed (disable e.g. for cluster/console work)
-setDebugLevel('logfile',1); %0: no logfile 1: logfile
+setDebugLevel('LevelMin',0);        % Minimal Value of all global Values
+setDebugLevel('LevelMax',1000);     % Maximal Value ...
+setDebugLevel('text',3);            % quite verbose text, but...
+setDebugLevel('IterationStep',1000);% only every 100th iteration
+setDebugLevel('WriteImages',1);     % 0: no file writing, 1: file writing
+setDebugLevel('time',3);            % verbose time
+setDebugLevel('LoadData',1);        % 0: generate new data 1: load existing data (if it exists), (other wise it is generated)
+setDebugLevel('WriteData',0);       % 0: do not write data to file 1: write data to file (overwrites last experiment data!)
+setDebugLevel('Figures',1);         % 0: no figure display, 1: figures are displayed
+setDebugLevel('logfile',1);         % 0: no logfile 1: logfile
 
 %
 % ------
@@ -86,7 +87,7 @@ if getDebugLevel('WriteImages')
     % black mask of cut out (rest transparent
     imwrite(uint8(255*Mask),[resultsFolder,name,'-mask-b.png'],'Alpha',255*(1-Mask));
     % Display mask
-    pr = 100 * sum(sum(Mask==0))/numel(Mask);
+    pr = 100 * sum(sum(Mask==0))/length(Mask(:));
 end
 if getDebugLevel('Figures')
     figure(1); imagesc(V,[-pi,pi]); colormap(hsv(1024));
@@ -131,7 +132,7 @@ VDist = problem.M.dist(Vcomp,Vres);
 %
 if getDebugLevel('Figures')
     figure(5); imagesc(VDist); colormap(flipud(gray(1024))); axis square
-    ME = sum(sum(VDist.^2))/numel(V);
+    ME = sum(sum(VDist.^2))/length(V(:));
     title(['Reconstruction Error. MSE = ',num2str(ME),'.']);
 end
 if getDebugLevel('WriteImages')

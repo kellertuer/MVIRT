@@ -14,7 +14,8 @@
 % This file can be started without any changes; it initializes the Toolbox
 % itself
 % ---
-% ManImRes 1.0, R. Bergmann ~ 2015-10-05
+% Manifold Valued Image Restoration 1.0
+% R. Bergmann ~ 2015-10-05
 
 % Init Toolbox
 start = pwd;

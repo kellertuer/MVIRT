@@ -18,24 +18,24 @@
 % This file can be started without any changes; it initialized the Toolbox
 % itself
 % ---
-% ManImRes 1.0 ~ R. Bergmann ~ 2015-06-20
+% Manifold Valued Image Restoration 1.0
+% R. Bergmann ~ 2015-06-20
 start = pwd;
 if ~isempty(fileparts(which(mfilename)))
     cd(fileparts(which(mfilename)));
 end
 run('../../initManImRes.m')
 % Global settings
-setDebugLevel('LevelMin',0);
-setDebugLevel('LevelMax',100);
-setDebugLevel('text',3); %verbose, but...
-setDebugLevel('IterationStep',100); %only every 50th iteration
-setDebugLevel('time',2);
-setDebugLevel('WriteImages',1); %0: no file writing, 1: file writing
-setDebugLevel('time',3); %many time measurements
-setDebugLevel('LoadData',1); %0: generate new data 1: load existing data (if it exists), (other wise it is generated)
-setDebugLevel('WriteData',0); %0: do not write data to file 1: write data to file (overwrites last experiment data!)
-setDebugLevel('Figures',1); %0: no figure display, 1: figures are displayed (disable e.g. for cluster/console work)
-setDebugLevel('logfile',1); %0: no logfile 1: logfile
+setDebugLevel('LevelMin',0);        % Minimal Value of all global Values
+setDebugLevel('LevelMax',100);      % Maximal Value ...
+setDebugLevel('text',3);            % quite verbose text, but...
+setDebugLevel('IterationStep',100); % only every 100th iteration
+setDebugLevel('WriteImages',1);     % 0: no file writing, 1: file writing
+setDebugLevel('time',3);            % verbose time
+setDebugLevel('LoadData',1);        % 0: generate new data 1: load existing data (if it exists), (other wise it is generated)
+setDebugLevel('WriteData',0);       % 0: do not write data to file 1: write data to file (overwrites last experiment data!)
+setDebugLevel('Figures',1);         % 0: no figure display, 1: figures are displayed
+setDebugLevel('logfile',1);         % 0: no logfile 1: logfile
 
 dataFolder = ['..',filesep,'..',filesep,'data',filesep];
 folder = ['examples',filesep,'S1',filesep];
@@ -51,7 +51,7 @@ dataName = 'S1-sailboatHueDenoising';
 %% Create Image
 %
 %
-% Logfile?
+% use a Logfile?
 if getDebugLevel('logfile')
     clc
     if exist([resultsFolder,name,'.log'],'file')
@@ -92,6 +92,7 @@ if getDebugLevel('WriteImages')
     imwrite(hsv2rgb(imgn),[resultsFolder,name,'-noisy.png'],'png');
 end
 % Number 1: H phase valued denoising
+clear problem
 problem.MaxIterations = iter; problem.Epsilon = epsilon;
 problem.f = permute(Zn(:,:,1),[3,1,2]); problem.M = S1;
 problem.alpha = 2*pi*1/4*[1,1,0,0];

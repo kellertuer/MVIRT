@@ -12,7 +12,8 @@
 %        J. SIAM Imaging Sci. 7(4), 2916?2953,
 %
 % ---
-% ManImRes 1.0 ~ R. Bergmann ~ 2015-06-19 | 2015-10-12
+% Manifold Valued Image Restoration 1.0
+% R. Bergmann ~ 2015-06-19 | 2015-10-12
 
 % Init Toolbox
 start = pwd;

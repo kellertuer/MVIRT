@@ -10,6 +10,13 @@ function s = fig2TikZ(filename,t,f,ylim,yticks,yticklabels,xticks,xticklabels,sc
 %   yticks : Array containing strings (possibly incl math) of y-axis labels
 %   xticks : Array containing strings (possibly incl math) of y-axis labels
 %   scales : scale both axis (can also be 
+%
+% OUTPUT
+%   s      : string containing the file content 
+% ---
+% Manifold Valued Image Restoration 1.0
+% R. Bergmann ~ 2014-03-29
+
 numplots = size(f,1);
 if (size(f,2) ~= length(t))
     error('t and f have to be same length');

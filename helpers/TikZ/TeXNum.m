@@ -11,7 +11,8 @@ function s = TeXNum(x,fmtmant,fmtexpn)
 %    s       : a string in TeX-Notation representing the number in
 %              sientific notation
 % ---
-% ManImRes 1.0, R. Bergmann ~ 2014-03-29
+% Manifold Valued Image Restoration 1.0
+% R. Bergmann ~ 2014-03-29
 
     expn = floor( log( abs(x) )/log(10) ); % prediction
     expn = expn + ( x == 10^(expn+1) ); % correction

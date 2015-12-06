@@ -1,5 +1,5 @@
- --- Logfile of Experiment S1-HuberN500 started 12-Oct-2015 18:08:15 ---
-Using File Data generated 19-Jun-2015 18:45:59.
+ --- Logfile of Experiment S1-HuberN500 started 06-Dec-2015 11:31:58 ---
+Using File Data generated 06-Dec-2015 11:00:22.
 i=1000 where lastdiff is 5.7832e-05 and lambdait=0.0031416
 i=2000 where lastdiff is 2.2222e-05 and lambdait=0.0015708
 i=3000 where lastdiff is 1.2606e-05 and lambdait=0.0010472
@@ -10,15 +10,12 @@ i=2000 where lastdiff is 0.091573 and lambdait=0.0015708
 i=3000 where lastdiff is 0.063067 and lambdait=0.0010472
 i=4000 where lastdiff is 0.04805 and lambdait=0.0007854
 4000 iterations, last difference:0.04805
-syntheticSARImage
+RadialInpaint
 Initializing Manifold Valued Image Restoration Toolbox.
 Debug Level of LevelMax set to 1000
 Debug Level of text set to 3
-Debug Level of IterationStep set to 1000
-Debug Level of time set to 2
+Debug Level of IterationStep set to 10000
 Debug Level of WriteImages set to 1
 Debug Level of time set to 3
-Debug Level of LoadData set to 1
-Debug Level of WriteData set to 0
 Debug Level of Figures set to 1
 Debug Level of logfile set to 1

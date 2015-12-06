@@ -17,7 +17,8 @@
 % This file can be started without any changes; it initializes the Toolbox
 % itself
 % ---
-% ManImRes 1.0, R. Bergmann ~ 2015-10-05
+% Manifold Valued Image Restoration 1.0
+% R. Bergmann ~ 2015-10-05
 
 % Init Toolbox
 start = pwd;
@@ -28,14 +29,14 @@ run('../../initManImRes.m')
 %
 %
 %% Settings
-setDebugLevel('LevelMin',0);
-setDebugLevel('LevelMax',100);
-setDebugLevel('text',3); %verbose, but...
-setDebugLevel('IterationStep',100); %only every 50th iteration
-setDebugLevel('WriteImages',1); %0: no file writing, 1: file writing
-setDebugLevel('time',3); %many time measurements
-setDebugLevel('Figures',1); %0: no figure display, 1: figures are displayed (disable e.g. for cluster/console work)
-setDebugLevel('logfile',1); %0: no logfile 1: logfile
+setDebugLevel('LevelMin',0);        % Minimal Value of all global Values
+setDebugLevel('LevelMax',100);      % Maximal Value ...
+setDebugLevel('text',3);            % quite verbose text, but...
+setDebugLevel('IterationStep',100); % only every 100th iteration
+setDebugLevel('WriteImages',1);     % 0: no file writing, 1: file writing
+setDebugLevel('time',3);            % verbose time
+setDebugLevel('Figures',1);         % 0: no figure display, 1: figures are displayed
+setDebugLevel('logfile',1);         % 0: no logfile 1: logfile
 
 dataFolder = ['..',filesep,'..',filesep,'data',filesep];
 folder = ['examples',filesep,'S1',filesep];
@@ -52,7 +53,6 @@ if getDebugLevel('logfile')
     diary([resultsFolder,name,'.log']);
     disp([' --- Logfile of Experiment ',name,' started ',datestr(datetime),' ---']);
 end
-
 
 if getDebugLevel('Figures')
     figure(1); imagesc(spiral,[-pi,pi]); colormap(hsv(1024));
@@ -78,7 +78,7 @@ M(:,2:3:size(spiral,2)) = 0;
 img = spiral.*M; %Just loose data
 if getDebugLevel('Figures')
     figure(2); imagesc(M,[0,1]); colormap(gray); axis square
-    pr = 100 * sum(sum(M==0))/numel(M);
+    pr = 100 * sum(~M(:))/length(M(:));
     title(['Mask: White pixels are kept, black ones are destroyed. (',num2str(pr,3),'% destroyed).']);
     figure(3); imagesc(img,[-pi,pi]);  colormap(hsv(1024)); axis square
     title('input data with destroyed points');
@@ -119,9 +119,9 @@ if getDebugLevel('WriteImages')
 end
 % Evaluation
 VDistTV12 = problem.M.dist(permute(spiral,[3,1,2]),permute(VresTV2,[3,1,2]));
-METV12 = sum(sum(VDistTV12.^2))/numel(spiral);
+METV12 = sum(sum(VDistTV12.^2))/length(spiral(:));
 VDistTV = problem.M.dist(permute(spiral,[3,1,2]),permute(VresTV,[3,1,2]));
-METV = sum(sum(VDistTV.^2))/numel(spiral);
+METV = sum(sum(VDistTV.^2))/length(spiral(:));
 if getDebugLevel('Figures')
     figure(6); imagesc(VDistTV12); colormap(flipud(gray(1024))); axis image; axis off;    title(['Reconstruction Error TV1&2. MSE = ',num2str(METV12),'.']);
     figure(7); imagesc(VDistTV); colormap(flipud(gray(1024))); axis image; axis off;    title(['Reconstruction Error TV. MSE = ',num2str(METV12),'.']);

@@ -25,15 +25,14 @@ if ~isempty(fileparts(which(mfilename)))
 end
 run('../../initManImRes.m')
 % Global settings
-setDebugLevel('LevelMin',0);
-setDebugLevel('LevelMax',1000);
-setDebugLevel('text',3); %verbose, but...
-setDebugLevel('IterationStep',1000); %only every 50th iteration
-setDebugLevel('time',2);
-setDebugLevel('WriteImages',1); %0: no file writing, 1: file writing
-setDebugLevel('time',3); %many time measurements
-setDebugLevel('Figures',1); %0: no figure display, 1: figures are displayed (disable e.g. for cluster/console work)
-setDebugLevel('logfile',1); %0: no logfile 1: logfile
+setDebugLevel('LevelMin',0);        % Minimal Value of all global Values
+setDebugLevel('LevelMax',1000);     % Maximal Value ...
+setDebugLevel('text',3);            % quite verbose text, but...
+setDebugLevel('IterationStep',1000);% only every 100th iteration
+setDebugLevel('WriteImages',1);     % 0: no file writing, 1: file writing
+setDebugLevel('time',3);            % verbose time
+setDebugLevel('Figures',1);         % 0: no figure display, 1: figures are displayed
+setDebugLevel('logfile',1);         % 0: no logfile 1: logfile
 
 dataFolder = ['..',filesep,'..',filesep,'data',filesep];
 folder = ['examples',filesep,'S1',filesep];
@@ -65,7 +64,7 @@ imgg = (double(rgb2gray(img))/256)*(2*pi)-pi;
 
 %% Initial Export of Starting Values
 if getDebugLevel('Figures')
-    figure(1); imagesc(imgg+pi); title('Original Data'); colormap hsv;
+    figure(1); imagesc(imgg+pi); title('Original Data'); colormap hsv; axis image
     pause(0.05); %show all 3
 end
 if getDebugLevel('WriteImages')
@@ -98,7 +97,7 @@ for i=1:length(alpha1s)
     end
     if getDebugLevel('Figures')
         figure(i+1); imagesc(imgr+pi); title(['Reconstruction',...
-        num2str([problem.alpha problem.beta]),' .']); colormap hsv;
+        num2str([problem.alpha problem.beta]),' .']); colormap hsv; axis image
     end
 end
 % End logfile
