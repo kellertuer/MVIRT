@@ -1,0 +1,48 @@
+ --- Logfile of Experiment Lemniscate started 07-Dec-2015 20:27:59 ---
+Using File Data generated 05-May-2015 16:42:41.
+M = 
+  <a href="matlab:helpPopup Sn" style="font-weight:bold">Sn</a> with properties:
+
+        type: 'The 2-sphere in R3'
+         tau: 1
+       steps: 10
+    ItemSize: 3
+      useMex: 1
+problem = 
+                M: [1x1 Sn]
+                f: [3x512 double]
+    MaxIterations: 1000
+          Epsilon: 0
+           lambda: 1.5708
+Parameter range alpha (3 values): 0,0.55,0.7.
+Parameter range beta  (3 values): 0,21,29.
+Computation for Cyclic proximal point algorithm on manifolds took 0.24976728 sec.
+1000 iterations, last difference:3.65e-08
+Parameters: \alpha=0 \beta=0 yield 0.13212.
+Computation for Cyclic proximal point algorithm on manifolds took 3.60550290 sec.
+1000 iterations, last difference:3.7045e-06
+Parameters: \alpha=0.55 \beta=0 yield 0.044648.
+Computation for Cyclic proximal point algorithm on manifolds took 3.33803338 sec.
+1000 iterations, last difference:4.7748e-06
+Parameters: \alpha=0.7 \beta=0 yield 0.044405.
+Computation for Cyclic proximal point algorithm on manifolds took 97.11582990 sec.
+1000 iterations, last difference:0.00010686
+Parameters: \alpha=0 \beta=21 yield 0.040373.
+Computation for Cyclic proximal point algorithm on manifolds took 103.03561972 sec.
+1000 iterations, last difference:9.1703e-05
+Parameters: \alpha=0.55 \beta=21 yield 0.034787.
+Computation for Cyclic proximal point algorithm on manifolds took 130.68310676 sec.
+1000 iterations, last difference:9.8128e-05
+Parameters: \alpha=0.7 \beta=21 yield 0.03488.
+Computation for Cyclic proximal point algorithm on manifolds took 105.07453944 sec.
+1000 iterations, last difference:0.00018612
+Parameters: \alpha=0 \beta=29 yield 0.040374.
+Computation for Cyclic proximal point algorithm on manifolds took 131.88910874 sec.
+1000 iterations, last difference:0.0001968
+Parameters: \alpha=0.55 \beta=29 yield 0.03479.
+Computation for Cyclic proximal point algorithm on manifolds took 112.09466579 sec.
+1000 iterations, last difference:0.00019159
+Parameters: \alpha=0.7 \beta=29 yield 0.034894.
+Minimum: Parameters: \alpha=0.55 \beta=21 yields minimal value 0.034787.
+Minimum: Parameter: \alpha=0.7 yields minimal value 0.044405.
+ --- Logfile of Experiment >Lemniscate< ended 07-Dec-2015 20:39:33 ---
