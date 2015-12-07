@@ -19,12 +19,14 @@ classdef (Abstract) manifold < handle
     %                          X with standard deviation sigma
     % _normal functions
     %    proxDist(g,f,lambda) : proximal mapping of distance terms
-    %    mean(f,q)            : Karcher mean of the values f with inital q
+    %    mean(f)              : Karcher mean of the values f
     %    midPoint(x,z)        : Compute the mid point between x and z.
+    %    geodesic(x,y,pts)    : Compute the geodesic between x and y with
+    %                           pts points
     %
     % ---
-    % ManImRes 1.0 ~ R. Bergmann ~ 2014-10-18 | 2015-01-25
-    
+    % Manifold Valued Image Restoration 1.0
+    % R. Bergmann ~ 2014-10-18, last edit: 2015-12-05
     properties
         useMex = true; %Whether or not to use mex-files in the manifold-functions
     end
@@ -46,8 +48,9 @@ classdef (Abstract) manifold < handle
         v = log(this,p,q);
         % distance between p and q on the manifold
         d = dist(this,p,q);
-        % add noise w.r.t. manifold and standard deviation sigma to a
-        % (multidimensional) signal X
+        % addNoise(X,sigma) add noise w.r.t. the manifold itself and a
+        % standard deviation sigma to a (multidimensional) signal X of
+        % manifold valued pixels.
         Y = addNoise(X,sigma)
     end
     methods
@@ -67,21 +70,112 @@ classdef (Abstract) manifold < handle
                 x=f;
                 return
             end
-            t = this.dist(g,f);
-            if (size(t,1)==1) %column vector
-                t = shiftdim(t,1);
+             v = this.log(g,f);
+             if sum(size(lambda))==2 % a numner
+                 t = lambda/(1+lambda);
+             else
+%                t = repmat(lambda./(1+lambda),[ones(1,length(size(lambda))),this.ItemSize]);
+                 t = lambda./(1+lambda); %avoid repmat
+                 % manifolds first with one-dim stuff to avoid repmat
+                 l = length(size(lambda));
+                 t = permute(t,[l+(1:length(size(this.ItemSize))),1:l]);
+             end
+             x = this.exp(g, t.*v);
+        end
+        function [x1,x2] = proxTV(this,f1,f2,lambda)
+            % proxTV(f,lambda)
+            % Proximal steps from f1 to f2 and f2 to f1 with parameter
+            % lambda on an arbitrary manifold. This is the proximal map of
+            % the piointwise distance function d(f1,f2).
+            % INPUT
+            %  f1,f2    : data columns
+            %  lambda   : proxParameter 
+            % OUTPUT
+            %  x1,x2    : resulting columns of the proximal map
+            % ---
+            % ManImRes 1.0, R. Bergmann ~ 2014-10-19
+            if all(f1(:) == f2(:))
+                x1=f1;
+                x2=f2;
+                return
             end
-            tS = size(t); tS = tS(tS>1);
-            v = this.log(g,f);
-            % repeat into all manifold dimensions
-            %first part produces singleton dimensions - as many as the
-            %manifold needs, last reproduces t in permute
-            t = repmat(... %permute singleton dimensions (as many as manifold dims) from last to first
-                    permute(t,[(length(size(f))-length(this.ItemSize)+1):(length(size(f))),1:(length(tS))]), ...
-                    [this.ItemSize(this.ItemSize>1),ones(1,length(tS))]);
-            x = this.exp(g, (lambda./(1+lambda)).*t.*v);
+            
+            % Calculate step length in (0,1/2]
+            step = min(1/2,lambda./this.dist(f1,f2));
+            step = permute(repmat(step(:),[1,this.ItemSize]),[length(this.ItemSize)+1:-1:1]);
+            x1 = this.exp(f1,step.*this.log(f1,f2));
+            x2 = this.exp(f2,step.*this.log(f2,f1));
         end
         function x = mean(this,varargin)
+            x = this.mean_gd(varargin{:});
+        end
+        function m = midPoint(this,x,z)
+            % m = midPoint(x,z)
+            %   Compute the (geodesic) mid point of x and z.
+            %
+            % INPUT
+            %    x,z : two point(sets) of manifold points
+            %
+            % OUTPUT
+            %      m : resulting mid point( sets)
+            %
+            % ---
+            % ManImRes 1.0, R. Bergmann ~ 2014-10-19 | 2015-01-29
+            m = this.exp(x, this.log(x,z)./2);
+        end
+        function geo = geodesic(varargin)
+            % geo = geodesic(this,x,y,pts)
+            % Compute the geodesic between x and y using pts-2 points to
+            % interpolate
+            %
+            % INPUT
+            %   x,y : two points of the manifold
+            %   pts : (100) optional length of geodesic, or set to length t
+            %               if t is chosen
+            %     t : vector of points lead to geo = \gamma_{x,y}(t) 
+            %
+            % OUTPUT
+            %   geo : the geodesic between x,y with geo(1) = x, geo(pts)=y
+            %
+            % ---
+            % ManImRes 1.0 J. Persch ~2015-10-29
+            ip = inputParser;
+            addRequired(ip,'this');
+            addRequired(ip,'x');
+            addRequired(ip,'y');
+            addParameter(ip,'pts',100);
+            addParameter(ip,'t',0:1/99:1);
+            parse(ip, varargin{:});
+            vars = ip.Results;
+            
+            this = vars.this;
+            x = vars.x;
+            y = vars.y;
+            
+            if size(x,length(this.ItemSize)+1)>1 ||size(y,length(this.ItemSize)+1)>1
+                error('x,y should be points on the manifold');
+            end
+            if vars.pts > 0 || isscalar(vars.pts)
+                pts = vars.pts;
+            else
+               error('pts should be a scalar >0');
+            end
+            if isvector(vars.t)
+                t = vars.t;
+                pts = length(t);             
+            else
+               error('t should be a vector'); 
+            end
+           geo = zeros([prod(this.ItemSize),pts]);
+           v = this.log(x,y);
+           for i = 1:pts
+               geo(:,i) = reshape(this.exp(x,t(i)*v),prod(this.ItemSize),1);
+           end
+           geo = reshape(geo,[this.ItemSize,pts]);
+        end
+    end
+    methods (Access=protected)
+        function x = mean_gd(this,varargin)
             % mean(f) calculates the mean of the input data with a gradient
             % descent algorithm. This implementation is based on
             %
@@ -109,7 +203,7 @@ classdef (Abstract) manifold < handle
             addParameter(ip,'Weights',NaN);
             addParameter(ip,'InitVal',NaN);
             addParameter(ip,'MaxIterations',50);
-            addParameter(ip,'Epsilon',10^-6);
+            addParameter(ip,'Epsilon',5*10^-7);
             parse(ip, varargin{:});
             vars = ip.Results;
             f = vars.f;
@@ -175,19 +269,107 @@ classdef (Abstract) manifold < handle
                 i= i+1;
             end
         end
-        function m = midPoint(this,x,z)
-            % m = midPoint(x,z)
-            %   Compute the (geodesic) mid point of x and z.
+        function x = mean_cppa(this,varargin)
+            % mean(f,lambda)
+            % Perform the (karcher) mean on an arbitrary manifold. Computed
+            % by employing the cyclic proximal point algorithm from [1]
             %
             % INPUT
-            %    x,z : two point(sets) of manifold points
+            %    f     :  m x n Data points ([this.Itemsize,m,n]) to compute
+            %            m means of n points each, pp.
+            %   lambda : initial value for the sequence lambda_k in the CPPA 
             %
             % OUTPUT
-            %      m : resulting mid point( sets)
+            %   x     : manifold mean of the values in (each column of) f depending on q
             %
+            % OPTIONAL PARAMETERS
+            %   'InitVal'       : m Initial Data points for the cppa 
+            %   'Weights'       : [ones(size(f,2))] perform a karcher mean
+            %                   with differen weights.
+            %   'MaxIterations' : (400) Maximal number of Iterations
+            %   'Epsilon'       : (10^{-6}) Lower bound for the max change in one cycle
+            %
+            %           one of the parameters MaxIterations/Epsilon can be dactivated
+            %           by specifying them as Inf but not both.
+            %
+            %   For Details on the algorithm see
+            % [1] M. Bacak, Computing medians and means in Hadamard spaces.
+            % SIAM Journal on Optimization, 24(3), pp. 1542-1566, 2013.
             % ---
-            % ManImRes 1.0, R. Bergmann ~ 2014-10-19 | 2015-01-29
-            m = this.exp(x, this.log(x,z)./2);
+            % ManImRes 1.0, R. Bergmann ~ 2015-07-16
+            ip = inputParser;
+            addRequired(ip,'f');
+            addRequired(ip,'lambda');
+            addParameter(ip,'Weights',NaN);
+            addParameter(ip,'InitVal',NaN);
+            addParameter(ip,'MaxIterations',500);
+            addParameter(ip,'Epsilon',5*10^-9);
+            parse(ip, varargin{:});
+            vars = ip.Results;
+            f = vars.f;
+            dims = size(f);
+            if length(dims) ~= length(this.ItemSize)+2
+                error('f wrong size');
+            end
+            f = reshape(f,[prod(this.ItemSize),dims(1+length(this.ItemSize):end)]);
+            m = dims(end-1);
+            n = dims(end);
+            manDim = dims(1:end-2);
+            if isnan(vars.Weights)
+                w = 1/n*ones(m,n);
+            elseif isvector(vars.Weights)
+                w = vars.Weights(:)';
+                if length(w) ~=n
+                    error('length(w) does not match data points');
+                end
+                w = repmat(w,m,1);
+            else
+                w = vars.Weights;
+                if any(size(w) ~= [m,n])
+                    error('dim w do not match data points');
+                end
+            end
+            % Resize w to fit to the Manifold
+            if isnan(vars.InitVal)
+                x = reshape(f,[prod(this.ItemSize),m,n]);
+                x = reshape(x(:,:,1),[this.ItemSize,m]);
+            else
+                x = vars.InitVal;
+                if (length(size(x))== length(this.ItemSize)) ...
+                        && (all(size(x) == this.ItemSize))
+                    x = repmat(x,[ones(1,length(this.ItemSize)),m]);
+                elseif any(size(x) ~= [this.ItemSize,m])
+                    error(['InitVal has to be of size [',num2str(this.ItemSize),'] or [',...
+                        num2str([this.ItemSize,m]),'].']);
+                end
+            end
+            if vars.Epsilon > 0
+                epsilon = vars.Epsilon;
+            else
+                warning('Epsilon should be larger than zero, set Epsilon to 10^-6')
+                epsilon = 10^-6;
+            end
+            if vars.MaxIterations > 0
+                maxiter = vars.MaxIterations;
+            else
+                warning('Iterations should be larger than zero, set Iterations to 100')
+                maxiter = 100;
+            end
+            itD = inf; %max Distance in last iteration
+            i=0;
+            while ( (max(itD(:))>=epsilon) && (i<maxiter) )
+                i = i+1;
+                lambdait = vars.lambda/i;
+                xold = x;
+                for j=1:n %cycle through all proxes
+                    aj = reshape(f,[prod(manDim),m,n]); %collapse manifold
+                    %collect all jth points, expand manifold again
+                    aj = reshape(aj(:,:,j),[manDim,m]);
+                    x = this.proxDist(x,aj,lambdait*w(:,j));
+                end
+                itD = this.dist(x,xold);
+                itD = max(itD(:));
+            end
         end
     end
 end

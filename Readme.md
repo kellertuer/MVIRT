@@ -27,7 +27,8 @@ To get started with the remaining features have a look at the `examples/` folder
 or take a look at the `algorithms/` and `manifolds/` functions and classes.
 
 ## Authors
-The package was initialized by Ronny Bergmann <bergmann@mathematik.uni-kl.de>.
+The package was initialized by Ronny Bergmann <bergmann@mathematik.uni-kl.de>
+and some algorithms were implemented by Johannes Persch <persch@mathematik.uni-kl.de>.
 
 ## References
 The examples provided in this toolbox are published in the following articles
