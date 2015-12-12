@@ -40,6 +40,15 @@ if vars.Make
     mex -I../include/eigen -Imanifolds SnExp.cpp manifolds/manifoldSn.cpp
     mex -I../include/eigen -Imanifolds SnLog.cpp manifolds/manifoldSn.cpp
     mex -I../include/eigen -Imanifolds SnGradX.cpp manifolds/manifoldSn.cpp
+    % SPD
+    disp('--- Compiling SymPosDef functions ---');
+    mex -I../include/eigen -Imanifolds SPDDist.cpp manifolds/manifoldSPD.cpp
+    mex -I../include/eigen -Imanifolds SPDDot.cpp manifolds/manifoldSPD.cpp
+    mex -I../include/eigen -Imanifolds SPDExp.cpp manifolds/manifoldSPD.cpp
+    mex -I../include/eigen -Imanifolds SPDGradX.cpp manifolds/manifoldSPD.cpp
+    mex -I../include/eigen -Imanifolds SPDLog.cpp manifolds/manifoldSPD.cpp
+    mex -I../include/eigen -Imanifolds SPDParallelTransport.cpp manifolds/manifoldSPD.cpp
+    mex -I../include/eigen -Imanifolds SPDMean.cpp manifolds/manifoldSPD.cpp
     cd ..
 end% Init Debug
 setDebugLevel(2);

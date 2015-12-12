@@ -3,8 +3,7 @@
  * Manifold functions of Symmetric positive definite matrices, elementary,
  *not working with vectors/arrays of matrices, in Eigen-Library notation for convenience
  * ---
- * Manifold Valued Image Restoration 1.0
- * R. Bergmann, 2015-04-12
+ * ManImRes ~R. Bergmann, 2015-04-12
  */
 #ifndef MANIFOLDSPD_H
 #define MANIFOLDSPD_H
@@ -15,27 +14,29 @@
 using namespace std;
 using namespace Eigen;
 
+MatrixXd mSPDExp(MatrixXd X, MatrixXd V);
+MatrixXd mSPDExp(MatrixXd X, MatrixXd V,double t);
+MatrixXd mSPDExpAtId(MatrixXd X, MatrixXd V,double t);
 /* Y = mSPDExp(X,V) Compute one exponential map for
  * INPUT: X: SPD Matrix, V a matrix in TXM
  * OUTPUT: Y resulting SPD Y. V may be shorten by t before, if not given, 1.0 is used.
  */
-MatrixXd mSPDExp(MatrixXd X, MatrixXd V);
-MatrixXd mSPDExp(MatrixXd X, MatrixXd V,double t);
+MatrixXd mSPDLog(MatrixXd X, MatrixXd Y);
 /* V = mSPDLog(X,Y)
  * Compute one logarithmic maps (inverts Exp) for two points X,Y SPD,
  * Compute the vector in TXM pointing to Y
  * INPUT: X,Y points (SPDs). 
  * OUTPUT: Direction V
  */
-MatrixXd mSPDLog(MatrixXd X, MatrixXd Y);
+MatrixXd mSPDLogAtId(MatrixXd X, MatrixXd Y);
+double mSPDDist(MatrixXd X, MatrixXd Y);
 /* d = mSPDDist(X,Y)
  * Compute the distance of SPDs X,Y
  */
-double mSPDDist(MatrixXd X, MatrixXd Y);
+double mSPDDot(MatrixXd X, MatrixXd V, MatrixXd W);
 /* d = mSPDDot(X,V,W)
  * compute dot product in the TXM of the elements V and W.
  */
-double mSPDDot(MatrixXd X, MatrixXd V, MatrixXd W);
 MatrixXd mSPDGradX(MatrixXd X, MatrixXd Y, MatrixXd Z);
 /* compute the (sub) gradient w.r.t. to X 
  * INPUT: X,Y,Z points (SPDs)

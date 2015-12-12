@@ -4,8 +4,7 @@
  * Small helper part for all SPD C++-functions used in the wrappers
  *
  * ---
- * Manifold Valued Image Restoration 1.0
- * R. Bergmann ~ 2015-04-12
+ * ManImRes, R. Bergmann ~ 2015-04-12
  */
 #include "manifoldSPD.h"
 #include "mex.h"
