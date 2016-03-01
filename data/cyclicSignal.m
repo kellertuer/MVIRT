@@ -12,8 +12,9 @@ function [fn,fo, t] = cyclicSignal(n,sigma)
 %     fo : the generated signal without noise to compare with
 %     t  : corresponding x-axis values for both signals on [0,1]
 % ---
-% Manifold Valued Image Restoration 1.0
-% R. Bergmann ~ 2014-11-29
+% Manifold-valued Image Restoration Toolbox 1.0
+% R. Bergmann ~ 2014-11-29 | 2016-02-24
+% see LICENSE.txt
 
 t = linspace(0,1,n); % on the interval [0,1]
 fo = zeros(1,length(t));

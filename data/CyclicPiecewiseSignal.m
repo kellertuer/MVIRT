@@ -11,8 +11,10 @@ function [fn,fo,t] = CyclicPiecewiseSignal(n,sigma)
 %     fo : the generated signal without noise to compare with
 %     t  : corresponding x-axis values for both signals on [0,1]
 % ---
-% Manifold Valued Image Restoration 1.0
-% R. bergmann | 2015-06-19
+% Manifold-valued Image Restoration Toolbox 1.0
+% R. Bergmann ~ 2015-06-19 | 2016-02-24
+% see LICENSE.txt
+
     t = linspace(0,1,n); % on the interval [0,1]
     a = 4;
     fo = zeros(1,length(t));

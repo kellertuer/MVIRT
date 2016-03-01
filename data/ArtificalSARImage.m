@@ -1,16 +1,20 @@
 function [Zn,Z] = ArtificalSARImage(pts,sigma)
 % ArtificialSARImage(pts) constructs the artificial SAR image of size
-%    pts x pts pixsle
+%    pts x pts pixel
 %
 %   INPUT
 %      pts : pixel size of the resulting Image
-%      sigma
+%      sigma : standard deviation of the wrapped Gaussian noise imposed on
+%           the image.
 %
 %   OUTPUT
 %      Zn : the artificial SAR Image (i.e. noisy
 %      Z  : the noise free wrapped original
 %
-% ManImRes ~ R. Bergmann ~ 2014-07-23 | 2014-11-29
+% ---
+% Manifold-valued Image Restoration Toolbox 1.0
+% R. Bergmann ~ 2014-07-23 | 2016-02-24
+% see LICENSE.txt
 
 [X,Y] = meshgrid(0:1/(pts-1):1,0:1/(pts-1):1);
 Xm = X -1/2; Ym = Y-1/2;
