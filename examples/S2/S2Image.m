@@ -11,14 +11,15 @@
 %   variational model for restoring manifold-valued images, 2015.
 %
 % ---
-% Manifold Valued Image Restoration 1.0
-% R. Bergmann ~ 2015-03-09 | 2015-12-10
+% Manifold-valued Image Restoration Toolbox 1.0
+% R. Bergmann ~ 2015-03-09 | 2016-03-01
+% see LICENSE.txt
 clear problem; close all; clc
 start = pwd;
 if ~isempty(fileparts(which(mfilename)))
     cd(fileparts(which(mfilename)));
 end
-run('../../initManImRes.m')
+run('../../initMVIRT.m')
 %
 %
 %% Settings

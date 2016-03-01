@@ -1,4 +1,4 @@
-function initManImRes(varargin)
+function initMVIRT(varargin)
 % initManImRes()
 %   Initialize the Manifold Valued Data Processing Toolbox by adding all
 %   needed folders relative to this file, where the neccessary files

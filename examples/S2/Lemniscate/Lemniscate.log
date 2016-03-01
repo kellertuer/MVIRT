@@ -1,4 +1,4 @@
- --- Logfile of Experiment Lemniscate started 07-Dec-2015 20:27:59 ---
+ --- Logfile of Experiment Lemniscate started 01-Mar-2016 09:56:54 ---
 Using File Data generated 05-May-2015 16:42:41.
 M = 
   <a href="matlab:helpPopup Sn" style="font-weight:bold">Sn</a> with properties:
@@ -16,33 +16,33 @@ problem =
            lambda: 1.5708
 Parameter range alpha (3 values): 0,0.55,0.7.
 Parameter range beta  (3 values): 0,21,29.
-Computation for Cyclic proximal point algorithm on manifolds took 0.24976728 sec.
+Computation for Cyclic proximal point algorithm on manifolds took 0.62022184 sec.
 1000 iterations, last difference:3.65e-08
 Parameters: \alpha=0 \beta=0 yield 0.13212.
-Computation for Cyclic proximal point algorithm on manifolds took 3.60550290 sec.
+Computation for Cyclic proximal point algorithm on manifolds took 5.00290325 sec.
 1000 iterations, last difference:3.7045e-06
 Parameters: \alpha=0.55 \beta=0 yield 0.044648.
-Computation for Cyclic proximal point algorithm on manifolds took 3.33803338 sec.
+Computation for Cyclic proximal point algorithm on manifolds took 4.92256945 sec.
 1000 iterations, last difference:4.7748e-06
 Parameters: \alpha=0.7 \beta=0 yield 0.044405.
-Computation for Cyclic proximal point algorithm on manifolds took 97.11582990 sec.
+Computation for Cyclic proximal point algorithm on manifolds took 159.09416044 sec.
 1000 iterations, last difference:0.00010686
 Parameters: \alpha=0 \beta=21 yield 0.040373.
-Computation for Cyclic proximal point algorithm on manifolds took 103.03561972 sec.
+Computation for Cyclic proximal point algorithm on manifolds took 161.13429180 sec.
 1000 iterations, last difference:9.1703e-05
 Parameters: \alpha=0.55 \beta=21 yield 0.034787.
-Computation for Cyclic proximal point algorithm on manifolds took 130.68310676 sec.
+Computation for Cyclic proximal point algorithm on manifolds took 152.33526399 sec.
 1000 iterations, last difference:9.8128e-05
 Parameters: \alpha=0.7 \beta=21 yield 0.03488.
-Computation for Cyclic proximal point algorithm on manifolds took 105.07453944 sec.
+Computation for Cyclic proximal point algorithm on manifolds took 152.36087949 sec.
 1000 iterations, last difference:0.00018612
 Parameters: \alpha=0 \beta=29 yield 0.040374.
-Computation for Cyclic proximal point algorithm on manifolds took 131.88910874 sec.
+Computation for Cyclic proximal point algorithm on manifolds took 155.41712088 sec.
 1000 iterations, last difference:0.0001968
 Parameters: \alpha=0.55 \beta=29 yield 0.03479.
-Computation for Cyclic proximal point algorithm on manifolds took 112.09466579 sec.
+Computation for Cyclic proximal point algorithm on manifolds took 141.52400163 sec.
 1000 iterations, last difference:0.00019159
 Parameters: \alpha=0.7 \beta=29 yield 0.034894.
 Minimum: Parameters: \alpha=0.55 \beta=21 yields minimal value 0.034787.
 Minimum: Parameter: \alpha=0.7 yields minimal value 0.044405.
- --- Logfile of Experiment >Lemniscate< ended 07-Dec-2015 20:39:33 ---
+ --- Logfile of Experiment >Lemniscate< ended 01-Mar-2016 10:12:36 ---
