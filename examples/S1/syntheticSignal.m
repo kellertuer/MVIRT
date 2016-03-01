@@ -14,15 +14,16 @@
 % This file can be started without any changes; it initializes the Toolbox
 % itself
 % ---
-% Manifold Valued Image Restoration 1.0
-% R. Bergmann ~ 2014-03-24 | 2015-06-19
+% Manifold-valued Image Restoration Toolbox 1.0
+% R. Bergmann ~ 2014-03-24 | 2016-02-24
+% see LICENSE.txt
 
 % Init Toolbox
 start = pwd;
 if ~isempty(fileparts(which(mfilename)))
     cd(fileparts(which(mfilename)));
 end
-run('../../initManImRes.m')
+run('../../initMVIRT.m')
 %
 %
 %% Settings

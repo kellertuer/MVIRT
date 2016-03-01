@@ -1,15 +1,10 @@
- --- Logfile of Experiment S1-Vesuvius started 06-Dec-2015 13:42:17 ---
-[Warning: Key 'Cyclic proximal point algorithm on manifolds' already in use for a running time measurement; restarting
-timer.] 
-[> In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('debug', '/Users/bergmann/Dropbox/Repositories/ManImRes/debug/debug.m', 61)" style="font-weight:bold">debug</a> (<a href="matlab: opentoline('/Users/bergmann/Dropbox/Repositories/ManImRes/debug/debug.m',61,0)">line 61</a>)
-  In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('cppa_ad_2D', '/Users/bergmann/Dropbox/Repositories/ManImRes/algorithms/cppa_ad_2D.m', 212)" style="font-weight:bold">cppa_ad_2D</a> (<a href="matlab: opentoline('/Users/bergmann/Dropbox/Repositories/ManImRes/algorithms/cppa_ad_2D.m',212,0)">line 212</a>)
-  In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('Vesuvius', '/Users/bergmann/Dropbox/Repositories/ManImRes/examples/S1/Vesuvius.m', 93)" style="font-weight:bold">Vesuvius</a> (<a href="matlab: opentoline('/Users/bergmann/Dropbox/Repositories/ManImRes/examples/S1/Vesuvius.m',93,0)">line 93</a>)] 
+ --- Logfile of Experiment S1-Vesuvius started 01-Mar-2016 09:08:43 ---
 Timer started for Cyclic proximal point algorithm on manifolds
 i=1000 where lastdiff is 0.0038314 and lambdait=0.0031416
 i=2000 where lastdiff is 0.0003173 and lambdait=0.0015708
 i=3000 where lastdiff is 0.00056247 and lambdait=0.0010472
 i=4000 where lastdiff is 0.00026668 and lambdait=0.0007854
 Timer stopped for Cyclic proximal point algorithm on manifolds.
-Computation for Cyclic proximal point algorithm on manifolds took 1405.98355892 sec.
+Computation for Cyclic proximal point algorithm on manifolds took 1761.61054274 sec.
 4000 iterations, last difference:0.00026668
- --- Logfile of Experiment S1-Vesuvius ended 06-Dec-2015 14:05:44 ---
+ --- Logfile of Experiment S1-Vesuvius ended 01-Mar-2016 09:38:07 ---

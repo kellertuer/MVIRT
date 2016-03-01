@@ -1,11 +1,11 @@
- --- Logfile of Experiment PhaseRadial started 06-Dec-2015 11:33:31 ---
+ --- Logfile of Experiment PhaseRadial started 25-Feb-2016 11:35:11 ---
 Timer started for Cyclic proximal point algorithm on manifolds
 i=1000 where lastdiff is 6.3104e-05 and lambdait=0.0015708
 i=2000 where lastdiff is 2.5336e-05 and lambdait=0.0007854
 i=3000 where lastdiff is 1.5297e-05 and lambdait=0.0005236
 i=4000 where lastdiff is 1.1523e-05 and lambdait=0.0003927
 Timer stopped for Cyclic proximal point algorithm on manifolds.
-Computation for Cyclic proximal point algorithm on manifolds took 148.09781626 sec.
+Computation for Cyclic proximal point algorithm on manifolds took 131.33853292 sec.
 4000 iterations, last difference:1.1523e-05
 Timer started for Cyclic proximal point algorithm on manifolds
 i=1000 where lastdiff is 9.5539e-05 and lambdait=0.0015708
@@ -13,6 +13,6 @@ i=2000 where lastdiff is 3.185e-05 and lambdait=0.0007854
 i=3000 where lastdiff is 2.1135e-05 and lambdait=0.0005236
 i=4000 where lastdiff is 1.4661e-05 and lambdait=0.0003927
 Timer stopped for Cyclic proximal point algorithm on manifolds.
-Computation for Cyclic proximal point algorithm on manifolds took 79.81976072 sec.
+Computation for Cyclic proximal point algorithm on manifolds took 57.13471064 sec.
 4000 iterations, last difference:1.4661e-05
- --- Logfile of Experiment PhaseRadial ended 06-Dec-2015 11:37:21 ---
+ --- Logfile of Experiment PhaseRadial ended 25-Feb-2016 11:38:21 ---

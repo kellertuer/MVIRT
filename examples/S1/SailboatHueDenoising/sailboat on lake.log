@@ -1,54 +1,49 @@
- --- Logfile of Experiment sailboat on lake started 06-Dec-2015 11:39:41 ---
+ --- Logfile of Experiment sailboat on lake started 25-Feb-2016 11:50:26 ---
 Using File Data generated 06-Dec-2015 11:00:22.
-[Warning: Key 'Cyclic proximal point algorithm on manifolds' already in use for a running time measurement; restarting
-timer.] 
-[> In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('debug', '/Users/bergmann/Dropbox/Repositories/ManImRes/debug/debug.m', 61)" style="font-weight:bold">debug</a> (<a href="matlab: opentoline('/Users/bergmann/Dropbox/Repositories/ManImRes/debug/debug.m',61,0)">line 61</a>)
-  In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('cppa_ad_2D', '/Users/bergmann/Dropbox/Repositories/ManImRes/algorithms/cppa_ad_2D.m', 212)" style="font-weight:bold">cppa_ad_2D</a> (<a href="matlab: opentoline('/Users/bergmann/Dropbox/Repositories/ManImRes/algorithms/cppa_ad_2D.m',212,0)">line 212</a>)
-  In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('sailboat_Hue_Denoising', '/Users/bergmann/Dropbox/Repositories/ManImRes/examples/S1/sailboat_Hue_Denoising.m', 103)" style="font-weight:bold">sailboat_Hue_Denoising</a> (<a href="matlab: opentoline('/Users/bergmann/Dropbox/Repositories/ManImRes/examples/S1/sailboat_Hue_Denoising.m',103,0)">line 103</a>)] 
 Timer started for Cyclic proximal point algorithm on manifolds
-i=100 where lastdiff is 0.80208 and lambdait=0.031416
-i=200 where lastdiff is 0.17781 and lambdait=0.015708
-i=300 where lastdiff is 0.068716 and lambdait=0.010472
-i=400 where lastdiff is 0.1701 and lambdait=0.007854
-i=500 where lastdiff is 0.1387 and lambdait=0.0062832
-i=600 where lastdiff is 0.11896 and lambdait=0.005236
-i=700 where lastdiff is 0.031201 and lambdait=0.004488
-i=800 where lastdiff is 0.071271 and lambdait=0.003927
-i=900 where lastdiff is 0.081245 and lambdait=0.0034907
-i=1000 where lastdiff is 0.024245 and lambdait=0.0031416
-i=1100 where lastdiff is 0.011029 and lambdait=0.002856
-i=1200 where lastdiff is 0.0096271 and lambdait=0.002618
-i=1300 where lastdiff is 0.021441 and lambdait=0.0024166
-i=1400 where lastdiff is 0.0089463 and lambdait=0.002244
-i=1500 where lastdiff is 0.0051319 and lambdait=0.0020944
-i=1600 where lastdiff is 0.0082384 and lambdait=0.0019635
-i=1700 where lastdiff is 0.0058671 and lambdait=0.001848
-i=1800 where lastdiff is 0.010197 and lambdait=0.0017453
-i=1900 where lastdiff is 0.001698 and lambdait=0.0016535
-i=2000 where lastdiff is 0.0047593 and lambdait=0.0015708
-i=2100 where lastdiff is 0.0050162 and lambdait=0.001496
-i=2200 where lastdiff is 0.03536 and lambdait=0.001428
-i=2300 where lastdiff is 0.0045661 and lambdait=0.0013659
-i=2400 where lastdiff is 0.0041144 and lambdait=0.001309
-i=2500 where lastdiff is 0.0049898 and lambdait=0.0012566
-i=2600 where lastdiff is 0.0079608 and lambdait=0.0012083
-i=2700 where lastdiff is 0.001867 and lambdait=0.0011636
-i=2800 where lastdiff is 0.0019892 and lambdait=0.001122
-i=2900 where lastdiff is 0.016944 and lambdait=0.0010833
-i=3000 where lastdiff is 0.006429 and lambdait=0.0010472
-i=3100 where lastdiff is 0.0053999 and lambdait=0.0010134
-i=3200 where lastdiff is 0.0040954 and lambdait=0.00098175
-i=3300 where lastdiff is 0.0031786 and lambdait=0.000952
-i=3400 where lastdiff is 0.0017081 and lambdait=0.000924
-i=3500 where lastdiff is 0.00095735 and lambdait=0.0008976
-i=3600 where lastdiff is 0.00071957 and lambdait=0.00087266
-i=3700 where lastdiff is 0.0037822 and lambdait=0.00084908
-i=3800 where lastdiff is 0.00043668 and lambdait=0.00082673
-i=3900 where lastdiff is 0.022669 and lambdait=0.00080554
-i=4000 where lastdiff is 0.023894 and lambdait=0.0007854
+i=100 where lastdiff is 0.031934 and lambdait=0.031416
+i=200 where lastdiff is 0.14857 and lambdait=0.015708
+i=300 where lastdiff is 0.080947 and lambdait=0.010472
+i=400 where lastdiff is 0.11884 and lambdait=0.007854
+i=500 where lastdiff is 0.16386 and lambdait=0.0062832
+i=600 where lastdiff is 0.13026 and lambdait=0.005236
+i=700 where lastdiff is 0.073863 and lambdait=0.004488
+i=800 where lastdiff is 0.039769 and lambdait=0.003927
+i=900 where lastdiff is 0.0084506 and lambdait=0.0034907
+i=1000 where lastdiff is 0.013101 and lambdait=0.0031416
+i=1100 where lastdiff is 0.02023 and lambdait=0.002856
+i=1200 where lastdiff is 0.024696 and lambdait=0.002618
+i=1300 where lastdiff is 0.012048 and lambdait=0.0024166
+i=1400 where lastdiff is 0.0132 and lambdait=0.002244
+i=1500 where lastdiff is 0.052457 and lambdait=0.0020944
+i=1600 where lastdiff is 0.0057929 and lambdait=0.0019635
+i=1700 where lastdiff is 0.0028759 and lambdait=0.001848
+i=1800 where lastdiff is 0.029805 and lambdait=0.0017453
+i=1900 where lastdiff is 0.010369 and lambdait=0.0016535
+i=2000 where lastdiff is 0.0073355 and lambdait=0.0015708
+i=2100 where lastdiff is 0.0019287 and lambdait=0.001496
+i=2200 where lastdiff is 0.0021243 and lambdait=0.001428
+i=2300 where lastdiff is 0.0011023 and lambdait=0.0013659
+i=2400 where lastdiff is 0.0034764 and lambdait=0.001309
+i=2500 where lastdiff is 0.0059582 and lambdait=0.0012566
+i=2600 where lastdiff is 0.014387 and lambdait=0.0012083
+i=2700 where lastdiff is 0.0036075 and lambdait=0.0011636
+i=2800 where lastdiff is 0.0069314 and lambdait=0.001122
+i=2900 where lastdiff is 0.0059937 and lambdait=0.0010833
+i=3000 where lastdiff is 0.0085666 and lambdait=0.0010472
+i=3100 where lastdiff is 0.0029 and lambdait=0.0010134
+i=3200 where lastdiff is 0.0025427 and lambdait=0.00098175
+i=3300 where lastdiff is 0.0022384 and lambdait=0.000952
+i=3400 where lastdiff is 0.004518 and lambdait=0.000924
+i=3500 where lastdiff is 0.016839 and lambdait=0.0008976
+i=3600 where lastdiff is 0.0062274 and lambdait=0.00087266
+i=3700 where lastdiff is 0.0019053 and lambdait=0.00084908
+i=3800 where lastdiff is 0.0098742 and lambdait=0.00082673
+i=3900 where lastdiff is 0.0061572 and lambdait=0.00080554
+i=4000 where lastdiff is 0.0049174 and lambdait=0.0007854
 Timer stopped for Cyclic proximal point algorithm on manifolds.
-Computation for Cyclic proximal point algorithm on manifolds took 1878.41724294 sec.
-4000 iterations, last difference:0.023894
+Computation for Cyclic proximal point algorithm on manifolds took 1864.59912678 sec.
+4000 iterations, last difference:0.0049174
 Timer started for Cyclic proximal point algorithm on manifolds
 i=100 where lastdiff is 0.0034674 and lambdait=0.031416
 i=200 where lastdiff is 0.0013467 and lambdait=0.015708
@@ -91,6 +86,6 @@ i=3800 where lastdiff is 4.2889e-05 and lambdait=0.00082673
 i=3900 where lastdiff is 4.1438e-05 and lambdait=0.00080554
 i=4000 where lastdiff is 4.0052e-05 and lambdait=0.0007854
 Timer stopped for Cyclic proximal point algorithm on manifolds.
-Computation for Cyclic proximal point algorithm on manifolds took 1749.86646163 sec.
+Computation for Cyclic proximal point algorithm on manifolds took 1220.83692628 sec.
 4000 iterations, last difference:4.0052e-05
- --- Logfile of Experiment sailboat on lake ended 06-Dec-2015 12:40:13 ---
+ --- Logfile of Experiment sailboat on lake ended 25-Feb-2016 12:41:54 ---

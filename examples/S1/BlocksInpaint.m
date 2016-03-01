@@ -5,9 +5,12 @@
 % Demonstrating the Cyclic Proximal Point Algorithm for absolute Differences
 % of first and second order on a phase valued image containing a constant
 % block and a linear increase inside one block. This extends an idea from
+%
 % K. Papafitsoros, C. B. Schönlieb: A Combined First and Second Order
-%   Variational Approach for Image Reconstruciton, J. Math. Imaging. Vis.
-% 48:308-338,2014 to linear blocks and the phase valued setting.
+%   Variational Approach for Image Reconstruciton,
+%       J. Math. Imaging. Vis. 48, pp. 308-338, 2014.
+%
+% to linear blocks and the phase valued setting.
 %
 % The comparison is published as the second numerical example (Sec. 5) of
 %
@@ -17,15 +20,16 @@
 % This file can be started without any changes; it initializes the Toolbox
 % itself
 % ---
-% Manifold Valued Image Restoration 1.0
-% R. Bergmann ~ 2015-10-05
+% Manifold-valued Image Restoration Toolbox 1.0
+% R. Bergmann ~ 2015-10-05 | 2016-02-24
+% see LICENSE.txt
 
 % Init Toolbox
 start = pwd;
 if ~isempty(fileparts(which(mfilename)))
     cd(fileparts(which(mfilename)));
 end
-run('../../initManImRes.m')
+run('../../initMVIRT.m')
 %
 %
 %% Settings

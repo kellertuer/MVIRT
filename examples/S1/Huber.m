@@ -12,15 +12,16 @@
 %        J. SIAM Imaging Sci. 7(4), 2916?2953,
 %
 % ---
-% Manifold Valued Image Restoration 1.0
-% R. Bergmann ~ 2015-06-19 | 2015-10-12
+% Manifold-valued Image Restoration Toolbox 1.0
+% R. Bergmann ~ 2015-06-19 | 2016-02-24
+% see LICENSE.txt
 
 % Init Toolbox
 start = pwd;
 if ~isempty(fileparts(which(mfilename)))
     cd(fileparts(which(mfilename)));
 end
-run('../../initManImRes.m')
+run('../../initMVIRT.m')
 %
 %
 %% Settings

@@ -1,4 +1,4 @@
- --- Logfile of Experiment S1-Vesuvius-Inpaint started 06-Dec-2015 14:11:24 ---
+ --- Logfile of Experiment S1-Vesuvius-Inpaint started 01-Mar-2016 09:55:40 ---
 Using File Data generated 06-Dec-2015 11:00:44.
 Timer started for Cyclic proximal point algorithm on manifolds
 i=1000 where lastdiff is 0.0029728 and lambdait=0.0031416
@@ -6,7 +6,7 @@ i=2000 where lastdiff is 0.00018351 and lambdait=0.0015708
 i=3000 where lastdiff is 0.00035954 and lambdait=0.0010472
 i=4000 where lastdiff is 8.2568e-05 and lambdait=0.0007854
 Timer stopped for Cyclic proximal point algorithm on manifolds.
-Computation for Cyclic proximal point algorithm on manifolds took 1382.97387274 sec.
+Computation for Cyclic proximal point algorithm on manifolds took 1565.28557310 sec.
 4000 iterations, last difference:8.2568e-05
 Timer started for Cyclic proximal point algorithm on manifolds
 i=1000 where lastdiff is 0.0060832 and lambdait=0.0031416
@@ -14,6 +14,6 @@ i=2000 where lastdiff is 0.00085583 and lambdait=0.0015708
 i=3000 where lastdiff is 0.0022018 and lambdait=0.0010472
 i=4000 where lastdiff is 6.9023e-05 and lambdait=0.0007854
 Timer stopped for Cyclic proximal point algorithm on manifolds.
-Computation for Cyclic proximal point algorithm on manifolds took 1660.33786218 sec.
+Computation for Cyclic proximal point algorithm on manifolds took 1832.87707436 sec.
 4000 iterations, last difference:6.9023e-05
- --- Logfile of Experiment S1-Vesuvius-Inpaint ended 06-Dec-2015 15:02:09 ---
+ --- Logfile of Experiment S1-Vesuvius-Inpaint ended 01-Mar-2016 10:52:21 ---

@@ -2,7 +2,7 @@
 % Denoising the Vesuvius InSAR Data
 % ===============================
 %
-% In InSAR data, the phase valued images are often noisy. Denoising them is
+% In InSAR data, the phase-valued images are often noisy. Denoising them is
 % a task performed on S1 valued data and demonstrated in this example.
 %
 % The Mount Vesuvius Data is obtained from
@@ -16,14 +16,16 @@
 % This file can be started without any changes; it initialized the Toolbox
 % itself
 % ---
-% ManImRes 1.0, R. Bergmann ~ 2014-04-06 | 2015-06-20
+% Manifold-valued Image Restoration 1.0
+% R. Bergmann ~ 2014-04-06 | 2016-02-24
+% see LICENSE.txt
 
 % Init Toolbox
 start = pwd;
 if ~isempty(fileparts(which(mfilename)))
     cd(fileparts(which(mfilename)));
 end
-run('../../initManImRes.m')
+run('../../initMVIRT.m')
 % Global settings
 setDebugLevel('LevelMin',0);        % Minimal Value of all global Values
 setDebugLevel('LevelMax',1000);     % Maximal Value ...
@@ -64,7 +66,8 @@ imgg = (double(rgb2gray(img))/256)*(2*pi)-pi;
 
 %% Initial Export of Starting Values
 if getDebugLevel('Figures')
-    figure(1); imagesc(imgg+pi); title('Original Data'); colormap hsv; axis image
+    figure(1); imagesc(imgg+pi); title('Original Data'); colormap hsv;
+    axis image; axis off
     pause(0.05); %show all 3
 end
 if getDebugLevel('WriteImages')
@@ -97,7 +100,8 @@ for i=1:length(alpha1s)
     end
     if getDebugLevel('Figures')
         figure(i+1); imagesc(imgr+pi); title(['Reconstruction',...
-        num2str([problem.alpha problem.beta]),' .']); colormap hsv; axis image
+        num2str([problem.alpha problem.beta]),' .']); colormap hsv;
+        axis image; axis off
     end
 end
 % End logfile

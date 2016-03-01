@@ -53,6 +53,6 @@ if vars.Make
 end% Init Debug
 setDebugLevel(2);
 % Add all necessary paths
-debug('text',1,'Text','Initializing the Manifold-valued Image Restoration Toolbox Toolbox.');
+debug('text',1,'Text','Initializing the Manifold-valued Image Restoration Toolbox.');
 cd(getManImResPath());
 %

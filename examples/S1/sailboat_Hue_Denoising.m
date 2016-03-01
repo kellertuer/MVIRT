@@ -18,13 +18,14 @@
 % This file can be started without any changes; it initialized the Toolbox
 % itself
 % ---
-% Manifold Valued Image Restoration 1.0
-% R. Bergmann ~ 2015-06-20
+% Manifold-valued Image Restoration Toolbox 1.0
+% R. Bergmann ~ 2015-06-20 | 2016-02-24
+% see LICENSE.txt
 start = pwd;
 if ~isempty(fileparts(which(mfilename)))
     cd(fileparts(which(mfilename)));
 end
-run('../../initManImRes.m')
+run('../../initMVIRT.m')
 % Global settings
 setDebugLevel('LevelMin',0);        % Minimal Value of all global Values
 setDebugLevel('LevelMax',100);      % Maximal Value ...

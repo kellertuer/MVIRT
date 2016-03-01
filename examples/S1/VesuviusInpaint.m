@@ -16,15 +16,16 @@
 % This file can be started without any changes; it initialized the Toolbox
 % itself
 % ---
-% Manifold Valued Image Restoration 1.0
-% R. Bergmann ~ 2015-10-12
+% Manifold-valued Image Restoration Toolbox 1.0
+% R. Bergmann ~ 2015-10-12 | 2016-02-24
+% see LICENSE.txt
 
 % Init Toolbox
 start = pwd;
 if ~isempty(fileparts(which(mfilename)))
     cd(fileparts(which(mfilename)));
 end
-run('../../initManImRes.m')
+run('../../initMVIRT.m')
 
 %% Settings
 setDebugLevel('LevelMin',0);        % Minimal Value of all global Values
@@ -91,11 +92,14 @@ if getDebugLevel('WriteImages')
 end
 if getDebugLevel('Figures')
     figure(1); imagesc(V,[-pi,pi]); colormap(hsv(1024));
-    title('Original Data V'); axis square
-    figure(2); imagesc(Mask,[0,1]); colormap(gray); axis square
+    title('Original Data V');
+    axis image; axis off
+    figure(2); imagesc(Mask,[0,1]); colormap(gray);
+    axis image; axis off
     title(['Mask: White pixels are kept, black ones are destroyed. (',num2str(pr,3),'% destroyed).']);
     Vl = V.*Mask; %Just loose data
-    figure(3); imagesc(Vl,[-pi,pi]);  colormap(hsv(1024)); axis square
+    figure(3); imagesc(Vl,[-pi,pi]);  colormap(hsv(1024));
+    axis image; axis off
     title('input data with destroyed points');
 end
 
@@ -115,7 +119,8 @@ problem.UnknownMask = ~Mask;
 % data applied if that's 1)
 Vres = permute(cppa_ad_2D(problem),[2,3,1]);
 if getDebugLevel('Figures')
-    figure(4); imagesc(VresTV12R,[-pi,pi]); colormap(hsv(1024));axis image; axis off;
+    figure(4); imagesc(Vres,[-pi,pi]); colormap(hsv(1024));
+    axis image; axis off
     title(['Result of the reconstruction using \alpha=',num2str(problem.alpha(1),4),' and \beta=',num2str(problem.beta(1),4),' on R.']);
 end
 if getDebugLevel('WriteImages')
@@ -131,7 +136,8 @@ Vcomp = permute(cppa_ad_2D(problem),[2,3,1]);
 VDist = problem.M.dist(Vcomp,Vres);
 %
 if getDebugLevel('Figures')
-    figure(5); imagesc(VDist); colormap(flipud(gray(1024))); axis square
+    figure(5); imagesc(VDist); colormap(flipud(gray(1024)));
+    axis image; axis off
     ME = sum(sum(VDist.^2))/length(V(:));
     title(['Reconstruction Error. MSE = ',num2str(ME),'.']);
 end
@@ -140,7 +146,9 @@ if getDebugLevel('WriteImages')
     imwrite(VDistexp,colormap(flipud(gray(255))),[resultsFolder,name,'-impainting-error-',num2str(problem.alpha(1),4),'-',num2str(problem.beta(1),4),'.png'],'png');
 end
 if getDebugLevel('Figures')
-    figure(6); imagesc(Vcomp); colormap hsv; axis square; title('Denoised without missing data');
+    figure(6); imagesc(Vcomp); colormap hsv;
+    axis image; axis off
+    title('Denoised without missing data');
 end
 if getDebugLevel('WriteImages')
     Vcompexp = uint8((Vcomp+pi)/(2*pi)*255);
