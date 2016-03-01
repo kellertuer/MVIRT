@@ -42,11 +42,12 @@ function [x,fctValSeq] = cppa_ad_2D(varargin)
 % See also:
 %    manifold.proxad, cppa_ad_1D, cppa_ad_nD
 % ---
-% Manifold Valued Image Restoration 1.0
-% R. Bergmann ~ 2014-10-22 | 2015-06-19
+% Manifold-valued Image Restoration Toolbox 1.0
+% R. Bergmann ~ 2014-10-22 | 2016-02-22
+% see LICENSE.txt
 
 %
-% Change log
+% Changelog
 % 2015-01-30 Optimized to new array structure
 % 2014-12-01 Changed internal calls of proxAD from inputParser to Struct
 % 2014-11-29 Extracted Algorithms from the manifold class to be more

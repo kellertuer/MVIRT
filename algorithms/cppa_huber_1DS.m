@@ -30,8 +30,9 @@ function x = cppa_huber_1DS(f, alpha,lambda,tau,omega,varargin)
 %    R. Bergmann, A. Weinmann: Inpainting of Cyclic Data using First and
 %        Second Order Differences, Preprint, 2014
 % ---
-% Manifold Valued Image Restoration 1.0
-% R. Bergmann ~ created 2014-08-27
+% Manifold-valued Image Restoration Toolbox 1.0
+% R. Bergmann ~ 2014-08-27 | 2016-02-22
+% see LICENSE.txt
 
 ip = inputParser;
 addParameter(ip, 'MaxIterations',400);

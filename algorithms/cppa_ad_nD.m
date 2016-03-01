@@ -41,10 +41,11 @@ function [x,fctValSeq] = cppa_ad_nD(varargin)
 %                          and the distance data array from x_k to x_{k-1} measured on
 %                          the manifold
 % See also:
-%   manifold.proxad, cppa_ad_1D, cppa_ad_2D
+%    manifold.proxad, cppa_ad_1D, cppa_ad_2D
 % ---
-% Manifold Valued Image Restoration 1.0
-% R. Bergmann ~ 2014-10-22 | 2014-05-09
+% Manifold-valued Image Restoration Toolbox 1.0
+% R. Bergmann ~ 2014-10-22 | 2016-02-22
+% see LICENSE.txt
 
 %
 % Changelog

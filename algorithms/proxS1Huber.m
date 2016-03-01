@@ -26,8 +26,9 @@ function x = proxS1Huber(pf,lambda,tau, omega)
 %        Total Variation Regularization for Manfold-valued Data
 %
 % ---
-% Manifold Valued Image Restoration 1.0
-% R. Bergmann ~ 2014-08-27
+% Manifold-valued Image Restoration Toolbox 1.0
+% R. Bergmann ~ 2014-08-27 | 2016-02-22
+% see LICENSE.txt
 
 if isrow(pf)
     f = pf';

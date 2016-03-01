@@ -9,7 +9,7 @@ function initManImRes(varargin)
 %   'UseMex' : (true) Set this flag to false to disable the usage of
 %   C++Algorithms and use the (fallback) Matlab implementations
 % ---
-% Manifold Valued Image Restoration 1.0
+% Manifold-valued Image Restoration Toolbox 1.0
 % R. Bergmann ~ 2014-11-29 | 2015-04-09
 
 ip = inputParser;
@@ -53,6 +53,6 @@ if vars.Make
 end% Init Debug
 setDebugLevel(2);
 % Add all necessary paths
-debug('text',1,'Text','Initializing the MANifold Valued IMage REStoration Toolbox.');
+debug('text',1,'Text','Initializing the Manifold-valued Image Restoration Toolbox Toolbox.');
 cd(getManImResPath());
 %
