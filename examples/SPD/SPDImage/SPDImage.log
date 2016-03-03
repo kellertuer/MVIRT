@@ -1,4 +1,4 @@
- --- Logfile of Experiment SPDImage started 25-Dec-2015 18:59:00 ---
+ --- Logfile of Experiment SPDImage started 02-Mar-2016 19:43:18 ---
 Using File Data generated 08-Oct-2015 09:44:05.
 ans = 
   <a href="matlab:helpPopup matlab.ui.Figure" style="font-weight:bold">Figure</a> (2) with properties:
@@ -32,7 +32,7 @@ i=200 where lastdiff is 2.3604e-15 and lambdait=0.0005
 i=300 where lastdiff is 2.3604e-15 and lambdait=0.00033333
 i=400 where lastdiff is 2.3604e-15 and lambdait=0.00025
 Timer stopped for Cyclic proximal point algorithm on manifolds.
-Computation for Cyclic proximal point algorithm on manifolds took 5.28931140 sec.
+Computation for Cyclic proximal point algorithm on manifolds took 3.92852089 sec.
 400 iterations, last difference:2.3604e-15
 Parameters: \alpha=0 \beta=0 yield 0.60969.
 Timer started for Cyclic proximal point algorithm on manifolds
@@ -41,7 +41,7 @@ i=200 where lastdiff is 0.00030086 and lambdait=0.0005
 i=300 where lastdiff is 0.00019189 and lambdait=0.00033333
 i=400 where lastdiff is 0.00013951 and lambdait=0.00025
 Timer stopped for Cyclic proximal point algorithm on manifolds.
-Computation for Cyclic proximal point algorithm on manifolds took 66.72647201 sec.
+Computation for Cyclic proximal point algorithm on manifolds took 60.80294785 sec.
 400 iterations, last difference:0.00013951
 Parameters: \alpha=0.3125 \beta=0 yield 0.40318.
 Timer started for Cyclic proximal point algorithm on manifolds
@@ -50,7 +50,7 @@ i=200 where lastdiff is 0.00035745 and lambdait=0.0005
 i=300 where lastdiff is 0.00022755 and lambdait=0.00033333
 i=400 where lastdiff is 0.00016518 and lambdait=0.00025
 Timer stopped for Cyclic proximal point algorithm on manifolds.
-Computation for Cyclic proximal point algorithm on manifolds took 64.55823482 sec.
+Computation for Cyclic proximal point algorithm on manifolds took 73.01050365 sec.
 400 iterations, last difference:0.00016518
 Parameters: \alpha=0.375 \beta=0 yield 0.39593.
 Timer started for Cyclic proximal point algorithm on manifolds
@@ -59,7 +59,7 @@ i=200 where lastdiff is 0.00021907 and lambdait=0.0005
 i=300 where lastdiff is 0.0001347 and lambdait=0.00033333
 i=400 where lastdiff is 9.5439e-05 and lambdait=0.00025
 Timer stopped for Cyclic proximal point algorithm on manifolds.
-Computation for Cyclic proximal point algorithm on manifolds took 1834.87236935 sec.
+Computation for Cyclic proximal point algorithm on manifolds took 1876.90640783 sec.
 400 iterations, last difference:9.5439e-05
 Parameters: \alpha=0 \beta=0.125 yield 0.53152.
 Timer started for Cyclic proximal point algorithm on manifolds
@@ -68,7 +68,7 @@ i=200 where lastdiff is 0.00040543 and lambdait=0.0005
 i=300 where lastdiff is 0.00024888 and lambdait=0.00033333
 i=400 where lastdiff is 0.00017602 and lambdait=0.00025
 Timer stopped for Cyclic proximal point algorithm on manifolds.
-Computation for Cyclic proximal point algorithm on manifolds took 1612.83967934 sec.
+Computation for Cyclic proximal point algorithm on manifolds took 1810.60524636 sec.
 400 iterations, last difference:0.00017602
 Parameters: \alpha=0.3125 \beta=0.125 yield 0.38952.
 Timer started for Cyclic proximal point algorithm on manifolds
@@ -77,7 +77,7 @@ i=200 where lastdiff is 0.00042736 and lambdait=0.0005
 i=300 where lastdiff is 0.00026055 and lambdait=0.00033333
 i=400 where lastdiff is 0.00018329 and lambdait=0.00025
 Timer stopped for Cyclic proximal point algorithm on manifolds.
-Computation for Cyclic proximal point algorithm on manifolds took 1536.99098868 sec.
+Computation for Cyclic proximal point algorithm on manifolds took 2505.56005115 sec.
 400 iterations, last difference:0.00018329
 Parameters: \alpha=0.375 \beta=0.125 yield 0.39075.
 Timer started for Cyclic proximal point algorithm on manifolds
@@ -86,7 +86,7 @@ i=200 where lastdiff is 0.00040997 and lambdait=0.0005
 i=300 where lastdiff is 0.00024973 and lambdait=0.00033333
 i=400 where lastdiff is 0.0001742 and lambdait=0.00025
 Timer stopped for Cyclic proximal point algorithm on manifolds.
-Computation for Cyclic proximal point algorithm on manifolds took 1547.16325704 sec.
+Computation for Cyclic proximal point algorithm on manifolds took 2289.69776822 sec.
 400 iterations, last difference:0.0001742
 Parameters: \alpha=0 \beta=0.625 yield 0.46499.
 Timer started for Cyclic proximal point algorithm on manifolds
@@ -95,7 +95,7 @@ i=200 where lastdiff is 0.00044992 and lambdait=0.0005
 i=300 where lastdiff is 0.00028884 and lambdait=0.00033333
 i=400 where lastdiff is 0.0002106 and lambdait=0.00025
 Timer stopped for Cyclic proximal point algorithm on manifolds.
-Computation for Cyclic proximal point algorithm on manifolds took 1577.88484377 sec.
+Computation for Cyclic proximal point algorithm on manifolds took 2662.57627902 sec.
 400 iterations, last difference:0.0002106
 Parameters: \alpha=0.3125 \beta=0.625 yield 0.43095.
 Timer started for Cyclic proximal point algorithm on manifolds
@@ -104,7 +104,7 @@ i=200 where lastdiff is 0.00046758 and lambdait=0.0005
 i=300 where lastdiff is 0.00029674 and lambdait=0.00033333
 i=400 where lastdiff is 0.00021686 and lambdait=0.00025
 Timer stopped for Cyclic proximal point algorithm on manifolds.
-Computation for Cyclic proximal point algorithm on manifolds took 1571.76442598 sec.
+Computation for Cyclic proximal point algorithm on manifolds took 2435.52364177 sec.
 400 iterations, last difference:0.00021686
 Parameters: \alpha=0.375 \beta=0.625 yield 0.43755.
 Minimum: Parameters: \alpha=0.3125 \beta=0.125 yields minimal value 0.38952.
@@ -120,4 +120,4 @@ ans =
        Units: 'pixels'
 
   Show <a href="matlab:if exist('ans', 'var'), matlab.graphics.internal.getForDisplay('ans', ans, 'matlab.ui.Figure'), else, matlab.graphics.internal.getForDisplay('ans'), end">all properties</a>
- --- Logfile of Experiment SPDImage; ended 25-Dec-2015 21:43:09 ---
+ --- Logfile of Experiment SPDImage; ended 03-Mar-2016 09:37:58 ---
