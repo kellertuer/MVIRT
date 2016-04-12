@@ -2,7 +2,7 @@ classdef S1 < manifold & handle
     % The manifold of the circle or S1
     %
     % ---
-    % ManImRes 1.0, R. Bergmann ~2014-10-22
+    % Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann ~2014-10-22
     properties
         type = 'S1';
         ItemSize = 1;
@@ -20,7 +20,7 @@ classdef S1 < manifold & handle
             % OUTPUT
             %   q : resulting point(s) on S1
             % ---
-            % ManImRes 1.0, R. Bergmann ~ 2014-10-19
+            % Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann ~ 2014-10-19
             if nargin<4
                 t=1;
             end
@@ -43,7 +43,7 @@ classdef S1 < manifold & handle
         % OUTPUT
         %    v : points on the tangential plane at point(s) p
         % ---
-        % ManImRes 1.0, R. Bergmann ~ 2014-10-22
+        % Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann ~ 2014-10-22
             assert(all(size(p)==size(q)),'p and q have to be of same size');
             v = symMod(q-p,2*pi);
         end
@@ -56,7 +56,7 @@ classdef S1 < manifold & handle
         %    OUTPUT
         %        d      : lengths of the shorter arcs between a and b
         % ---
-        % ManImRes 1.0, R. Bergmann ~ created 2013-10-25 | 2014-10-22
+        % Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann ~ 2013-10-25 | 2014-10-22
             if iscolumn(p)
                 p_ = p';
             else
@@ -104,7 +104,7 @@ classdef S1 < manifold & handle
             % See also:
             %    cppa_ad_1D, cppa_ad_2D, cppa_ad_nD
             % ---
-            % ManImRes ~ R. Bergmann ~ 2014-03-23 | 2014-11-29
+            % Manifold-Valued Image Restoration Toolbox 1.0 ~ R. Bergmann ~ 2014-03-23 | 2014-11-29
             if length(varargin)==1 && isstruct(varargin{1}) %struct case - less checks
                 vars = varargin{1};
                 assert(all(isfield(vars,{'f','lambda','w'})),...
@@ -131,6 +131,7 @@ classdef S1 < manifold & handle
                 if sum(vars.w)~=0
                     error('The sum of the weights w has to be zero.');
                 end
+                w = vars.w;
                 f = vars.f;
                 if (size(f,2)==1) && (length(size(vars.f))==2) %one column data
                     f = f';

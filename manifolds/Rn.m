@@ -1,62 +1,38 @@
-classdef S1mRn < manifold & handle
-    % The product manifold of combined cyclic and real valued data, i.e.
-    % (S^1)^n x R^m, so its an k=n+m dimensional space
+classdef Rn < manifold & handle
+    % The manifold of the usual n-dimensional euclidean space.
     % ---
     % Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann ~2014-10-22
     properties
-        % Binary vectors indicating S and R components of lenthg of the
-        % whole space dimension
-        type='S1mRn';
-        SComponents;
-        RComponents;
+        type='Rn';
         ItemSize;
-        
     end
     
     methods
-        function obj = S1mRn(m,n)
-        % SnRm(n,m) Create a product manifold, where
-        % - the first n components are cyclic
-        % - the last m components are real valued
-            if (length(m) == length(n)) && all(islogical(m)) && all(islogical(n))
-                obj.SComponents = m;
-                obj.RComponents = n;
-            else % numbers
-                k = n+m;
-                obj.SComponents = (1:k)<=m;
-                obj.RComponents = (1:k)>m;
-                obj.type = ['S',num2str(m),'R',num2str(n)];
-            end
-            obj.ItemSize = length(obj.SComponents);
+        function obj = Rn(n)
+            obj.type = ['R',num2str(n)];
+            obj.ItemSize = n;
         end
-        function q = exp(this,p,v)
+        function q = exp(~,p,v)
             % exp(p,v) - Exponential map at the point p with respect to v in
-            % TpM on S1.
+            % TpM.
             %
             % INPUT
-            %   p : a point or set (columns) of points on the manifold SnRm
+            %   p : a point or set (columns) of points on the manifold Rn
             %   v : a point or set (columns) of point in the tangential spaces TpM
             %
             % OUTPUT
-            %   q : resulting point(s) on SnRm
+            %   q : resulting point(s) on Rn
             % ---
             % Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann ~ 2014-10-26
-            assert(all(size(p)==size(v)),'p and q have to be of same size');
-            assert( (size(p,1)==this.ItemSize) && (size(v,1)==this.ItemSize), ...
-                'The manifold dimension of either p or v is wrong');
-            p_ = reshape(p,this.ItemSize,[]);
-            v_ = reshape(v,this.ItemSize,[]);
-            q = v_+p_;
-            q(this.SComponents,:) = symMod(q(this.SComponents,:),2*pi);
-            q = reshape(q,size(p));
+            q = p+v;
         end
-        function v = log(this,p,q)
+        function v = log(~,p,q)
             % log(q,p) - Inverse Exponential Map at p of q.
             %
             % INPUT
             %    p : point or set of (column) points indicating the
-            %        tangential base points
-            %    q : point(s) on SmRn (i.e. [-pi,pi)^mR^ being put into the
+            %        tangential base points (in Rn)
+            %    q : point(s) on Rn being put into the
             %        tangential plane at their corresponding p
             %
             % OUTPUT
@@ -65,12 +41,11 @@ classdef S1mRn < manifold & handle
             % Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann ~ 2014-10-22
             assert(all(size(p)==size(q)),'p and q have to be of same size');
             v = q-p;
-            v(this.SComponents,:) = symMod(v(this.SComponents,:),2*pi);
         end
         function x = proxDist(this,g,f,lambda)
             % proxDist(g,f,lambda)
             % Proximal step towards f from given data g with parameter
-            % lambda on (S1)mRn arbitrary manifold.
+            % lambda on an arbitrary manifold.
             % INPUT
             %  f,g    : data point( sets/columns )
             %  lambda : stepsize towards f
@@ -79,55 +54,35 @@ classdef S1mRn < manifold & handle
             %       x : result point( sets) of the proximal map
             % ---
             % Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann ~ 2014-10-19
-            t = this.dist(g,f,0); %do not sum
+            t = this.dist(g,f,0);
             v = this.log(g,f);
-            % t = repmat(t,[this.ItemSize,1]); %repeat t into the dimensions
-            % Instead of the line above - for product manifolds we do the
-            % following
             v = sign(v); %norm v in each factor of the product manifold
             x = this.exp(g, lambda/(1+lambda).*t.*v);
         end
-        function d = dist(this,p,q,n)
+        function d = dist(this,p,q,norm)
             % dist(a,b) computes the length of the smaller arc of a,b on
             % SnRm and returns the vector of distances. If n is specified,
             % the n-norm of these distances is computed
             %    INPUT
             %        p,q    : 2 point sets (columns) on the SnRm data
-            %        n      : (optional on product manifolds) norm to combine the
-            %                 distances with n-norm (set to 0 to
-            %                 deactivate)
+            %    
+            %    OPTIONAL
+            %       norm     : (2) norm to use (0 to disable, i.e. stay elementwise)
             %
             %    OUTPUT
             %        d      : lengths of the shorter arcs between on S components and abs on R, then the norm
             % ---
             % Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann ~ created 2013-10-25 ~ last edited 2014-10-22
-            if length(this.SComponents)>1 %number of components more than one.
-                if isrow(p) % one datum
-                    p_ = p';
-                else
-                    p_ = p;
-                end
-                if isrow(q)
-                    q_ = q';
-                else
-                    q_ = q;
-                end
-            else
-                p_=p; q_=q;
-            end
-            assert( all(size(p_)==size(q_)), ...
+            assert(all(size(p)==size(q)), ...
                 'Distances can only be computed for equal length vectors p and q');
-            assert( (size(p,1)==this.ItemSize) && (size(q,1)==this.ItemSize), ...
+            assert((size(p,1)==this.ItemSize) && (size(q,1)==this.ItemSize), ...
                 'The manifold dimension of either p or q is wrong');
-            d = reshape(p_-q_,this.ItemSize,[]);
-            d(this.SComponents,:) = symMod(d(this.SComponents,:) ,2*pi);
-            d = abs(d);
-            d = reshape(d,size(p_));
+            d = abs(p-q);
             if (nargin < 4)
-                n = 2;
+                norm = 2;
             end
-            if n~=0
-                d = shiftdim(sum( d.^n, 1).^(1/n)); %eliminate leading zeros
+            if norm~=0
+                d = shiftdim(sum( d.^norm, 1).^(1/norm)); %eliminate leading zeros
             end
         end
         function x = proxad(this,varargin)
@@ -186,10 +141,10 @@ classdef S1mRn < manifold & handle
             else
                 vars.RegMask = ones(l,d); %move all
             end
-            assert(k==length(this.SComponents),['The values of f (',...
+            assert(k==length(this.ItemSize),['The values of f (',...
                 num2str(d),' points in ',num2str(l),...
                 ' proximal mappings of dimension ',num2str(k),...
-                ') are not of dimension ',num2str(length(this.SComponents)),'.']);
+                ') are not of dimension ',num2str(length(this.ItemSize)),'.']);
             if (isrow(vars.w))
                 vars.w = vars.w';
             else
@@ -221,8 +176,6 @@ classdef S1mRn < manifold & handle
                 % scalar products <f,w> for each row/column in 1&3 dim ->
                 % lxk result and also take S-components into account
                 sp =  dot(repmat(permute(vars.w,[3,2,1]),[k,sum(proxsets),1]),vars.f(:,proxsets,:),3);
-                % sum over last dimension -> kxlxd result
-                sp(this.SComponents,:,:) = symMod(sp(this.SComponents,:,:),2*pi);
                 spn = sqrt(sum(sp.^2,1)); %sp norm -> 1xl
                 s = sp./repmat(spn,[k,1,1]); %norm -> s - kxl
                 s(isnan(s)) = 0; %else case
@@ -236,15 +189,9 @@ classdef S1mRn < manifold & handle
                         [3,2,1]),[k,1,1]).*...
                     repmat(s.*repmat(mins,[k,1,1]),[1,1,d]);
             end
-            % modulo all computed on S components
-            x(this.SComponents,inpaintpts|proxsets,:) = ...
-                symMod(x(this.SComponents,inpaintpts|proxsets,:),2*pi);
         end
-        function fn = addNoise(this,f,sigma)
+        function fn = addNoise(~,f,sigma)
             fn = f + sigma*randn(size(f));
-            fn = reshape(fn,this.ItemSize,[]);
-            fn(this.SComponents,:) = symMod(fn(this.SComponents,:),2*pi);
-            fn = reshape(fn,size(f));
         end
     end
 end

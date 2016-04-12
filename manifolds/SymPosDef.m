@@ -16,7 +16,7 @@ classdef SymPosDef < manifold & handle
     %                             including) V.
     %
     % ---
-    % ManImRes 1.0, R. Bergmann ~ 2015-01-28
+    % Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann ~ 2015-01-28
     properties
         type = 'SymPosDef';
         tau = 1;
@@ -55,55 +55,55 @@ classdef SymPosDef < manifold & handle
             % 'Epsilon'      : Maximal change before stopping
             %
             %
-            % ManImRes 1.0, J. Persch 2015-11-05
+            % Manifold-Valued Image Restoration Toolbox 1.0, J. Persch 2015-11-05
             if ~this.useMex || getDebugLevel('MatlabMean')==1 % fallback nonMex
                 x=this.mean@manifold(varargin{:});
-            else            
-            ip = inputParser;
-            addRequired(ip,'f');
-            addParameter(ip,'Weights',NaN);
-            addParameter(ip,'InitVal',NaN);
-            addParameter(ip,'MaxIterations',50);
-            addParameter(ip,'Epsilon',10^-6);
-            parse(ip, varargin{:});
-            vars = ip.Results;
-            f = vars.f;
-            dims = size(f);
-            if length(dims) ~= length(this.ItemSize)+2
-                error('f wrong size');
-            end
-            % shift manDim in first dimension
-            dim = size(f);
-            m = dim(end-1);
-            n = dim(end);
-            if isnan(vars.Weights)
-                w = 1/n*ones(m,n);
-            elseif isvector(vars.Weights)
-                w = vars.Weights(:)';
-                if length(w) ~=n
-                    error('length(w) does not match data points');
+            else
+                ip = inputParser;
+                addRequired(ip,'f');
+                addParameter(ip,'Weights',NaN);
+                addParameter(ip,'InitVal',NaN);
+                addParameter(ip,'MaxIterations',50);
+                addParameter(ip,'Epsilon',10^-6);
+                parse(ip, varargin{:});
+                vars = ip.Results;
+                f = vars.f;
+                dims = size(f);
+                if length(dims) ~= length(this.ItemSize)+2
+                    error('f wrong size');
                 end
-                w = repmat(w,m,1);
-            else
-                w = vars.Weights;
-                if any(size(w) ~= [m,n])
-                    error('dim w do not match data points');
+                % shift manDim in first dimension
+                dim = size(f);
+                m = dim(end-1);
+                n = dim(end);
+                if isnan(vars.Weights)
+                    w = 1/n*ones(m,n);
+                elseif isvector(vars.Weights)
+                    w = vars.Weights(:)';
+                    if length(w) ~=n
+                        error('length(w) does not match data points');
+                    end
+                    w = repmat(w,m,1);
+                else
+                    w = vars.Weights;
+                    if any(size(w) ~= [m,n])
+                        error('dim w do not match data points');
+                    end
                 end
-            end          
-            if vars.Epsilon > 0
-                epsilon = vars.Epsilon;
-            else
-                warning('Epsilon should be larger than zero, set Epsilon to 10^-6')
-                epsilon = 10^-12;
+                if vars.Epsilon > 0
+                    epsilon = vars.Epsilon;
+                else
+                    warning('Epsilon should be larger than zero, set Epsilon to 10^-6')
+                    epsilon = 10^-12;
+                end
+                if vars.MaxIterations > 0
+                    iter = vars.MaxIterations;
+                else
+                    warning('Iterations should be larger than zero, set Iterations to 100')
+                    iter = 100;
+                end
+                x = SPDMean(f,w,epsilon,iter);
             end
-            if vars.MaxIterations > 0
-                iter = vars.MaxIterations;
-            else
-                warning('Iterations should be larger than zero, set Iterations to 100')
-                iter = 100;
-            end
-            x = SPDMean(f,w,epsilon,iter);
-            end            
         end
         function Y = exp(this,X,V,t)
             % exp(X,V) - Exponential map at the point(s) P with respect to
@@ -120,14 +120,14 @@ classdef SymPosDef < manifold & handle
             % OUTPUT
             %   Y : resulting point(s) on P(m)
             % ---
-            % ManImRes 1.0, R. Bergmann ~ 2015-01-20 | 2015-04-10
+            % Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann ~ 2015-01-20 | 2015-04-10
             
             % Changelog
             %   2015-04-10 introduced mexfile
             if nargin<4 % define t
                 t=1;
             end
-            if this.useMex 
+            if this.useMex
                 Y = SPDExp(X,V,t);
             else
                 Y = this.localExp(X,V,t);
@@ -145,7 +145,7 @@ classdef SymPosDef < manifold & handle
             %   V : resulting point(s) of X(i) to Y(i) elementwise
             %
             % ---
-            % ManImRes 1.0, R. Bergmann ~ 2015-01-20 | 2015-04-10
+            % Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann ~ 2015-01-20 | 2015-04-10
             
             % Changelog
             % 2015-04-10 Changed to Mex.
@@ -166,7 +166,7 @@ classdef SymPosDef < manifold & handle
             % OUTPUT
             %     d : resulting distances of each pair of points of p,q.
             % ---
-            % ManImRes 1.0, R. Bergmann ~ 2014-10-19 | 2015-04-11
+            % Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann ~ 2014-10-19 | 2015-04-11
             
             % Changelog
             %   2015-04-11 Added mex-file version
@@ -195,7 +195,7 @@ classdef SymPosDef < manifold & handle
             %    W : tangential vector( set, one) at (each) Y
             %
             % ---
-            % ManImRes 1.0, R. Bergmann ~ 2015-01-29 | 2015-04-10
+            % Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann ~ 2015-01-29 | 2015-04-10
             
             % Changelog
             %   2015-04-10 Introduced Mex-Files
@@ -225,7 +225,7 @@ classdef SymPosDef < manifold & handle
             %     ds : the corresponding value(s) of the inner product of (each triple) V,W at X
             %
             % ---
-            % ManImRes 1.0, R. Bergmann ~ 2015-01-29 | 2015-04-11
+            % Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann ~ 2015-01-29 | 2015-04-11
             
             % Changelog
             %   2015-04-11 Created Mex-File
@@ -249,16 +249,39 @@ classdef SymPosDef < manifold & handle
             %     W      : correspoinding eigenmatrices
             %
             % ---
-            % ManImRes 1.0, R. Bergmann ~ 2015-01-20 | 2015-04-11
+            % Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann ~ 2015-01-20 | 2015-04-11
             
             % Changelog
             %   2015-04-11 Extracted to local; optimized GradX instead of
             %              writing a Mex here o spare memory
             [lambda,W] = this.localJacobianEigenFrame(X,V);
         end
-        function G = gradX(this,X,Y,Z)
-            % gradX(X,Y,Z) Compute the gradient with respect to the first
+        function G = grad_X_D2(this,X,Y,Z)
+            % grad_X_D2(X,Y,Z) Compute the gradient with respect to the first
             % variable of the second order difference term. This can also
+            % be used for the third, Z, exchanging X and Z
+            %
+            % INPUT
+            %   X : A point( set)
+            %   Y : A point( set)
+            %   Z : A point( set)
+            %
+            % OUTPUT
+            %   G : A (set of) tangent vector(s, one) at (each) X.
+            %
+            % ---
+            % Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann  2015-01-29
+            % Compute mid point(s)
+            if this.useMex
+                G = SPDGrad_X_D2(X,Y,Z);
+            else
+                G = this.localGrad_X_D2(X,Y,Z);
+            end
+        end
+        function G = grad_X_D2_Sq(this,X,Z,Y)
+            % grad_X_D2_sq(X,Z,Y) Compute the gradient with respect to the first
+            % variable of the squared second order difference term
+            % d^2(c(X,Z),Y). This can also
             % be used for the third, Z, exchanging X and Z
             %
             % INPUT
@@ -273,9 +296,9 @@ classdef SymPosDef < manifold & handle
             % ManImRes 1.0, R. Bergmann  2015-01-29
             % Compute mid point(s)
             if this.useMex
-                G = SPDGradX(X,Y,Z);
+                G = SPDGrad_X_D2_Sq(X,Y,Z);
             else
-                G = this.localGradX(X,Y,Z);
+                G = this.localGrad_X_D2_Sq(X,Y,Z);
             end
         end
         function x = proxad(this,varargin)
@@ -305,7 +328,7 @@ classdef SymPosDef < manifold & handle
             % OUTPUT
             %      x : resulting data of all proximal maps (mxmxdxl)
             % ---
-            % ManImRes 1.0, R. Bergmann ~ 2015-01-20
+            % Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann ~ 2015-01-20
             if (length(varargin)==1 && isstruct(varargin{1})) %struct case
                 vars = varargin{1};
                 assert(isfield(vars,'f')&&isfield(vars,'lambda')&&isfield(vars,'w'),...
@@ -371,16 +394,16 @@ classdef SymPosDef < manifold & handle
                 x(:,:,(missingpoints(:,1)>0)&inpaintpts,1) = x(:,:,(missingpoints(:,1)>0)&inpaintpts,2);
                 x(:,:,(missingpoints(:,2)>0)&inpaintpts,2) = x(:,:,(missingpoints(:,2)>0)&inpaintpts,1);
             elseif (length(w)==3) && all(w==[1,-2,1]')
-                %
+                    %
                 % Iterative subgradient descent
                 x = vars.f;
                 % Gradient descent
                 xopt = x(:,:,proxpts,:);
-                xoptvals = this.dist(this.midPoint(x(:,:,proxpts,1),x(:,:,proxpts,3)),x(:,:,proxpts,2)); %x=f hence first term zero
+                xoptvals = vars.lambda*this.dist(this.midPoint(x(:,:,proxpts,1),x(:,:,proxpts,3)),x(:,:,proxpts,2)); %x=f hence first term zero
                 for i=1:this.steps
                     % midpoints between firsts and thirds
                     % Gradient X
-                    grad1 = this.log(x(:,:,proxpts,1),vars.f(:,:,proxpts,1)) + vars.lambda*this.gradX(x(:,:,proxpts,1),x(:,:,proxpts,2),x(:,:,proxpts,3));
+                    grad1 = this.log(x(:,:,proxpts,1),vars.f(:,:,proxpts,1)) + vars.lambda*this.grad_X_D2(x(:,:,proxpts,1),x(:,:,proxpts,2),x(:,:,proxpts,3));
                     % Gradient Y (easy)
                     M = this.exp(x(:,:,proxpts,1), this.log(x(:,:,proxpts,1),x(:,:,proxpts,3))/2);
                     V = this.log(x(:,:,proxpts,2),M);
@@ -392,13 +415,13 @@ classdef SymPosDef < manifold & handle
                     V(:,:,~(Vl>eps)) = 0;
                     grad2 = this.log(x(:,:,proxpts,2),vars.f(:,:,proxpts,2)) + vars.lambda*V;
                     % Gradient Z
-                    grad3 = this.log(x(:,:,proxpts,3),vars.f(:,:,proxpts,3)) + vars.lambda*this.gradX(x(:,:,proxpts,3),x(:,:,proxpts,2),x(:,:,proxpts,1));
-                    tauit = this.tau*vars.lambda/i; %sinnvoll?
+                    grad3 = this.log(x(:,:,proxpts,3),vars.f(:,:,proxpts,3)) + vars.lambda*this.grad_X_D2(x(:,:,proxpts,3),x(:,:,proxpts,2),x(:,:,proxpts,1));
+                    tauit = this.tau/i; 
                     x(:,:,proxpts,1) = this.exp(x(:,:,proxpts,1), tauit*grad1);
                     x(:,:,proxpts,2) = this.exp(x(:,:,proxpts,2), tauit*grad2);
                     x(:,:,proxpts,3) = this.exp(x(:,:,proxpts,3), tauit*grad3);
                     xoptt = x(:,:,proxpts,:);
-                    xvals = sum(this.dist(vars.f(:,:,proxpts,:),xoptt).^2,2) + this.dist(this.midPoint(xoptt(:,:,:,1),xoptt(:,:,:,3)),xoptt(:,:,:,2));
+                    xvals = 1/2*sum(this.dist(vars.f(:,:,proxpts,:),xoptt).^2,2) + vars.lambda*this.dist(this.midPoint(xoptt(:,:,:,1),xoptt(:,:,:,3)),xoptt(:,:,:,2));
                     xopt(:,:,xvals<xoptvals,:) = xoptt(:,:,xvals<xoptvals,:);
                     xoptvals(xvals<xoptvals) = xvals(xvals<xoptvals);
                 end
@@ -407,7 +430,7 @@ classdef SymPosDef < manifold & handle
             elseif (length(w)==4) && all(w==[-1,1,-1,1]')
                 x=vars.f;
                 xopt = x(:,:,proxpts,:);
-                xoptvals = this.dist(this.midPoint(x(:,:,proxpts,1),x(:,:,proxpts,3)),this.midPoint(x(:,:,proxpts,2),x(:,:,proxpts,4))); %x=f hence first term zero
+                xoptvals = vars.lambda*this.dist(this.midPoint(x(:,:,proxpts,1),x(:,:,proxpts,3)),this.midPoint(x(:,:,proxpts,2),x(:,:,proxpts,4))); %x=f hence first term zero
                 for i=1:this.steps
                     % Two arrays of midpoints
                     M = zeros(this.ItemSize(1),this.ItemSize(2),size(x(1,1,proxpts,1),3),2);
@@ -419,15 +442,15 @@ classdef SymPosDef < manifold & handle
                         mi = mod(j,2)+1; %opposite midpoint index (1,3)->2, (2,4)->1
                         % similar to the approach for 1,-2,1 just that y is
                         % the other middle point
-                        grad(:,:,:,j) = this.gradX(x(:,:,proxpts,j),M(:,:,:,mi),x(:,:,proxpts,j2));
+                        grad(:,:,:,j) = this.grad_X_D2(x(:,:,proxpts,j),M(:,:,:,mi),x(:,:,proxpts,j2));
                     end
                     %perform a gradient step
-                    tauit = this.tau*vars.lambda/i;
+                    tauit = this.tau/i;
                     for j=1:4
                         x(:,:,proxpts,j) = this.exp(x(:,:,proxpts,j), tauit*grad(:,:,:,j));
                     end
                     xoptt = x(:,:,proxpts,:);
-                    xvals = sum(this.dist(vars.f(:,:,proxpts,:),xoptt).^2,2) + this.dist(this.midPoint(xoptt(:,:,:,1),xoptt(:,:,:,3)),this.midPoint(xoptt(:,:,:,2),xoptt(:,:,:,4)));
+                    xvals = sum(this.dist(vars.f(:,:,proxpts,:),xoptt).^2,2)/2 + vars.lambda*this.dist(this.midPoint(xoptt(:,:,:,1),xoptt(:,:,:,3)),this.midPoint(xoptt(:,:,:,2),xoptt(:,:,:,4)));
                     xopt(:,:,xvals<xoptvals,:) = xoptt(:,:,xvals<xoptvals,:);
                     xoptvals(xvals<xoptvals) = xvals(xvals<xoptvals);
                 end
@@ -597,7 +620,7 @@ classdef SymPosDef < manifold & handle
             % OUTPUT
             %     W : a set of vectors forming the eigenframe
             % ---
-            % ManImRes 1.0, R. Bergmann ~2015-01-29
+            % Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann ~2015-01-29
             n = this.ItemSize(1)*(this.ItemSize(1)+1)/2;
             [U,S,~]=svd(X);
             S= diag(sqrt(max(diag(S),0))); %Avoid rounding errors, elementwise sqrt
@@ -612,9 +635,9 @@ classdef SymPosDef < manifold & handle
                 s = 1;
                 for i=1:this.ItemSize(1)
                     for j=i:this.ItemSize(2)
-                        lambda(s) = abs(cpointlambda(i)-cpointlambda(j));
+                        lambda(s) = abs(cpointlambda(i)-cpointlambda(j))*norm(V,'fro');
                         t = 0.5;
-                        if (i==j)
+                        if (i~=j)
                             t = sqrt(t);
                         end
                         thisV = t*( cpointV(:,i)*cpointV(:,j)' + cpointV(:,j)*cpointV(:,i)');
@@ -624,7 +647,7 @@ classdef SymPosDef < manifold & handle
                 end
             end
         end
-        function G = localGradX(this,X,Y,Z)
+        function G = localGrad_X_D2(this,X,Y,Z)
             M = this.exp(X, this.log(X,Z)/2);
             n = this.ItemSize(1)*(this.ItemSize(1)+1)/2;
             % Solve Eigenvalue problem in Z (in Z with direction towards X)

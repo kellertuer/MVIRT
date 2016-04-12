@@ -13,7 +13,7 @@
 % R. Bergmann, M. Bacak, G. Steidl, A. Weinmann,
 %     A second order non-smooth variational model for restoring
 %     manifold-valued images,
-%     accepted to SIAM Journal on Scientific Computing, 2015.
+%     SIAM Journal on Scientific Computing, 38, (1), A567?A597, 2016.
 %
 % ---
 % Manifold-valued Image Restoration Toolbox 1.0

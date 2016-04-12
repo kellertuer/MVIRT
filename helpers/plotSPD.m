@@ -28,8 +28,9 @@ function [fhB,gD] = plotSPD(varargin)
 % OUTPUT
 %   figurehandle : the handle of the created figure
 % ---
-% Manifold Valued Image Restoration 1.0
+% Manifold-valued Image Restoration Toolbox 1.0
 % R. Bergmann ~ 2015-01-19 | 2015-12-05
+% see LICENSE.txt
 
 % Logfile
 % 2015-03-27 Added the optional parameter ExportHeader

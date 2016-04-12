@@ -10,7 +10,7 @@ function initMVIRT(varargin)
 %   C++Algorithms and use the (fallback) Matlab implementations
 % ---
 % Manifold-valued Image Restoration Toolbox 1.0
-% R. Bergmann ~ 2014-11-29 | 2015-04-09
+% R. Bergmann ~ 2014-11-29 | 2015-04-12
 
 ip = inputParser;
 addParameter(ip,'Make',false);
@@ -39,19 +39,28 @@ if vars.Make
     mex -I../include/eigen -Imanifolds SnDist.cpp manifolds/manifoldSn.cpp
     mex -I../include/eigen -Imanifolds SnExp.cpp manifolds/manifoldSn.cpp
     mex -I../include/eigen -Imanifolds SnLog.cpp manifolds/manifoldSn.cpp
-    mex -I../include/eigen -Imanifolds SnGradX.cpp manifolds/manifoldSn.cpp
+    mex -I../include/eigen -Imanifolds SnParallelTransport.cpp manifolds/manifoldSn.cpp
+    mex -I../include/eigen -Imanifolds SnGrad_X_D2.cpp manifolds/manifoldSn.cpp
     % SPD
     disp('--- Compiling SymPosDef functions ---');
     mex -I../include/eigen -Imanifolds SPDDist.cpp manifolds/manifoldSPD.cpp
     mex -I../include/eigen -Imanifolds SPDDot.cpp manifolds/manifoldSPD.cpp
     mex -I../include/eigen -Imanifolds SPDExp.cpp manifolds/manifoldSPD.cpp
-    mex -I../include/eigen -Imanifolds SPDGradX.cpp manifolds/manifoldSPD.cpp
+    mex -I../include/eigen -Imanifolds SPDGrad_X_D2.cpp manifolds/manifoldSPD.cpp
     mex -I../include/eigen -Imanifolds SPDLog.cpp manifolds/manifoldSPD.cpp
     mex -I../include/eigen -Imanifolds SPDParallelTransport.cpp manifolds/manifoldSPD.cpp
     mex -I../include/eigen -Imanifolds SPDMean.cpp manifolds/manifoldSPD.cpp
     cd ..
-end% Init Debug
-setDebugLevel(2);
+end
+%% Disable Mex usage?
+if ~vars.UseMex
+    % where to save this?
+end
+%% Init Debug
+setDebugLevel('LevelMin',0);
+setDebugLevel('LevelMax',50);
+setDebugLevel('time',3);
+setDebugLevel('text',3);
 % Add all necessary paths
 debug('text',1,'Text','Initializing the Manifold-valued Image Restoration Toolbox.');
 cd(getManImResPath());

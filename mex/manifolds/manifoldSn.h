@@ -3,7 +3,7 @@
  * Manifold functions of Symmetric positive definite matrices, elementary,
  *not working with vectors/arrays of matrices, in Eigen-Library notation for convenience
  * ---
- * Manifold Valued Image Restoration 1.0
+ * Manifold-valued Image Restoration Toolbox 1.0
  * R. Bergmann, 2015-04-12
  */
 #ifndef MANIFOLDSN_H
@@ -32,9 +32,16 @@ double mSnDist(VectorXd X, VectorXd Y);
 /* d = mSnDist(X,Y)
  * Compute the distance of the two points X,Y on Sn.
  */
-VectorXd mSnGradX(VectorXd X, VectorXd Y, VectorXd Z);
+VectorXd mSnGrad_X_D2(VectorXd X, VectorXd Y, VectorXd Z);
 /* compute the (sub) gradient w.r.t. to X 
  * INPUT: X,Y,Z points (unit vectors in Rn+1)
  * OUTPUT: Direction of the gradient of the second order difference at X.
  */
+VectorXd mSnParallelTransport(VectorXd X, VectorXd Y, VectorXd V, double t);
+/*
+ * INPUT: X,Y : 2 points on Sn, V: Vector from TxM, and a t to shorten the Y-X
+ * OUTPUT: W parallel transported V
+ */
+VectorXd mSnParallelTransport(VectorXd X, VectorXd Y, VectorXd V);
+
 #endif /* MANIFOLD_H */

@@ -11,6 +11,10 @@ function [fn,fo, t] = cyclicSignal(n,sigma)
 %     fn : the generated (noisy) signal
 %     fo : the generated signal without noise to compare with
 %     t  : corresponding x-axis values for both signals on [0,1]
+%
+%    R. Bergmann, F. Laus, G. Steidl, A. Weinmann (2014). 
+%       Second order differences of cyclic data and applications in variational denoising. 
+%       SIAM Journal on Imaging Sciences. 7, (4), 2916?2953.
 % ---
 % Manifold-valued Image Restoration Toolbox 1.0
 % R. Bergmann ~ 2014-11-29 | 2016-02-24

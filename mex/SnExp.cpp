@@ -4,7 +4,7 @@
  * Wrapper for the exponential function of Sn
  * 
  * ---
- * Manifold Valued Image Restoration 1.0
+ * Manifold-valued Image Restoration Toolbox 1.0
  * R. Bergmann ~ 2015-05-22
  */
 #include "mex.h"

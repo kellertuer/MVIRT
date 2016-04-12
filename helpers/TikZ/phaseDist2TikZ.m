@@ -23,8 +23,9 @@ function s = phaseDist2TikZ(f,r,varargin)
 %           (formated string with escaped \, \n, and \t which are _not_ escaped)
 %
 % ---
-% Manifold Valued Image Restoration 1.0
+% Manifold-valued Image Restoration Toolbox 1.0
 % R. Bergmann ~ 2014-04-24 
+% see LICENSE.txt
 
 [n,m] = size(f); %m is the number of data sets we have, n their length
 if length(r)~=m

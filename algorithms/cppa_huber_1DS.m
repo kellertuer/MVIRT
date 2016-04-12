@@ -10,7 +10,7 @@ function x = cppa_huber_1DS(f, alpha,lambda,tau,omega,varargin)
 %      lambda  : weight for the proximal mappings
 %      tau     : parameter for the huber functional to determine parabola
 %      omega   : parameter for the huber functional to determine parabola
-%      width
+%                width
 %
 %   OUTPUT:
 %      x       : result of the cyclic proximal point algorithm

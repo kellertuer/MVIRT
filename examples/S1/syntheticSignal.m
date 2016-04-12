@@ -7,9 +7,9 @@
 %
 % The comparison is published as the first numerical example (Sec. 5) of
 %
-%    R. Bergmann, F. Laus, G. Steidl, A. Weinmann: Second Order Differences
-%        of S1-valued Data and Applications in Variational Image Denoising.
-%        J. SIAM Imaging Sci. 7(4), 2916?2953,
+%    R. Bergmann, F. Laus, G. Steidl, A. Weinmann (2014). 
+%       Second order differences of cyclic data and applications in variational denoising. 
+%       SIAM Journal on Imaging Sciences. 7, (4), 2916?2953.
 %
 % This file can be started without any changes; it initializes the Toolbox
 % itself

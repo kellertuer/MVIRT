@@ -31,7 +31,7 @@ function [dataStr,gD] = exportSPD2AsymptoteTry(varargin)
 % OUTPUT
 %   dataStr : the String containing the POV-Ray source code
 % ---
-% Manifold Valued Image Restoration 1.0
+% Manifold-valued Image Restoration Toolbox 1.0
 % R. Bergmann ~ 2015-02-24 | 2015-12-05
 
 % Logfile
@@ -45,6 +45,7 @@ addParameter(ip,'GridScale',1);
 addParameter(ip,'ColorScheme', 'GA');
 addParameter(ip,'ExportHeader',false);
 addParameter(ip,'File', '');
+addParameter(ip,'ColorMap',hsv);
 parse(ip, varargin{:});
 vars = ip.Results;
 dataDim = size(vars.f);
@@ -70,8 +71,8 @@ else
     gD(1:length(vars.GridDistance)) = vars.GridDistance;
 end
 gD = gD.*vars.GridScale;
-numCol = 256;
-hsvCM = hsv(numCol);
+numCol = size(vars.ColorMap,1);%256;
+CM = vars.ColorMap;
 pt = zeros(1,3);
 if length(dataDim)>2 %2D or 1D
     pt(3) = dataDim(3);
@@ -124,30 +125,30 @@ for i=1:prod(dataDim) %run through all matrices
         switch vars.ColorScheme
             case 'GA'
                 if all(all(vars.f(:,:,x,y,z)==0))
-                    color=hsvCM(1,:);
+                    color=CM(1,:);
                 else
                     AR = sqrt(((d-1)/d)*sum( log(lambda).^2) - 2/d*sum(sum(tril(log(lambda)*log(lambda)',-1))));
                     ARnormed = AR/(1+AR); %See Also Moakher & Batchelor in [0,1]
                     colInd = round(ARnormed*(numCol-1))+1; %color index
                     if ~isreal(colInd) || isnan(colInd) %might happen due to rounding errors
                         lambda = zeros(1,3);
-                        color = hsvCM(1,:);
+                        color = CM(1,:);
                     else
-                        color = hsvCM(colInd,:);
+                        color = CM(colInd,:);
                     end
                 end
             case 'FA'
                 if all(all(vars.f(:,:,x,y,z)==0))
-                    color=hsvCM(1,:);
+                    color=CM(1,:);
                 else
                     AF = sqrt(((d-1)/d)*sum( lambda.^2) - 2/d*sum(sum(tril(lambda*lambda',-1))));
                     AFnormed = AF/norm(vars.f(:,:,x,y,z),'fro'); %See Also Moakher & Batchelor in [0,1]
                     colInd = round(AFnormed*(numCol-1))+1; %color index
                     if ~isreal(colInd) || isnan(colInd) %might happen due to rounding errors
                         lambda = zeros(1,3);
-                        color = hsvCM(1,:);
+                        color = CM(1,:);
                     else
-                        color = hsvCM(colInd,:);
+                        color = CM(colInd,:);
                     end
                 end
             case 'Direction'

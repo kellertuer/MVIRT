@@ -37,6 +37,12 @@ function [x,fctValSeq] = cppa_ad_1D(varargin)
 %                          the manifold
 %
 %  See also:
+%
+% R. Bergmann, M. Bacak, G. Steidl, A. Weinmann,
+%     A second order non-smooth variational model for restoring
+%     manifold-valued images,
+%     SIAM Journal on Scientific Computing, 38, (1), A567?A597, 2016.
+%
 %    manifold, manifold.proxad, cppa_ad_2D, cppa_ad_nD
 % ---
 % Manifold-valued Image Restoration Toolbox 1.0

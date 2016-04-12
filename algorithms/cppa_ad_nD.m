@@ -40,7 +40,13 @@ function [x,fctValSeq] = cppa_ad_nD(varargin)
 %                          iteration and accepts two parameter, the x_k
 %                          and the distance data array from x_k to x_{k-1} measured on
 %                          the manifold
-% See also:
+%  See also:
+%
+% R. Bergmann, M. Bacak, G. Steidl, A. Weinmann,
+%     A second order non-smooth variational model for restoring
+%     manifold-valued images,
+%     SIAM Journal on Scientific Computing, 38, (1), A567?A597, 2016.
+%
 %    manifold.proxad, cppa_ad_1D, cppa_ad_2D
 % ---
 % Manifold-valued Image Restoration Toolbox 1.0

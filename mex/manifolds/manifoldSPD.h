@@ -3,7 +3,7 @@
  * Manifold functions of Symmetric positive definite matrices, elementary,
  *not working with vectors/arrays of matrices, in Eigen-Library notation for convenience
  * ---
- * ManImRes ~R. Bergmann, 2015-04-12
+ * Manifold-Valued Image Restoration Toolbox 1.0 ~ R. Bergmann, 2015-04-12
  */
 #ifndef MANIFOLDSPD_H
 #define MANIFOLDSPD_H
@@ -37,7 +37,7 @@ double mSPDDot(MatrixXd X, MatrixXd V, MatrixXd W);
 /* d = mSPDDot(X,V,W)
  * compute dot product in the TXM of the elements V and W.
  */
-MatrixXd mSPDGradX(MatrixXd X, MatrixXd Y, MatrixXd Z);
+MatrixXd mSPDGrad_X_D2(MatrixXd X, MatrixXd Y, MatrixXd Z);
 /* compute the (sub) gradient w.r.t. to X 
  * INPUT: X,Y,Z points (SPDs)
  * OUTPUT: Direction of the gradient of the second order difference at X.

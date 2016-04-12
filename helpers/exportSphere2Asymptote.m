@@ -22,7 +22,7 @@ function fileStr = exportSphere2Asymptote(varargin)
 %                    or just the drawing commands. 
 %
 % ---
-% ManImRes 1.0, R. Bergmann ~ 2015-03-10 | 2015-03-27
+% Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann ~ 2015-03-10 | 2015-03-27
 
     % Lofgile
     % 2015-03-27 Added the optional parameter ExportHeader

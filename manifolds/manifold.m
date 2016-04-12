@@ -25,8 +25,9 @@ classdef (Abstract) manifold < handle
     %                           pts points
     %
     % ---
-    % Manifold Valued Image Restoration 1.0
+    % Manifold-valued Image Restoration Toolbox 1.0
     % R. Bergmann ~ 2014-10-18, last edit: 2015-12-05
+    % see LICENSE.txt
     properties
         useMex = true; %Whether or not to use mex-files in the manifold-functions
     end
@@ -65,7 +66,7 @@ classdef (Abstract) manifold < handle
             % OUTPUT
             %       x : result point( sets) of the proximal map
             % ---
-            % ManImRes 1.0, R. Bergmann ~ 2014-10-19
+            % Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann ~ 2014-10-19
             if all(g(:) == f(:))
                 x=f;
                 return
@@ -93,7 +94,7 @@ classdef (Abstract) manifold < handle
             % OUTPUT
             %  x1,x2    : resulting columns of the proximal map
             % ---
-            % ManImRes 1.0, R. Bergmann ~ 2014-10-19
+            % Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann ~ 2014-10-19
             if all(f1(:) == f2(:))
                 x1=f1;
                 x2=f2;
@@ -120,7 +121,7 @@ classdef (Abstract) manifold < handle
             %      m : resulting mid point( sets)
             %
             % ---
-            % ManImRes 1.0, R. Bergmann ~ 2014-10-19 | 2015-01-29
+            % Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann ~ 2014-10-19 | 2015-01-29
             m = this.exp(x, this.log(x,z)./2);
         end
         function geo = geodesic(varargin)
@@ -138,7 +139,7 @@ classdef (Abstract) manifold < handle
             %   geo : the geodesic between x,y with geo(1) = x, geo(pts)=y
             %
             % ---
-            % ManImRes 1.0 J. Persch ~2015-10-29
+            % Manifold-Valued Image Restoration Toolbox 1.0 J. Persch ~2015-10-29
             ip = inputParser;
             addRequired(ip,'this');
             addRequired(ip,'x');
@@ -197,7 +198,7 @@ classdef (Abstract) manifold < handle
             % 'Epsilon'      : Maximal change before stopping
             %
             %
-            % ManImRes 1.0, J. Persch 2015-07-24 | R. Bergmann 2015-07-30
+            % Manifold-Valued Image Restoration Toolbox 1.0, J. Persch 2015-07-24 | R. Bergmann 2015-07-30
             ip = inputParser;
             addRequired(ip,'f');
             addParameter(ip,'Weights',NaN);
@@ -296,7 +297,7 @@ classdef (Abstract) manifold < handle
             % [1] M. Bacak, Computing medians and means in Hadamard spaces.
             % SIAM Journal on Optimization, 24(3), pp. 1542-1566, 2013.
             % ---
-            % ManImRes 1.0, R. Bergmann ~ 2015-07-16
+            % Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann ~ 2015-07-16
             ip = inputParser;
             addRequired(ip,'f');
             addRequired(ip,'lambda');

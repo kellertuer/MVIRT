@@ -18,7 +18,7 @@ function fileStr = exportSphereSignals2Asymptote(varargin)
 %                     sets the first signal to 1/2 the others to 1.
 %
 % ---
-% ManImRes 1.0, R. Bergmann ~ 2015-03-26 | 2015-04-08
+% Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann ~ 2015-03-26 | 2015-04-08
 
 % Lofgile
 % 2015-04-08 Added the optional parameter OpacityVector

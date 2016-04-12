@@ -11,6 +11,10 @@ function [Zn,Z] = ArtificalSARImage(pts,sigma)
 %      Zn : the artificial SAR Image (i.e. noisy
 %      Z  : the noise free wrapped original
 %
+% This image is used in
+%    R. Bergmann, F. Laus, G. Steidl, A. Weinmann (2014). 
+%       Second order differences of cyclic data and applications in variational denoising. 
+%       SIAM Journal on Imaging Sciences. 7, (4), 2916?2953.
 % ---
 % Manifold-valued Image Restoration Toolbox 1.0
 % R. Bergmann ~ 2014-07-23 | 2016-02-24

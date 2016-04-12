@@ -1,14 +1,15 @@
 function folder = getManImResPath()
 % getManImResPath()
-%    returns the base path of the ManImRes Toolbox and returns an error
+%    returns the base path of the MVIRT Toolbox and returns an error
 %    message, if the Toolbox is not initialized yet.
 %
 % ---
-% Manifold Valued Image Restoration 1.0
+% Manifold-valued Image Restoration Toolbox 1.0
 % R. Bergmann ~ 2014-11-29
+% see LICENSE.txt
 
-folder = fileparts(which('initManImRes.m'));
+folder = fileparts(which('initMVIRT.m'));
 assert(~isempty(folder),...
-    'ManImRes Toolbox not found in path, please run initManImRes.m first.');
+    'MVIRT not found in path, please run initMVIRT.m first.');
 end
 

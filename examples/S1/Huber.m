@@ -7,9 +7,9 @@
 % phase valued data.
 %
 % This example is published in
-%    R. Bergmann, F. Laus, G. Steidl, A. Weinmann: Second Order Differences
-%        of S1-valued Data and Applications in Variational Image Denoising.
-%        J. SIAM Imaging Sci. 7(4), 2916?2953,
+%    R. Bergmann, F. Laus, G. Steidl, A. Weinmann (2014). 
+%       Second order differences of cyclic data and applications in variational denoising. 
+%       SIAM Journal on Imaging Sciences. 7, (4), 2916?2953.
 %
 % ---
 % Manifold-valued Image Restoration Toolbox 1.0

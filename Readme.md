@@ -1,4 +1,4 @@
-# ManImRes – MANifold-valued IMage REStoration
+# MVIRT - Manifold-Valued Image Restoration Toolbox
 
 In many applications data is constrained to certain manifolds. The simplest
 example is the circle \(\mathbb S^1\), i.e. phase valued data like in InSAR
@@ -17,7 +17,7 @@ This `MatLab` package provides algorithms for restoring, i.e. denoising and inpa
 
 ## Installation, Initialization
 
-For installation just place the folder ManImRes somewhere in your preferred  
+For installation just place the folder MVIRT somewhere in your preferred  
 directory. On Startup be sure to have `ManImRes` as your base directory or  
 call `initMVIRT();` from anywhere. By default it adds all necessary folders  
 to the MATLAB path and initializes the debug helping functions.

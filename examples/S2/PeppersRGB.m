@@ -9,8 +9,10 @@
 %
 % This Matlab script is used to generate Figure 5.3(d) in
 %
-% ManImRes 1.0, R. Bergmann, M. Bacak, G. Steidl, A. Weinmann: A second order non-smooth
-%   variational model for restoring manifold-valued images, 2015.
+% R. Bergmann, M. Bacak, G. Steidl, A. Weinmann,
+%     A second order non-smooth variational model for restoring
+%     manifold-valued images,
+%     SIAM Journal on Scientific Computing, 38, (1), A567?A597, 2016.
 % 
 % ---
 % Manifold-valued Image Restoration Toolbox 1.0

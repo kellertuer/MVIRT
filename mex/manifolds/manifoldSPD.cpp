@@ -152,7 +152,7 @@ MatrixXd mSPDParallelTransport(MatrixXd X, MatrixXd Y, MatrixXd V, double t) {
     lW = Xsqrt*(U*S*U.transpose())*0.5*(lV+lV.transpose())*(U*S*U.transpose())*Xsqrt;
     return lW;
 }
-MatrixXd mSPDGradX(MatrixXd X, MatrixXd Y, MatrixXd Z) {
+MatrixXd mSPDGrad_X_D2(MatrixXd X, MatrixXd Y, MatrixXd Z) {
     int ItemSize = X.rows();
     if (ItemSize!=X.cols())
         return MatrixXd::Zero(1,1);
@@ -188,7 +188,6 @@ MatrixXd mSPDGradX(MatrixXd X, MatrixXd Y, MatrixXd Z) {
     S = eig.pseudoEigenvalueMatrix();
     U = eig.pseudoEigenvectors();
     // Compute all basis elements
-    double thisLambda=0;
     R = mSPDLog(M,Y);
     r = sqrt(mSPDDot(M,R,R));
     // Init G;
@@ -196,12 +195,12 @@ MatrixXd mSPDGradX(MatrixXd X, MatrixXd Y, MatrixXd Z) {
     for (i=0; i<ItemSize; i++) {
         for (j=i; j<ItemSize; j++) {
             //Compute sth eigenvalue based on i&j
-            lambda = abs((S(i,i) - S(j,j)));
+            lambda = abs((S(i,i) - S(j,j)))/2*mSPDDist(X,Z);
             //Compute corresponding basis element (matrix Wx)
             if (i==j)
-                Wx = sqrt(0.5)*( U.col(i)*U.col(j).transpose() + U.col(j)*U.col(i).transpose() );
-            else
                 Wx = 0.5*( U.col(i)*U.col(j).transpose() + U.col(j)*U.col(i).transpose() );
+            else
+                Wx = sqrt(0.5)*( U.col(i)*U.col(j).transpose() + U.col(j)*U.col(i).transpose() );
             Wx = Xsqrt*Wx*Xsqrt;
             // Basis Vector in X, transport it to M
             Wm = mSPDParallelTransport(X, M, Wx);
@@ -209,8 +208,8 @@ MatrixXd mSPDGradX(MatrixXd X, MatrixXd Y, MatrixXd Z) {
                 alpha = 0;
             else
                 alpha = mSPDDot(M,R,Wm)/r;
-             if ( thisLambda>0 ) // eigenvalue > 0
-                G = G + ( (sinh(thisLambda/2)/sinh(thisLambda)*alpha)*Wm);
+             if ( lambda>0 ) // eigenvalue > 0
+                G = G + ( (sinh(lambda/2)/sinh(lambda)*alpha)*Wm);
              else // eigenvalue 0
                 G = G + (0.5*alpha*Wm);
         }

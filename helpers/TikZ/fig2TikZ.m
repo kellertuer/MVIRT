@@ -14,8 +14,9 @@ function s = fig2TikZ(filename,t,f,ylim,yticks,yticklabels,xticks,xticklabels,sc
 % OUTPUT
 %   s      : string containing the file content 
 % ---
-% Manifold Valued Image Restoration 1.0
+% Manifold-valued Image Restoration Toolbox 1.0
 % R. Bergmann ~ 2014-03-29
+% see LICENSE.txt
 
 numplots = size(f,1);
 if (size(f,2) ~= length(t))

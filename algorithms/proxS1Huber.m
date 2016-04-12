@@ -18,12 +18,13 @@ function x = proxS1Huber(pf,lambda,tau, omega)
 %
 % SEE ALSO
 % 
-%    R. Bergmann, F. Laus, G. Steidl, A. Weinmann: Second Order Differences
-%        of S1-valued Data and Applications in Variational Image Denoising,
-%        Preprint, 2014
+%    R. Bergmann, F. Laus, G. Steidl, A. Weinmann (2014). 
+%       Second order differences of cyclic data and applications in variational denoising. 
+%       SIAM Journal on Imaging Sciences. 7, (4), 2916?2953.
 %    and
 %    A. Weinmann, L. Demaret, M. Storath:
-%        Total Variation Regularization for Manfold-valued Data
+%       Total Variation Regularization for Manifold-valued Data
+%       SIAM Journal on Imaging Sciences. 7, (4), 2226?2257.
 %
 % ---
 % Manifold-valued Image Restoration Toolbox 1.0

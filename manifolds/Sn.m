@@ -13,7 +13,7 @@ classdef Sn < manifold & handle
     %    TpMONB(p,q)   : Compute an ONB of the tangential plane at p, where
     %                 the first vector points towards q
     % ---
-    % ManImRes 1.0, R. Bergmann ~ 2015-01-29
+    % Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann ~ 2015-01-29
     properties
         type = '';
         tau = 0.01;
@@ -37,7 +37,7 @@ classdef Sn < manifold & handle
             % OUTPUT
             %   q : resulting point(s) on S2
             % ---
-            % ManImRes 1.0, R. Bergmann ~ 2014-10-19
+            % Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann ~ 2014-10-19
             if isrow(p)
                 p_=p';
             else
@@ -69,7 +69,7 @@ classdef Sn < manifold & handle
             % OUTPUT
             %    v : points on the tangential plane at point(s) p
             % ---
-            % ManImRes 1.0, R. Bergmann ~ 2014-10-19
+            % Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann ~ 2014-10-19
             if isrow(p)
                 p_=p';
             else
@@ -97,7 +97,7 @@ classdef Sn < manifold & handle
             % OUTPUT
             %     v : resulting distances of each column pair of p,q.
             % ---
-            % ManImRes 1.0, R. Bergmann ~ 2014-10-19 | 2015-03-30
+            % Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann ~ 2014-10-19 | 2015-03-30
             
             % Lofgile
             %   2015-03-30 Changed dist to work to collapse first dim
@@ -118,7 +118,7 @@ classdef Sn < manifold & handle
             % OUTPUT
             %      m : resulting mid point( sets)
             % ---
-            % ManImRes 1.0, R. Bergmann ~ 2014-10-19
+            % Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann ~ 2014-10-19
             m = this.exp(x, this.log(x,z)./2);
         end
         function x = proxad(this,varargin)
@@ -139,7 +139,7 @@ classdef Sn < manifold & handle
             % OUTPUT
             %      x : resulting data of all proximal maps
             % ---
-            % ManImRes 1.0, R. Bergmann ~ 2014-10-19
+            % Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann ~ 2014-10-19
             if (length(varargin)==1 && isstruct(varargin{1})) %struct case
                 vars = varargin{1};
                 assert(all(isfield(vars,{'f','lambda','w'})),...
@@ -208,12 +208,12 @@ classdef Sn < manifold & handle
                 G = zeros(size(x));
                 % Gradient descent
                 xopt = x(:,proxpts,:);
-                xoptvals = this.dist(this.midPoint(x(:,proxpts,1),x(:,proxpts,3)),x(:,proxpts,2)); %x=f hence first term zero
+                xoptvals = vars.lambda .* this.dist(this.midPoint(x(:,proxpts,1),x(:,proxpts,3)),x(:,proxpts,2)); %x=f hence first term zero
                 for gradcount = 1:this.steps
-                    tauit = this.tau*vars.lambda/gradcount;
+                    tauit = this.tau/gradcount;
                     % GradX
                     G(:,proxpts,1) = this.log(x(:,proxpts,1), vars.f(:,proxpts,1)) + ...
-                        vars.lambda*this.gradX(x(:,proxpts,1),x(:,proxpts,2),x(:,proxpts,3));
+                        vars.lambda*this.grad_X_D2(x(:,proxpts,1),x(:,proxpts,2),x(:,proxpts,3));
                     % Grad Y
                     V = this.log(x(:,proxpts,2),this.midPoint(x(:,proxpts,1),x(:,proxpts,3)));
                     normV = sqrt(sum(V.^2,1));
@@ -223,7 +223,7 @@ classdef Sn < manifold & handle
                     G(:,proxpts,2) = this.log(x(:,proxpts,2),vars.f(:,proxpts,2)) + vars.lambda.*V;
                     % Grad Z
                     G(:,proxpts,3) = this.log(x(:,proxpts,3), vars.f(:,proxpts,3)) + ...
-                        vars.lambda*this.gradX(x(:,proxpts,3),x(:,proxpts,2),x(:,proxpts,1));
+                        vars.lambda*this.grad_X_D2(x(:,proxpts,3),x(:,proxpts,2),x(:,proxpts,1));
                     % Gradient step
                     x = reshape(...
                         this.exp(reshape(x,this.ItemSize,[]), tauit*reshape(G,this.ItemSize,[])),...
@@ -231,7 +231,7 @@ classdef Sn < manifold & handle
                     x(:,proxpts,:) = x(:,proxpts,:)./repmat(sqrt(sum(x(:,proxpts,:).^2,1)),[this.ItemSize,1,1]); %sec?
                     xoptt = x(:,proxpts,:);
                     % -(l<2) fixes this summation for one point
-                    xvals = sum(this.dist(vars.f(:,proxpts,:),xoptt).^2,2) + this.dist(this.midPoint(xoptt(:,:,1),xoptt(:,:,3)),xoptt(:,:,2));
+                    xvals = sum(this.dist(vars.f(:,proxpts,:),xoptt).^2,2)/2 + vars.lambda.*this.dist(this.midPoint(xoptt(:,:,1),xoptt(:,:,3)),xoptt(:,:,2));
                     xvalsInd = xvals<xoptvals;
                     if any(xvalsInd(:))
                         xopt(:,xvalsInd,:) = xoptt(:,xvalsInd,:);
@@ -245,7 +245,7 @@ classdef Sn < manifold & handle
                 x = vars.f;
                 % Gradient descent
                 xopt = x(:,proxpts,:);
-                xoptvals = this.dist(this.midPoint(x(:,proxpts,1),x(:,proxpts,3)),this.midPoint(x(:,proxpts,2),x(:,proxpts,4))); %x=f hence first term zero
+                xoptvals = vars.lambda.*this.dist(this.midPoint(x(:,proxpts,1),x(:,proxpts,3)),this.midPoint(x(:,proxpts,2),x(:,proxpts,4))); %x=f hence first term zero
                 for gradcount = 1:this.steps
                     tauit = this.tau/gradcount;
                     %midpoints between pairs of points
@@ -258,16 +258,16 @@ classdef Sn < manifold & handle
                     for i=1:4
                         i2 = mod(i+1,4)+1; %other index involved in same mid point, 1-3, 2-4, 3-1, 4-2
                         G(:,:,i) = this.log(x(:,proxpts,i), vars.f(:,proxpts,i))...
-                            + vars.lambda*this.gradX(x(:,proxpts,i),...
+                            + vars.lambda*this.grad_X_D2(x(:,proxpts,i),...
                             M(:,:,mod(i,2)+1),... %opposite mid point as Y
                             x(:,proxpts,i2));
                     end
                     x(:,proxpts,:) = reshape(...
                         this.exp(reshape(x(:,proxpts,:),this.ItemSize,[]), tauit*reshape(G,this.ItemSize,[])),...
                         [this.ItemSize,sum(proxpts),d]);
-                    x(:,proxpts,:) = x(:,proxpts,:)./repmat(sqrt(sum(x(:,proxpts,:).^2,1)),[3,1,1]); %sec?
+                    x(:,proxpts,:) = x(:,proxpts,:)./repmat(sqrt(sum(x(:,proxpts,:).^2,1)),[this.ItemSize,1,1]); %sec?
                     xoptt = x(:,proxpts,:);
-                    xvals = sum(this.dist(vars.f(:,proxpts,:),xoptt).^2,2) + this.dist(this.midPoint(xoptt(:,:,1),xoptt(:,:,3)),this.midPoint(xoptt(:,:,2),xoptt(:,:,4)));
+                    xvals = sum(this.dist(vars.f(:,proxpts,:),xoptt).^2,2)/2 +  vars.lambda.*this.dist(this.midPoint(xoptt(:,:,1),xoptt(:,:,3)),this.midPoint(xoptt(:,:,2),xoptt(:,:,4)));
                     xopt(:,xvals<xoptvals,:) = xoptt(:,xvals<xoptvals,:);
                     xoptvals(xvals<xoptvals) = xvals(xvals<xoptvals);
                 end %end of mixed derivative gradient steps
@@ -290,30 +290,29 @@ classdef Sn < manifold & handle
             end
             fn = reshape(fn,fs);
         end
-        function fn = OldaddNoise(this,f,sigma)
-            if this.ItemSize==3 %S2
-                fs = size(f);
-                f = reshape(f,3,[]);
-                [AZ,EL,R] = cart2sph(f(1,:),f(2,:),f(3,:));
-                angles = sigma*randn([2,prod(fs(2:end))]);
-                AZ = AZ+angles(1,:);
-                EL = EL+angles(2,:);
-                [fx,fy,fz] = sph2cart(AZ,EL,R);
-                fn = zeros(size(f));
-                fn(1,:) = fx; fn(2,:) = fy; fn(3,:) = fz;
-                fn = reshape(fn,fs);
+        function W = parallelTransport(X,Y,V,t)
+            if nargin<4
+                t=1;
+            end
+            if this.useMex
+               SnParalleltransport(X,Y,V,t)
             else
-                %Good Idea?
-                fn = f + nthroot(sigma,this.ItemSize)*ones(size(f));
-                fn = fn./repmat(sqrt(sum(fn.^2,1)),[this.ItemSize,ones(1,length(size(f)))]);
+                % Parallel Transport the vector V from TxM to TyM
+                %
+                % directinal part that changes
+                sV = size(V);
+                dir = t.*this.log(X,Y);
+                scp = sum(dir.*V,1);
+                % substract V-part (scp*dir) and add the negative direction 
+                W = V - repmat(scp,[this.ItemSize,ones(1,sV(2:end))]).*(dir+this.log(Y,X));
             end
         end
     end
     methods (Access = private)
-        function G = gradX(this,X,Y,Z)
-%            if this.useMex && (this.ItemSize==3)
-%                G = SnGradX(X,Y,Z);
-%            else
+        function G = grad_X_D2(this,X,Y,Z)
+            if this.useMex
+                G = SnGrad_X_D2(X,Y,Z);
+            else
                 l = size(X,2);
                 m = this.exp(X, this.log(X,Z)./2);
                 % Common directions to middle points y
@@ -321,20 +320,31 @@ classdef Sn < manifold & handle
                 normr = permute(sqrt(sum(r.^2,1)),[2:length(size(r)),1]);
                 % Grad X
                 V = this.TpMONB(m,Z);
-                W = this.TpMONB(X,Z);
+                % Instead of
+                % W = this.TpMONB(X,Z);
+                % we have would have to use PT
+                % W = this.ParallelTransport(m,X,V);
+                % but we can also just adapt the first column, because the
+                % rest stays as it is
+                W = V;
+                W(:,:,1) = this.log(p_,q_);
+                normsw = sqrt(sum(W(:,:,1).^2,1));
+                W(:,normsw>eps,1) = W(:,normsw>eps,1)./repmat(normsw(normsw>eps),[this.ItemSize,1,1]);
                 alpha = zeros(l,this.ItemSize-1);
                 if any(normr>eps)
                     alpha(normr>eps,:) = sum(...
                         repmat(r(:,normr>eps),[1,1,this.ItemSize-1]).*...
                         V(:,normr>eps,:)./repmat(permute(normr(normr>eps),[2,1]),[this.ItemSize,1,this.ItemSize-1]),1);
                 end
+                % and even inplace, i.e. we rename the basis at M (W) also
+                % to V
                 G = W(:,:,1).*repmat(0.5*permute(alpha(:,1),[2,1]),[this.ItemSize,1]) ...
-                    + W(:,:,2:this.ItemSize-1).*...
+                    + sum(W(:,:,2:this.ItemSize-1).*...
                     repmat(...
-                    repmat(1./(2*cos(permute(this.dist(X,Z)./2,[3,1,2]))),[1,this.ItemSize-2]).*...
-                    permute(alpha(:,2:this.ItemSize-1),[2,1]),...
-                    [this.ItemSize,1,1]);
- %           end
+                    repmat(permute( 1./(2*cos(this.dist(X,Z)./2)) ,[3,1,2]),[1,1,this.ItemSize-2]).*...
+                    permute(alpha(:,2:this.ItemSize-1),[3,1,2]),...
+                    [this.ItemSize,1,1]),3);
+            end
         end
         function d = localDist(~,p,q)
             if ( size(p,2) > 1) && (size(q,2) > 1) %both nonsingleton
@@ -398,7 +408,7 @@ classdef Sn < manifold & handle
             % OUTPUT
             %    V : basiscolumn matrice(s)
             % ---
-            % ManImRes 1.0, R. Bergmann ~ 2014-10-19, last edit: 2014-10-23
+            % Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann ~ 2014-10-19, last edit: 2014-10-23
             if isrow(p)
                 p_=p';
             else
@@ -421,7 +431,7 @@ classdef Sn < manifold & handle
                         % The remaining Tangential vectors are the orthogonal
                         % to p(:,col) and V(:,col,1), i.e. the nullspace of the
                         % matrix p V V ... V
-                        V(:,col,2:this.ItemSize-1) = null([p_(:,col), repmat(V(:,col,1),[1,this.ItemSize-1])]);
+                        V(:,col,2:this.ItemSize-1) = null([p_(:,col), V(:,col,1)].');
                     end
                 end
             end

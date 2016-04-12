@@ -5,7 +5,7 @@
  * symmetric posivive definte matrices.
  *
  * ---
- * Manifold Valued Image Restoration 1.0
+ * Manifold-valued Image Restoration Toolbox 1.0
  * R. Bergmann ~ 2015-04-12
  */
 #include "mex.h"
