@@ -1,4 +1,4 @@
- --- Logfile of Experiment S1-syntheticSignalN500 started 26-Mar-2016 21:42:48 ---
+ --- Logfile of Experiment S1-syntheticSignalN500 started 13-Apr-2016 17:40:12 ---
 Using File Data generated 06-Dec-2015 11:00:22.
 - TV1&2 Minimization by CPPA, alpha=0.75, beta=0 -
 Timer started for Cyclic proximal point algorithm on manifolds
@@ -7,7 +7,7 @@ i=2000 where lastdiff is 3.8817e-06 and lambdait=0.0015708
 i=3000 where lastdiff is 1.8112e-06 and lambdait=0.0010472
 i=4000 where lastdiff is 1.0443e-06 and lambdait=0.0007854
 Timer stopped for Cyclic proximal point algorithm on manifolds.
-Computation for Cyclic proximal point algorithm on manifolds took 3.60166052 sec.
+Computation for Cyclic proximal point algorithm on manifolds took 2.95873322 sec.
 4000 iterations, last difference:1.0443e-06
 - TV1&2 Minimization by CPPA, alpha=0, beta=1.5 -
 Timer started for Cyclic proximal point algorithm on manifolds
@@ -16,7 +16,7 @@ i=2000 where lastdiff is 2.4914e-05 and lambdait=0.0015708
 i=3000 where lastdiff is 1.3725e-05 and lambdait=0.0010472
 i=4000 where lastdiff is 6.1746e-06 and lambdait=0.0007854
 Timer stopped for Cyclic proximal point algorithm on manifolds.
-Computation for Cyclic proximal point algorithm on manifolds took 5.52514362 sec.
+Computation for Cyclic proximal point algorithm on manifolds took 3.55327532 sec.
 4000 iterations, last difference:6.1746e-06
 - TV1&2 Minimization by CPPA, alpha=0.25, beta=0.5 -
 Timer started for Cyclic proximal point algorithm on manifolds
@@ -25,6 +25,6 @@ i=2000 where lastdiff is 7.8133e-06 and lambdait=0.0015708
 i=3000 where lastdiff is 4.3931e-06 and lambdait=0.0010472
 i=4000 where lastdiff is 2.5779e-06 and lambdait=0.0007854
 Timer stopped for Cyclic proximal point algorithm on manifolds.
-Computation for Cyclic proximal point algorithm on manifolds took 8.86554387 sec.
+Computation for Cyclic proximal point algorithm on manifolds took 5.46294130 sec.
 4000 iterations, last difference:2.5779e-06
- --- Logfile of Experiment S1-syntheticSignalN500 ended 26-Mar-2016 21:43:08 ---
+ --- Logfile of Experiment S1-syntheticSignalN500 ended 13-Apr-2016 17:40:25 ---

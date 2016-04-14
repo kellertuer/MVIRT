@@ -1,4 +1,4 @@
- --- Logfile of Experiment S1-HuberN500 started 25-Feb-2016 11:34:54 ---
+ --- Logfile of Experiment S1-HuberN500 started 13-Apr-2016 16:30:16 ---
 Using File Data generated 06-Dec-2015 11:00:22.
 i=1000 where lastdiff is 3.4853e-05 and lambdait=0.0031416
 i=2000 where lastdiff is 1.4187e-05 and lambdait=0.0015708
@@ -11,7 +11,12 @@ i=3000 where lastdiff is 0.063304 and lambdait=0.0010472
 i=4000 where lastdiff is 0.048204 and lambdait=0.0007854
 4000 iterations, last difference:0.048204
 RadialInpaint
-Initializing the Manifold-valued Image Restoration Toolbox Toolbox.
+Debug Level of LevelMin set to 0
+Debug Level of LevelMax set to 50
+Debug Level of time set to 3
+Debug Level of text set to 3
+Initializing the Manifold-valued Image Restoration Toolbox.
+Debug Level of LevelMin set to 0
 Debug Level of LevelMax set to 1000
 Debug Level of text set to 3
 Debug Level of IterationStep set to 10000

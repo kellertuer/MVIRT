@@ -1,4 +1,4 @@
- --- Logfile of Experiment sailboat on lake started 25-Feb-2016 11:50:26 ---
+ --- Logfile of Experiment sailboat on lake started 13-Apr-2016 16:35:13 ---
 Using File Data generated 06-Dec-2015 11:00:22.
 Timer started for Cyclic proximal point algorithm on manifolds
 i=100 where lastdiff is 0.031934 and lambdait=0.031416
@@ -42,7 +42,7 @@ i=3800 where lastdiff is 0.0098742 and lambdait=0.00082673
 i=3900 where lastdiff is 0.0061572 and lambdait=0.00080554
 i=4000 where lastdiff is 0.0049174 and lambdait=0.0007854
 Timer stopped for Cyclic proximal point algorithm on manifolds.
-Computation for Cyclic proximal point algorithm on manifolds took 1864.59912678 sec.
+Computation for Cyclic proximal point algorithm on manifolds took 1826.49789187 sec.
 4000 iterations, last difference:0.0049174
 Timer started for Cyclic proximal point algorithm on manifolds
 i=100 where lastdiff is 0.0034674 and lambdait=0.031416
@@ -86,6 +86,6 @@ i=3800 where lastdiff is 4.2889e-05 and lambdait=0.00082673
 i=3900 where lastdiff is 4.1438e-05 and lambdait=0.00080554
 i=4000 where lastdiff is 4.0052e-05 and lambdait=0.0007854
 Timer stopped for Cyclic proximal point algorithm on manifolds.
-Computation for Cyclic proximal point algorithm on manifolds took 1220.83692628 sec.
+Computation for Cyclic proximal point algorithm on manifolds took 1449.25184463 sec.
 4000 iterations, last difference:4.0052e-05
- --- Logfile of Experiment sailboat on lake ended 25-Feb-2016 12:41:54 ---
+ --- Logfile of Experiment sailboat on lake ended 13-Apr-2016 17:29:50 ---

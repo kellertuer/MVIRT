@@ -1,4 +1,4 @@
- --- Logfile of Experiment PhaseSpiral started 25-Feb-2016 16:09:39 ---
+ --- Logfile of Experiment PhaseSpiral started 13-Apr-2016 17:29:52 ---
 Timer started for Cyclic proximal point algorithm on manifolds
 i=100 where lastdiff is 0.0021832 and lambdait=0.015708
 i=200 where lastdiff is 0.0035321 and lambdait=0.007854
@@ -8,7 +8,7 @@ i=500 where lastdiff is 0.00010155 and lambdait=0.0031416
 i=600 where lastdiff is 0.0052447 and lambdait=0.002618
 i=700 where lastdiff is 0.0010063 and lambdait=0.002244
 Timer stopped for Cyclic proximal point algorithm on manifolds.
-Computation for Cyclic proximal point algorithm on manifolds took 70.88713313 sec.
+Computation for Cyclic proximal point algorithm on manifolds took 57.72440615 sec.
 700 iterations, last difference:0.0010063
 Timer started for Cyclic proximal point algorithm on manifolds
 i=100 where lastdiff is 0.0022203 and lambdait=0.015708
@@ -19,6 +19,6 @@ i=500 where lastdiff is 0.00032537 and lambdait=0.0031416
 i=600 where lastdiff is 0.00026952 and lambdait=0.002618
 i=700 where lastdiff is 0.00023004 and lambdait=0.002244
 Timer stopped for Cyclic proximal point algorithm on manifolds.
-Computation for Cyclic proximal point algorithm on manifolds took 30.24641498 sec.
+Computation for Cyclic proximal point algorithm on manifolds took 23.91937122 sec.
 700 iterations, last difference:0.00023004
- --- Logfile of Experiment PhaseSpiral ended 25-Feb-2016 16:11:22 ---
+ --- Logfile of Experiment PhaseSpiral ended 13-Apr-2016 17:31:14 ---

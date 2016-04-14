@@ -1,4 +1,4 @@
- --- Logfile of Experiment S1-syntheticSARImageN256 started 29-Feb-2016 16:09:31 ---
+ --- Logfile of Experiment S1-syntheticSARImageN256 started 13-Apr-2016 17:31:16 ---
 Using File Data generated 06-Dec-2015 11:00:22.
 Timer started for Cyclic proximal point algorithm on manifolds
 i=1000 where lastdiff is 1.0216e-05 and lambdait=0.0031416
@@ -6,7 +6,7 @@ i=2000 where lastdiff is 3.2148e-06 and lambdait=0.0015708
 i=3000 where lastdiff is 1.5672e-06 and lambdait=0.0010472
 i=4000 where lastdiff is 9.975e-07 and lambdait=0.0007854
 Timer stopped for Cyclic proximal point algorithm on manifolds.
-Computation for Cyclic proximal point algorithm on manifolds took 105.71755404 sec.
+Computation for Cyclic proximal point algorithm on manifolds took 98.76860107 sec.
 4000 iterations, last difference:9.975e-07
 On 0.375        0.25           0           0           0           0           0 the error is ME:0.007235467
 Timer started for Cyclic proximal point algorithm on manifolds
@@ -15,7 +15,7 @@ i=2000 where lastdiff is 4.1613e-06 and lambdait=0.0015708
 i=3000 where lastdiff is 2.292e-06 and lambdait=0.0010472
 i=4000 where lastdiff is 1.5108e-06 and lambdait=0.0007854
 Timer stopped for Cyclic proximal point algorithm on manifolds.
-Computation for Cyclic proximal point algorithm on manifolds took 229.07096286 sec.
+Computation for Cyclic proximal point algorithm on manifolds took 222.34028303 sec.
 4000 iterations, last difference:1.5108e-06
 On 0           0           0           0       0.125       0.125       0.125 the error is ME:0.006479875
 Timer started for Cyclic proximal point algorithm on manifolds
@@ -24,7 +24,7 @@ i=2000 where lastdiff is 5.4672e-06 and lambdait=0.0015708
 i=3000 where lastdiff is 2.7793e-06 and lambdait=0.0010472
 i=4000 where lastdiff is 1.638e-06 and lambdait=0.0007854
 Timer stopped for Cyclic proximal point algorithm on manifolds.
-Computation for Cyclic proximal point algorithm on manifolds took 275.24788252 sec.
+Computation for Cyclic proximal point algorithm on manifolds took 212.47223203 sec.
 4000 iterations, last difference:1.638e-06
 On 0.25       0.125           0           0       0.125       0.125           0 the error is ME:0.005212811
- --- Logfile of Experiment S1-syntheticSARImageN256 ended 29-Feb-2016 16:19:44 ---
+ --- Logfile of Experiment S1-syntheticSARImageN256 ended 13-Apr-2016 17:40:11 ---
