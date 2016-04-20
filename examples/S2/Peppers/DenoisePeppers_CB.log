@@ -1,0 +1,105 @@
+ --- Logfile of Experiment DenoisePeppers_CB started 18-Apr-2016 19:38:16 ---
+Using File Data generated 08-May-2015 09:12:32.
+problem = 
+          Epsilon: 0
+    MaxIterations: 400
+              tau: 1
+           lambda: 1.5708
+                M: [1x1 Sn]
+                f: [3x512x512 double]
+            alpha: [0.0469 0.0469 0 0]
+             beta: 0
+ans = 
+  <a href="matlab:helpPopup Sn" style="font-weight:bold">Sn</a> with properties:
+
+        type: 'The 2-sphere in R3'
+         tau: 0.0100
+       steps: 5
+    ItemSize: 3
+      useMex: 1
+ans =
+     0     0
+ans =
+    0.0938         0
+[Warning: Key 'Cyclic proximal point algorithm on manifolds' already in use for a running time measurement; restarting timer.] 
+[> In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('debug', '/Users/bergmann/Dropbox/Repositories/MVIRT/debug/debug.m', 61)" style="font-weight:bold">debug</a> (<a href="matlab: opentoline('/Users/bergmann/Dropbox/Repositories/MVIRT/debug/debug.m',61,0)">line 61</a>)
+  In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('cppa_ad_2D', '/Users/bergmann/Dropbox/Repositories/MVIRT/algorithms/cppa_ad_2D.m', 213)" style="font-weight:bold">cppa_ad_2D</a> (<a href="matlab: opentoline('/Users/bergmann/Dropbox/Repositories/MVIRT/algorithms/cppa_ad_2D.m',213,0)">line 213</a>)
+  In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('PeppersCB', '/Users/bergmann/Dropbox/Repositories/MVIRT/examples/S2/PeppersCB.m', 120)" style="font-weight:bold">PeppersCB</a> (<a href="matlab: opentoline('/Users/bergmann/Dropbox/Repositories/MVIRT/examples/S2/PeppersCB.m',120,0)">line 120</a>)] 
+Timer started for Cyclic proximal point algorithm on manifolds
+<a href="matlab: opentoline('/Users/bergmann/Dropbox/Repositories/MVIRT/algorithms/cppa_ad_2D.m',374,1)">374 </a>    if mod(i,getDebugLevel('IterationStep'))==0
+if system_dependent('IsDebugMode')==1, dbstep; end
+getDebugLevel('IterationStep'
+ getDebugLevel('IterationStep'
+                              
+{Error: Expression or statement is incorrect--possibly unbalanced (, {, or [.
+} 
+getDebugLevel('IterationStep')
+ans =
+   100
+if system_dependent('IsDebugMode')==1, dbcont; end
+if system_dependent('IsDebugMode')==1, dbcont; end
+if system_dependent('IsDebugMode')==1, dbcont; end
+if system_dependent('IsDebugMode')==1, dbcont; end
+if system_dependent('IsDebugMode')==1, dbcont; end
+if system_dependent('IsDebugMode')==1, dbcont; end
+if system_dependent('IsDebugMode')==1, dbcont; end
+i=100 where lastdiff is 8.4036e-05 and lambdait=0.015708
+i=200 where lastdiff is 2.1154e-05 and lambdait=0.007854
+i=300 where lastdiff is 9.424e-06 and lambdait=0.005236
+i=400 where lastdiff is 5.3073e-06 and lambdait=0.003927
+Timer stopped for Cyclic proximal point algorithm on manifolds.
+Computation for Cyclic proximal point algorithm on manifolds took 832.92968655 sec.
+400 iterations, last difference:5.3073e-06
+Timer started for Cyclic proximal point algorithm on manifolds
+i=100 where lastdiff is 0.00014815 and lambdait=0.015708
+i=200 where lastdiff is 3.8309e-05 and lambdait=0.007854
+i=300 where lastdiff is 1.7708e-05 and lambdait=0.005236
+i=400 where lastdiff is 1.1023e-05 and lambdait=0.003927
+Timer stopped for Cyclic proximal point algorithm on manifolds.
+Computation for Cyclic proximal point algorithm on manifolds took 73.94964678 sec.
+400 iterations, last difference:1.1023e-05
+Elapsed time is 907.031962 seconds.
+New optimal PSNR:27.0845.
+New optimal PSNR for TV1:27.0845.
+ans =
+         0    0.4690
+Timer started for Cyclic proximal point algorithm on manifolds
+i=100 where lastdiff is 1.5352e-05 and lambdait=0.015708
+i=200 where lastdiff is 4.5181e-06 and lambdait=0.007854
+i=300 where lastdiff is 2.9199e-06 and lambdait=0.005236
+i=400 where lastdiff is 1.8952e-06 and lambdait=0.003927
+Timer stopped for Cyclic proximal point algorithm on manifolds.
+Computation for Cyclic proximal point algorithm on manifolds took 42807.86520558 sec.
+400 iterations, last difference:1.8952e-06
+Timer started for Cyclic proximal point algorithm on manifolds
+i=100 where lastdiff is 0.00088703 and lambdait=0.015708
+i=200 where lastdiff is 0.00033928 and lambdait=0.007854
+i=300 where lastdiff is 0.00018394 and lambdait=0.005236
+i=400 where lastdiff is 0.00012703 and lambdait=0.003927
+Timer stopped for Cyclic proximal point algorithm on manifolds.
+Computation for Cyclic proximal point algorithm on manifolds took 150.81649048 sec.
+400 iterations, last difference:0.00012703
+Elapsed time is 42958.746710 seconds.
+PSNR:21.7007.
+ans =
+    0.0938    0.4690
+Timer started for Cyclic proximal point algorithm on manifolds
+i=100 where lastdiff is 9.9487e-05 and lambdait=0.015708
+i=200 where lastdiff is 2.5001e-05 and lambdait=0.007854
+i=300 where lastdiff is 1.161e-05 and lambdait=0.005236
+i=400 where lastdiff is 6.7158e-06 and lambdait=0.003927
+Timer stopped for Cyclic proximal point algorithm on manifolds.
+Computation for Cyclic proximal point algorithm on manifolds took 32237.68197487 sec.
+400 iterations, last difference:6.7158e-06
+Timer started for Cyclic proximal point algorithm on manifolds
+i=100 where lastdiff is 0.00095041 and lambdait=0.015708
+i=200 where lastdiff is 0.00031217 and lambdait=0.007854
+i=300 where lastdiff is 0.000168 and lambdait=0.005236
+i=400 where lastdiff is 0.0001213 and lambdait=0.003927
+Timer stopped for Cyclic proximal point algorithm on manifolds.
+Computation for Cyclic proximal point algorithm on manifolds took 212.53461392 sec.
+400 iterations, last difference:0.0001213
+Elapsed time is 32450.631328 seconds.
+PSNR:25.0805.
+Best PSNR27.0845 obtained for 0.0938           0.
+Best PSNR for TV1 27.0845 obtained for 0.0938.

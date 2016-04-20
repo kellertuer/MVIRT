@@ -1,0 +1,70 @@
+ --- Logfile of Experiment DenoisePeppers_HSV1 started 23-Mar-2016 08:20:24 ---
+Using File Data generated 08-May-2015 09:12:32.
+problem = 
+          Epsilon: 1.0000e-09
+    MaxIterations: 400
+           lambda: 1.5708
+                M: [1x1 S1mRn]
+                f: [3x512x512 double]
+            alpha: [0.0938 0.0938 0 0]
+             beta: 0.0156
+ans = 
+  <a href="matlab:helpPopup S1mRn" style="font-weight:bold">S1mRn</a> with properties:
+
+           type: 'S1R2'
+    SComponents: [1 0 0]
+    RComponents: [0 1 1]
+       ItemSize: 3
+         useMex: 1
+ans =
+    0.3927         0
+Timer started for Cyclic proximal point algorithm on manifolds
+i=100 where lastdiff is 0.0099045 and lambdait=0.015708
+i=200 where lastdiff is 0.0068674 and lambdait=0.007854
+i=300 where lastdiff is 0.0033736 and lambdait=0.005236
+i=400 where lastdiff is 0.0024574 and lambdait=0.003927
+Timer stopped for Cyclic proximal point algorithm on manifolds.
+Computation for Cyclic proximal point algorithm on manifolds took 204.51606654 sec.
+400 iterations, last difference:0.0024574
+Elapsed time is 204.624214 seconds.
+New optimal PSNR:27.0732.
+New optimal PSNR for TV1:27.0732.
+ans =
+    0.5890         0
+Timer started for Cyclic proximal point algorithm on manifolds
+i=100 where lastdiff is 0.017544 and lambdait=0.015708
+i=200 where lastdiff is 0.0015149 and lambdait=0.007854
+i=300 where lastdiff is 0.00038997 and lambdait=0.005236
+i=400 where lastdiff is 0.00015579 and lambdait=0.003927
+Timer stopped for Cyclic proximal point algorithm on manifolds.
+Computation for Cyclic proximal point algorithm on manifolds took 188.75752185 sec.
+400 iterations, last difference:0.00015579
+Elapsed time is 188.800762 seconds.
+New optimal PSNR:28.0233.
+New optimal PSNR for TV1:28.0233.
+ans =
+    0.3927    0.1963
+Timer started for Cyclic proximal point algorithm on manifolds
+i=100 where lastdiff is 0.010987 and lambdait=0.015708
+i=200 where lastdiff is 0.004507 and lambdait=0.007854
+i=300 where lastdiff is 0.00050832 and lambdait=0.005236
+i=400 where lastdiff is 0.00020427 and lambdait=0.003927
+Timer stopped for Cyclic proximal point algorithm on manifolds.
+Computation for Cyclic proximal point algorithm on manifolds took 646.59369755 sec.
+400 iterations, last difference:0.00020427
+Elapsed time is 646.649356 seconds.
+New optimal PSNR:28.456.
+ans =
+    0.5890    0.1963
+Timer started for Cyclic proximal point algorithm on manifolds
+i=100 where lastdiff is 0.0037144 and lambdait=0.015708
+i=200 where lastdiff is 0.0015004 and lambdait=0.007854
+i=300 where lastdiff is 0.00051695 and lambdait=0.005236
+i=400 where lastdiff is 0.0027858 and lambdait=0.003927
+Timer stopped for Cyclic proximal point algorithm on manifolds.
+Computation for Cyclic proximal point algorithm on manifolds took 654.58738912 sec.
+400 iterations, last difference:0.0027858
+Elapsed time is 654.697700 seconds.
+PSNR:28.0541.
+Best PSNR28.456 obtained for 0.3927     0.19635.
+Best PSNR for TV1 28.0233 obtained for 0.58905.
