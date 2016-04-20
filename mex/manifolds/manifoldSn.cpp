@@ -4,11 +4,11 @@
  * Small helper part for all SPD C++-functions used in the wrappers
  *
  * ---
- * Manifold-valued Image Restoration Toolbox 1.0
- * R. Bergmann ~ 2015-04-22
+ * ManImRes, R. Bergmann ~ 2015-04-22
  */
 #include "manifoldSn.h"
 #include "mex.h"
+#include <iostream>
 
 VectorXd mSnExp(VectorXd X, VectorXd V) {
     return mSnExp(X,V,1.0);

@@ -4,8 +4,7 @@
  * Wrapper for the gradient in X of the second order differences of SPD matrices
  * 
  * ---
- * Manifold-valued Image Restoration Toolbox 1.0
- * R. Bergmann ~ 2015-04-12
+ * ManImRes, R. Bergmann ~ 2015-04-12
  */
 #include "mex.h"
 #include "math.h"
@@ -77,7 +76,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
                 lZ(j,k) = IZ[j + ItemSize*k + ItemSize*ItemSize*i];
             }
         }
-        lG = mSPDGradX(lX,lY,lZ);
+        lG = mSPDGrad_X_D2(lX,lY,lZ);
         for (j=0; j<ItemSize; j++) {
             for (k=0; k<ItemSize; k++) {
                 //Extract copy back to result V

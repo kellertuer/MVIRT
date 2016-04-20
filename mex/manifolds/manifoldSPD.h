@@ -3,7 +3,7 @@
  * Manifold functions of Symmetric positive definite matrices, elementary,
  *not working with vectors/arrays of matrices, in Eigen-Library notation for convenience
  * ---
- * Manifold-Valued Image Restoration Toolbox 1.0 ~ R. Bergmann, 2015-04-12
+ * ManImRes ~R. Bergmann, 2015-04-12
  */
 #ifndef MANIFOLDSPD_H
 #define MANIFOLDSPD_H
@@ -42,6 +42,12 @@ MatrixXd mSPDGrad_X_D2(MatrixXd X, MatrixXd Y, MatrixXd Z);
  * INPUT: X,Y,Z points (SPDs)
  * OUTPUT: Direction of the gradient of the second order difference at X.
  */
+MatrixXd mSPDGrad_X_D2_Sq(MatrixXd X, MatrixXd Y, MatrixXd Z);
+/* compute the gradient w.r.t. to X 
+ * INPUT: X,Y,Z points (SPDs)
+ * OUTPUT: Direction of the gradient of the squared second order difference at X.
+ */
+
 MatrixXd mSPDParallelTransport(MatrixXd X, MatrixXd Y, MatrixXd V);
 MatrixXd mSPDParallelTransport(MatrixXd X, MatrixXd Y, MatrixXd V, double t);
 

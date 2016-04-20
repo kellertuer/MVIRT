@@ -42,6 +42,36 @@ MatrixXd mSPDExp(MatrixXd X, MatrixXd V,double t) {
     }
     return Y;
 }
+MatrixXd mSPDExpAtId(MatrixXd X, MatrixXd V,double t) {
+    int ItemSize = X.rows();
+    int i;
+    JacobiSVD<MatrixXd> svd;
+    EigenSolver<MatrixXd> eig;
+    if (ItemSize != X.cols())
+        return MatrixXd::Zero(1,1);
+    MatrixXd Y(ItemSize,ItemSize);
+    MatrixXd S(ItemSize,ItemSize), U(ItemSize,ItemSize), Xsqrt(ItemSize,ItemSize), lY(ItemSize,ItemSize);
+    if ( (X.isZero()) || (V.isZero()) || (t==0) )
+        Y = X;
+    else {
+        svd = JacobiSVD<MatrixXd>(X, ComputeFullU);
+        S = DiagonalMatrix<double,Dynamic,Dynamic>(svd.singularValues());
+        for (i=0; i<ItemSize; i++)
+            S(i,i) = sqrt(S(i,i));
+        U = svd.matrixU();
+        Xsqrt = U*S*U.transpose();
+        for (i=0; i<ItemSize; i++)
+            S(i,i) = 1/S(i,i);
+        lY = t*V; 
+        eig = EigenSolver<MatrixXd>(0.5*(lY+lY.transpose()), true);
+        S = eig.pseudoEigenvalueMatrix();
+        U = eig.pseudoEigenvectors();
+        for (i=0; i<ItemSize; i++)
+            S(i,i) = exp(S(i,i));
+        Y = Xsqrt*U*S*U.transpose()*Xsqrt;
+    }
+    return Y;
+}
 MatrixXd mSPDLog(MatrixXd X, MatrixXd Y) {
     int ItemSize = X.rows();
     int i;
@@ -70,6 +100,35 @@ MatrixXd mSPDLog(MatrixXd X, MatrixXd Y) {
             S(i,i) = log(S(i,i));
     U = svd.matrixU();
     return Xsqrt*U*S*U.transpose()*Xsqrt;
+}
+MatrixXd mSPDLogAtId(MatrixXd X, MatrixXd Y) {
+    int ItemSize = X.rows();
+    int i;
+    JacobiSVD<MatrixXd> svd;
+    EigenSolver<MatrixXd> eig;
+    if (ItemSize != X.cols())
+        return MatrixXd::Zero(1,1);
+    MatrixXd V(ItemSize,ItemSize);
+    MatrixXd S(ItemSize,ItemSize), U(ItemSize,ItemSize), XsqrtInv(ItemSize,ItemSize), lV(ItemSize,ItemSize);
+    if ( (X.isZero()) || (Y.isZero()) )
+        return MatrixXd::Zero(ItemSize,ItemSize);
+    svd = JacobiSVD<MatrixXd>(X, ComputeFullU);
+    S = DiagonalMatrix<double,Dynamic,Dynamic>(svd.singularValues());
+    for (i=0; i<ItemSize; i++)
+        S(i,i) = 1/sqrt(S(i,i));
+    U = svd.matrixU();
+    XsqrtInv = U*S*U.transpose();
+    // % V = Xsqrt * [ logm(U*diag(1./sqrt(diag(D)))*U'*Y*U*diag(1./sqrt(diag(D)))*U') * Xsqrt
+    for (i=0; i<ItemSize; i++)
+        S(i,i) = 1/S(i,i);
+    lV = XsqrtInv*Y*XsqrtInv;
+    // Is the following stable enough or do we need another svd?
+    svd.compute(0.5*(lV+lV.transpose()), ComputeFullU);
+    S = DiagonalMatrix<double,Dynamic,Dynamic>(svd.singularValues());
+    for (i=0; i<ItemSize; i++)
+            S(i,i) = log(S(i,i));
+    U = svd.matrixU();
+    return XsqrtInv*U*S*U.transpose()*XsqrtInv;
 }
 double mSPDDist(MatrixXd X, MatrixXd Y) {
     int ItemSize = X.rows();
@@ -208,6 +267,71 @@ MatrixXd mSPDGrad_X_D2(MatrixXd X, MatrixXd Y, MatrixXd Z) {
                 alpha = 0;
             else
                 alpha = mSPDDot(M,R,Wm)/r;
+             if ( lambda>0 ) // eigenvalue > 0
+                G = G + ( (sinh(lambda/2)/sinh(lambda)*alpha)*Wm);
+             else // eigenvalue 0
+                G = G + (0.5*alpha*Wm);
+        }
+    } //end running through all basis matrices W
+    return G;
+}
+
+MatrixXd mSPDGrad_X_D2_Sq(MatrixXd X, MatrixXd Y, MatrixXd Z) {
+    int ItemSize = X.rows();
+    if (ItemSize!=X.cols())
+        return MatrixXd::Zero(1,1);
+    int i=0,j=0,s=0;
+    int n = ItemSize*(ItemSize+1)/2;
+    double r=0, alpha=0,lambda=0;
+    JacobiSVD<MatrixXd> svd;
+    EigenSolver<MatrixXd> eig;
+    if (ItemSize != X.cols())
+        return MatrixXd::Zero(1,1);
+    MatrixXd G(ItemSize,ItemSize);
+    MatrixXd S(ItemSize,ItemSize), U(ItemSize,ItemSize), Xsqrt(ItemSize,ItemSize);
+    MatrixXd V(ItemSize,ItemSize), M(ItemSize,ItemSize);
+    MatrixXd Wx(ItemSize,ItemSize), Wm(ItemSize,ItemSize), R(ItemSize,ItemSize);
+    if ( (X.isZero() || Y.isZero() || Z.isZero() ) )
+        return MatrixXd::Zero(ItemSize,ItemSize);
+    M = mSPDExp(X,mSPDLog(X,Z)/2.0); //midpoint
+    //Compute one Jacobian Eigenframe in X and transport it to M
+    //...and its lambdas
+    V = mSPDLog(X,Z); //Starting point X->Z
+    svd = JacobiSVD<MatrixXd>(X, ComputeFullU);
+    S = DiagonalMatrix<double,Dynamic,Dynamic>(svd.singularValues());
+    for (i=0; i<ItemSize; i++)
+        S(i,i) = sqrt(S(i,i)); //X^{-1/2}
+    U = svd.matrixU();
+    Xsqrt = U*S*U.transpose();
+    for (i=0; i<ItemSize; i++)
+        S(i,i) = 1/S(i,i);
+    //called VE in matlab (loclEigenFrame)
+    // X^{-1/2}*V*X^{-1/2}
+    V = U*S*U.transpose()*V*U*S*U.transpose();
+    eig = EigenSolver<MatrixXd> (0.5*(V+V.transpose()),true);
+    S = eig.pseudoEigenvalueMatrix();
+    U = eig.pseudoEigenvectors();
+    // Compute all basis elements
+    R = mSPDLog(M,Y);
+    r = sqrt(mSPDDot(M,R,R));
+    // Init G;
+    G = MatrixXd::Zero(ItemSize,ItemSize);
+    for (i=0; i<ItemSize; i++) {
+        for (j=i; j<ItemSize; j++) {
+            //Compute sth eigenvalue based on i&j
+            lambda = abs((S(i,i) - S(j,j)));
+            //Compute corresponding basis element (matrix Wx)
+            if (i==j)
+                Wx = sqrt(0.5)*( U.col(i)*U.col(j).transpose() + U.col(j)*U.col(i).transpose() );
+            else
+                Wx = 0.5*( U.col(i)*U.col(j).transpose() + U.col(j)*U.col(i).transpose() );
+            Wx = Xsqrt*Wx*Xsqrt;
+            // Basis Vector in X, transport it to M
+            Wm = mSPDParallelTransport(X, M, Wx);
+            if ( r==0 )
+                alpha = 0;
+            else
+                alpha = 2*mSPDDot(M,R,Wm);
              if ( lambda>0 ) // eigenvalue > 0
                 G = G + ( (sinh(lambda/2)/sinh(lambda)*alpha)*Wm);
              else // eigenvalue 0

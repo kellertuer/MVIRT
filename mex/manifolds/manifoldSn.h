@@ -3,8 +3,7 @@
  * Manifold functions of Symmetric positive definite matrices, elementary,
  *not working with vectors/arrays of matrices, in Eigen-Library notation for convenience
  * ---
- * Manifold-valued Image Restoration Toolbox 1.0
- * R. Bergmann, 2015-04-12
+ * ManImRes ~R. Bergmann, 2015-04-12
  */
 #ifndef MANIFOLDSN_H
 #define MANIFOLDSN_H

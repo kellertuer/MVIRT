@@ -55,7 +55,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
             Y(j) = IY[j+ItemSize*i];
             Z(j) = IZ[j+ItemSize*i];
         }
-        G = mSnGradX(X,Y,Z);
+        G = mSnGrad_X_D2(X,Y,Z);
         for (j=0; j<ItemSize; j++) {
             OG[j + ItemSize*i] = G(j);
         }
