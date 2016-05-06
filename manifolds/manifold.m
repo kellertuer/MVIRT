@@ -145,7 +145,7 @@ classdef (Abstract) manifold < handle
             addRequired(ip,'x');
             addRequired(ip,'y');
             addParameter(ip,'pts',100);
-            addParameter(ip,'t',0:1/99:1);
+            addParameter(ip,'t',[]);
             parse(ip, varargin{:});
             vars = ip.Results;
             
@@ -163,7 +163,9 @@ classdef (Abstract) manifold < handle
             end
             if isvector(vars.t)
                 t = vars.t;
-                pts = length(t);             
+                pts = length(t);       
+            elseif isempty(vars.t)
+                t = 0:1/(pts-1):1;
             else
                error('t should be a vector'); 
             end

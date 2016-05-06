@@ -53,6 +53,7 @@ if (numel(vars.Colors)>0)
 end
 d = manDim(1);
 dataDim = dataDim(3:end);
+dataDim = [dataDim,ones(1,3-length(dataDim))];
 if length(vars.GridDistance)==1
     gD = vars.GridDistance*ones(1,3);
 elseif isempty(vars.GridDistance)
