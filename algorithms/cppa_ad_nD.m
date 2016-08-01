@@ -259,16 +259,15 @@ while ( (any(isnan(itD(:))) || (max(itD(~isnan(itD)))>=epsilon)) && (i<maxiter))
                 xshift = permute(x,p1); % shift manifold to first, l to second               
                 % (b) reshape to manifoldx2xRestsize(
                 % (c) permute 2 to third dim for easier proxes
-                problem.f = reshape(xshift(:,(l4+1):(2*mlt+l4),:),[prod(manDim),2,remnum*mlt]);
+                problem.f = reshape(xshift(:,(l4+1):(2*mlt+l4),:),[manDim,remnum*mlt,2]);
                 problem.lambda = alpha(l)*lambdait;
                 if useRegMask
-                    rMshift = permute(rM,p1(2:end)); %same shift in rM but ignoring manifold dimension
+                    rMshift = permute(rM,p1(2:end)-1); %same shift in rM but ignoring manifold dimension
                     problem.regMask = reshape(rMshift((l4+1):(2*mlt+l4),:),[2,remnum*mlt]);
                 end
-                problem.w = [-1,1];
+                problem.w = [-1,1]';
                 xshift(:,(l4+1):(2*mlt+l4),:) ... %1: manifold - keep, 2: difference dim - sub, 3-end keep in one
-                    = reshape(vars.M.proxad(problem),...
-                    [prod(manDim),mlt*2,remnum]); %reshape to l-dims, rest, manifold and shift manifold first again
+                    = reshape(vars.M.proxad(problem),[prod(manDim),mlt*2,remnum]); %reshape to l-dims, rest, manifold and shift manifold first again
                 x = permute(xshift,invp1); % undo shift from beginning of for loop
             end
         end
