@@ -290,21 +290,22 @@ classdef Sn < manifold & handle
             end
             fn = reshape(fn,fs);
         end
-        function W = parallelTransport(X,Y,V,t)
-            if nargin<4
+        function W = parallelTransport(this,X,Y,V,t)
+            if nargin<5
                 t=1;
             end
             if this.useMex
-               SnParalleltransport(X,Y,V,t)
+               W = SnParallelTransport(X,Y,V,t);
             else
                 % Parallel Transport the vector V from TxM to TyM
                 %
                 % directinal part that changes
                 sV = size(V);
                 dir = t.*this.log(X,Y);
+                dir = dir./repmat(sqrt(sum(dir.^2,1)),[3,ones(1,length(sV(2:end)))]);
                 scp = sum(dir.*V,1);
                 % substract V-part (scp*dir) and add the negative direction 
-                W = V - repmat(scp,[this.ItemSize,ones(1,sV(2:end))]).*(dir+this.log(Y,X));
+                W = V - repmat(scp,[this.ItemSize,ones(1,sV(2:end))]).*(dir+this.log(Y,X)./repmat(sqrt(sum(this.log(Y,X).^2,1)),[3,ones(1,length(sV(2:end)))]));
             end
         end
     end
