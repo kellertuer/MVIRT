@@ -85,7 +85,7 @@ classdef S1mRn < manifold & handle
             % Instead of the line above - for product manifolds we do the
             % following
             v = sign(v); %norm v in each factor of the product manifold
-            x = this.exp(g, lambda/(1+lambda).*t.*v);
+            x = this.exp(g, repmat(lambda./(1+lambda),[this.ItemSize,1]).*t.*v);
         end
         function d = dist(this,p,q,n)
             % dist(a,b) computes the length of the smaller arc of a,b on
