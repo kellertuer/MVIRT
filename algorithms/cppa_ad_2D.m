@@ -59,8 +59,11 @@ if (length(varargin)==1 && isstruct(varargin{1}))
     assert(all(isfield(vars,{'M','f','alpha','beta','lambda'})),'There are required input fields missing'); % at least required
     assert(isa(vars.M,'manifold'),'Input M is not a manifold');
     dimen = size(vars.f);
-    imgDim = dimen(end-1:end);
-    manDim = dimen(1:end-2);
+    manDim = dimen(1:length(vars.M.ItemSize));
+    imgDim = dimen(length(manDim)+1:end);
+    if all(size(imgDim) == [1 1])
+       imgDim = [imgDim,1]; 
+    end
     % Fill optionals
     useRegMask = isfield(vars,'RegMask');
     if ~useRegMask
@@ -158,8 +161,11 @@ else % Parse Variables and check input
     % N is the number of data points, k the dimension of the manifold, and they
     % are given as columns
     dimen = size(vars.f);
-    imgDim = dimen(end-1:end);
-    manDim = dimen(1:end-2);
+    manDim = dimen(1:length(vars.M.ItemSize));
+    imgDim = dimen(length(manDim)+1:end);
+    if all(size(imgDim) == [1 1])
+       imgDim = [imgDim,1]; 
+    end
     assert(all(manDim == vars.M.ItemSize),...
     ['Data Ite dimensions (',num2str(dimen(1:end-1))...
         ,' not consistent with manifold specification ',...
@@ -192,10 +198,6 @@ else % Parse Variables and check input
             useUnknownMask =true;
         end
     end
-%    if useRegMask&&useUnknownMask
-%        fixedAndUnknown = uM&(~rM);
-%        assert( ~any(fixedAndUnknown(:)), 'There exists at least one pixel that is unknown and fixed by the two masks, which is not allowed.');
-%    end
     evalFct = vars.EvalFct;
 end %end parser & checks
 % record l2TV & eps?
@@ -290,8 +292,8 @@ while ( (any(isnan(itD(:))) || (max(itD(~isnan(itD)))>=epsilon)) && (i<maxiter))
     %
     % Third: Second order differences
     for j=0:2
-        Nt = floor((imgDim(1)-j)/3);
-        Mt = floor((imgDim(2)-j)/3);
+        Nt = floor(abs(imgDim(1)-j)/3);
+        Mt = floor(abs(imgDim(2)-j)/3);
         % X
         if (beta(1) > 0)
             % (a) permute the subsampled dimension to second (most inner

@@ -5,12 +5,14 @@ classdef Rn < manifold & handle
     properties
         type='Rn';
         ItemSize;
+        Dimension;
     end
     
     methods
         function obj = Rn(n)
             obj.type = ['R',num2str(n)];
             obj.ItemSize = n;
+            obj.Dimension = n;
         end
         function q = exp(~,p,v)
             % exp(p,v) - Exponential map at the point p with respect to v in

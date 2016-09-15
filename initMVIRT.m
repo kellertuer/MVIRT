@@ -41,6 +41,13 @@ if vars.Make
     mex -I../include/eigen -Imanifolds SnLog.cpp manifolds/manifoldSn.cpp
     mex -I../include/eigen -Imanifolds SnParallelTransport.cpp manifolds/manifoldSn.cpp
     mex -I../include/eigen -Imanifolds SnGrad_X_D2.cpp manifolds/manifoldSn.cpp
+    % Hyperbolic space
+    disp('--- Compiling Hyperbolic Space functions ---');
+    mex -I../include/eigen -Imanifolds HnDist.cpp manifolds/manifoldHn.cpp
+    mex -I../include/eigen -Imanifolds HnDot.cpp manifolds/manifoldHn.cpp
+    mex -I../include/eigen -Imanifolds HnExp.cpp manifolds/manifoldHn.cpp
+    mex -I../include/eigen -Imanifolds HnLog.cpp manifolds/manifoldHn.cpp
+    mex -I../include/eigen -Imanifolds HnMean.cpp manifolds/manifoldHn.cpp
     % SPD
     disp('--- Compiling SymPosDef functions ---');
     mex -I../include/eigen -Imanifolds SPDDist.cpp manifolds/manifoldSPD.cpp

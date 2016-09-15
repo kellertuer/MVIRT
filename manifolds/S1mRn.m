@@ -2,7 +2,10 @@ classdef S1mRn < manifold & handle
     % The product manifold of combined cyclic and real valued data, i.e.
     % (S^1)^n x R^m, so its an k=n+m dimensional space
     % ---
-    % Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann ~2014-10-22
+    % ---
+    % Manifold-valued Image Restoration Toolbox 1.1
+    % R. Bergmann ~ 2014-10-22 | 2016-09-15
+    % see LICENSE.txt
     properties
         % Binary vectors indicating S and R components of lenthg of the
         % whole space dimension
@@ -10,7 +13,7 @@ classdef S1mRn < manifold & handle
         SComponents;
         RComponents;
         ItemSize;
-        
+        Dimension;
     end
     
     methods
@@ -28,24 +31,39 @@ classdef S1mRn < manifold & handle
                 obj.type = ['S',num2str(m),'R',num2str(n)];
             end
             obj.ItemSize = length(obj.SComponents);
+            obj.Dimension = obj.ItemSize;
         end
-        function q = exp(this,p,v)
+        function q = exp(this,p,v,t)
             % exp(p,v) - Exponential map at the point p with respect to v in
             % TpM on S1.
             %
             % INPUT
             %   p : a point or set (columns) of points on the manifold SnRm
             %   v : a point or set (columns) of point in the tangential spaces TpM
-            %
+            % OPTIONAL
+            %   t : [] following the geodesics for one time step
+            %       a scalar following the geodesics for time t
+            %       a set of t following each geodesic_i for time t_i
             % OUTPUT
             %   q : resulting point(s) on SnRm
             % ---
-            % Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann ~ 2014-10-26
+            % ManImRes 1.0, R. Bergmann ~ 2014-10-26
+            dimen = size(p);
+            if nargin < 4
+                t = 1;
+            end
+            if ~isscalar(t)
+                assert(all(dimen(2:end)==size(t)),'t has to match data dimeension');
+            end
             assert(all(size(p)==size(v)),'p and q have to be of same size');
             assert( (size(p,1)==this.ItemSize) && (size(v,1)==this.ItemSize), ...
                 'The manifold dimension of either p or v is wrong');
             p_ = reshape(p,this.ItemSize,[]);
-            v_ = reshape(v,this.ItemSize,[]);
+            if isscalar(t)
+            v_ = t*reshape(v,this.ItemSize,[]);
+            else
+                v_ = reshape(repmat(permute(t,[length(dimen),1:length(dimen)-1]),[this.ItemSize,ones(1,length(dimen)-1)]).*v,this.ItemSize,[]);
+            end
             q = v_+p_;
             q(this.SComponents,:) = symMod(q(this.SComponents,:),2*pi);
             q = reshape(q,size(p));
@@ -245,6 +263,51 @@ classdef S1mRn < manifold & handle
             fn = reshape(fn,this.ItemSize,[]);
             fn(this.SComponents,:) = symMod(fn(this.SComponents,:),2*pi);
             fn = reshape(fn,size(f));
+        end
+        function ds = dot(this,P,V,W)
+            % Sm1Rn.dot(P,V,W)
+            %     Compute the inner product of two tangent vectors in T_P M
+            %
+            % INPUT
+            %     X  : a point(Set) in P(n)
+            %     V  : a first tangent vector( set) to (each) X
+            %     W  : a secod tangent vector( set) to (each) X
+            %
+            % OUTPUT
+            %     ds : the corresponding value(s) of the inner product of (each triple) V,W at X
+            %
+            % ---
+            % MVIRT 1.1, J. Persch 2016-06-13
+            %
+            dimen = size(P);
+            if all(size(V) == dimen & size(W) == dimen)
+                ds = permute(sum(V.*W,1),[2:length(dimen),1]);
+            else
+                error('Dimensions of Input must coincide')
+            end
+        end
+        function V = TpMONB(this,p)
+            % V = TpMONB(p,q)
+            % Compute an ONB in TpM, where the first vector points to q,
+            % whin given.
+            %
+            % INPUT
+            %     p : base point( sets)
+            % OPTIONAL:
+            %     q : directional indicator( sets) for the first vector(s).
+            %
+            % OUTPUT
+            %    V : basiscolumn matrice(s)
+            % ---
+            % MVIRT 1.1, J. Persch 2016-06-24
+            if isrow(p)
+                p_=p';
+            else
+                p_=p;
+            end
+            dimen = size(p_);
+            V = permute(eye(this.Dimension),[1,3:length(dimen)+1,2]);
+            V = repmat(V,[1,dimen(2:end),1]);
         end
     end
 end

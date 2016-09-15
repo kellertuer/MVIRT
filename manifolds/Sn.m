@@ -17,13 +17,15 @@ classdef Sn < manifold & handle
     properties
         type = '';
         tau = 0.01;
-        steps = 500;
+        steps = 10;
         ItemSize;
+        Dimension;
     end
     
     methods
         function obj = Sn(n)
             obj.ItemSize = n+1;
+            obj.Dimension = n;
             obj.type = ['The ',num2str(n),'-sphere in R',num2str(n+1)];
         end
         function q = exp(this,p,v,t)
@@ -33,6 +35,10 @@ classdef Sn < manifold & handle
             % INPUT
             %   p : a point or set of points on the manifold S2
             %   v : a point or set of point in the tangential spaces TpM
+            % OPTIONAL:
+            %   t : [] following the geodesics for one time step
+            %       a scalar following the geodesics for time t
+            %       a set of t following each geodesic_i for time t_i
             %
             % OUTPUT
             %   q : resulting point(s) on S2
@@ -139,7 +145,7 @@ classdef Sn < manifold & handle
             % OUTPUT
             %      x : resulting data of all proximal maps
             % ---
-            % Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann ~ 2014-10-19
+            % MVIRT 1.0, R. Bergmann ~ 2014-10-19
             if (length(varargin)==1 && isstruct(varargin{1})) %struct case
                 vars = varargin{1};
                 assert(all(isfield(vars,{'f','lambda','w'})),...
@@ -299,7 +305,7 @@ classdef Sn < manifold & handle
             else
                 % Parallel Transport the vector V from TxM to TyM
                 %
-                % directinal part that changes
+                % directional part that changes
                 sV = size(V);
                 dir = t.*this.log(X,Y);
                 dir = dir./repmat(sqrt(sum(dir.^2,1)),[3,ones(1,length(sV(2:end)))]);
@@ -307,6 +313,151 @@ classdef Sn < manifold & handle
                 % substract V-part (scp*dir) and add the negative direction 
                 W = V - repmat(scp,[this.ItemSize,ones(1,sV(2:end))]).*(dir+this.log(Y,X)./repmat(sqrt(sum(this.log(Y,X).^2,1)),[3,ones(1,length(sV(2:end)))]));
             end
+        end
+        function V = TpMONB(this,p,q)
+            % V = TpMONB(p,q)
+            % Compute an ONB in TpM, where the first vector points to q,
+            % whin given.
+            %
+            % INPUT
+            %     p : base point( sets)
+            % OPTIONAL:
+            %     q : directional indicator( sets) for the first vector(s).
+            %
+            % OUTPUT
+            %    V : basiscolumn matrice(s)
+            % ---
+            % MVIRT 1.0, R. Bergmann ~ 2014-10-19 | 2014-10-23
+            if isrow(p)
+                p_=p';
+            else
+                p_=p;
+            end
+            q_given = 0;
+            if nargin == 3
+                q_given =1;
+                if isrow(q)
+                    q_=q';
+                else
+                    q_=q;
+                end
+                V = zeros(this.ItemSize,size(p_,2),this.ItemSize-1);
+                V(:,:,1) = this.log(p_,q_);
+                normsv = sqrt(sum(V(:,:,1).^2,1));
+                V(:,normsv>eps,1) = V(:,normsv>eps,1)./repmat(normsv(normsv>eps),[this.ItemSize,1,1]);
+            else
+                V = zeros(this.ItemSize,size(p_,2),this.ItemSize-1);
+            end
+            if this.ItemSize==3 && q_given == 1%S2 -> cross
+                V(:,:,2) = cross( squeeze(V(:,:,1)), p_);
+            else
+                for col=1:size(V,2)
+                    if ~q_given || (normsv(col)>eps)
+                        % The remaining Tangential vectors are the orthogonal
+                        % to p(:,col) and V(:,col,1), i.e. the nullspace of the
+                        % matrix p V V ... V
+                        V(:,col,1+q_given:this.Dimension) = null([p_(:,col), V(:,col,1)].');
+                    end
+                end
+            end
+        end
+        function ds = dot(this,P,V,W)
+            % Sn.dot(P,V,W)
+            %     Compute the inner product of two tangent vectors in T_P M
+            %
+            % INPUT
+            %     X  : a point(Set) in P(n)
+            %     V  : a first tangent vector( set) to (each) X
+            %     W  : a secod tangent vector( set) to (each) X
+            %
+            % OUTPUT
+            %     ds : the corresponding value(s) of the inner product of (each triple) V,W at X
+            %
+            % ---
+            % MVIRT 1.0 ~ J. Persch 2016-06-13
+            dimen = size(P);
+            if all(size(V) == dimen & size(W) == dimen)
+                ds = permute(sum(V.*W,1),[2:length(dimen),1]);
+            else
+                error('Dimensions of Input must coincide')
+            end
+        end
+        function x = mean(this,varargin)
+            % mean(f) calculates the mean of the input data with a gradient
+            % descent algorithm. This implementation is based on
+            %
+            % B. Afsari, Riemannian Lp center of mass: Existence,
+            %    uniqueness, and convexity,
+            %    Proc. AMS 139(2), pp.655-673, 2011.
+            %
+            % INPUT
+            %    f :  m x n Data points ([this.Itemsize,m,n]) to compute
+            %         m means of n points each, pp.
+            % OUTPUT
+            %    x :  m data points of the means calculated
+            %
+            % OPTIONAL
+            % 'Weights' : (1/n*ones([m,n]) 1xn or mxn weights for the mean
+            %            the first case uses the same weights for all means
+            % 'InitVal' : m Initial Data points for the gradient descent 
+            % 'MaxIterations': Maximal Number of Iterations
+            % 'Epsilon'      : Maximal change before stopping
+            %
+            %
+            % MVIRT 1.0, J. Persch 2015-11-05
+           
+            ip = inputParser;
+            addRequired(ip,'f');
+            addParameter(ip,'Weights',NaN);
+            addParameter(ip,'InitVal',NaN);
+            addParameter(ip,'MaxIterations',50);
+            addParameter(ip,'Epsilon',10^-6);
+            parse(ip, varargin{:});
+            vars = ip.Results;
+            f = vars.f;
+            dims = size(f);
+            if length(dims) ~= length(this.ItemSize)+2
+                if all(dims(1:length(this.ItemSize)) == this.ItemSize) && length(dims)<length(this.ItemSize)+2
+                    x = f;
+                    return
+                end
+                error('f wrong size');
+            end
+            % shift manDim in first dimension
+            dim = size(f);
+            m = dim(end-1);
+            n = dim(end);
+            if isnan(vars.Weights)
+                w = 1/n*ones(m,n);
+            elseif isvector(vars.Weights)
+                w = vars.Weights(:)';
+                if length(w) ~=n
+                    error('length(w) does not match data points');
+                end
+                w = repmat(w,m,1);
+            else
+                w = vars.Weights;
+                if any(size(w) ~= [m,n])
+                    error('dim w do not match data points');
+                end
+            end          
+            if vars.Epsilon > 0
+                epsilon = vars.Epsilon;
+            else
+                warning('Epsilon should be larger than zero, set Epsilon to 10^-6')
+                epsilon = 10^-6;
+            end
+            if vars.MaxIterations > 0
+                iter = vars.MaxIterations;
+            else
+                warning('Iterations should be larger than zero, set Iterations to 100')
+                iter = 100;
+            end
+            if ~this.useMex || getDebugLevel('MatlabMean')==1
+                x=this.mean@manifold(f,'Weights',w,'Epsilon',epsilon,'MaxIterations',iter);
+            else            
+            x = SnMean(f,w,epsilon,iter);
+            end            
         end
     end
     methods (Access = private)
@@ -356,6 +507,10 @@ classdef Sn < manifold & handle
         function q = localExp(this,p_,v_,t)
             if nargin < 4
                 t=1;
+            elseif ~isscalar(t)
+                if size(p_) ~= [this.ItemSize,size(t)]
+                    error('t needs to be of same dimension as p_ and v_ or a scalar')
+                end
             end
             if (size(p_,1)~=this.ItemSize) || (size(v_,1)~=this.ItemSize)
                 error(['Both sets of vectors have to be vectors from R',num2str(this.ItemSize),'.']);
@@ -371,8 +526,14 @@ classdef Sn < manifold & handle
             q = p_;
             % only the nonzero vs are directional
             if any(normv>eps)
-                q(:,normv>eps) = p_(:,normv>eps).*repmat(cos(t*normv(normv>eps)),[this.ItemSize,1])...
-                    + v_(:,normv>eps).*repmat(sin(t*normv(normv>eps))./normv(normv>eps),[this.ItemSize,1]);
+                % if to save the repmat
+                if isscalar(t)
+                    q(:,normv>eps) = p_(:,normv>eps).*repmat(cos(t*normv(:,normv>eps)),[this.ItemSize,1])...
+                        + v_(:,normv>eps).*repmat(sin(t*normv(:,normv>eps))./normv(:,normv>eps),[this.ItemSize,1]);
+                else
+                    q(:,normv>eps) = p_(:,normv>eps).*repmat(cos(t(normv>eps).*normv(:,normv>eps)),[this.ItemSize,1])...
+                        + v_(:,normv>eps).*repmat(sin(t(normv>eps).*normv(:,normv>eps))./normv(:,normv>eps),[this.ItemSize,1]);
+                end
             end
         end
         function v = localLog(this,p_,q_)
@@ -380,6 +541,9 @@ classdef Sn < manifold & handle
             if any(all(size(p_)~=size(q_)))
                 error('p and q have to be of same size');
             end
+            dimen = size(p_);
+            p_ = reshape(p_,this.ItemSize,[]);
+            q_ = reshape(q_,this.ItemSize,[]);
             % Compute all scalar products of points p and q, secure, that
             % they are in -1,1 for numerical reasons
             % scp = shiftdim(min( max(bsxfun(@dot,p,q),-1), 1));
@@ -397,45 +561,7 @@ classdef Sn < manifold & handle
                     normw(1,cols)./scp(1,cols)...
                     ,[this.ItemSize,ones(1,length(size(q_))-1)]);
             end
-        end
-        function V = TpMONB(this,p,q)
-            % V = TpMONB(p,q)
-            % Compute an ONB in TpM, where the first vector points to q.
-            %
-            % INPUT
-            %     p : base point( sets)
-            %     q : directional indicator( sets) for the first vector(s).
-            %
-            % OUTPUT
-            %    V : basiscolumn matrice(s)
-            % ---
-            % Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann ~ 2014-10-19, last edit: 2014-10-23
-            if isrow(p)
-                p_=p';
-            else
-                p_=p;
-            end
-            if isrow(q)
-                q_=q';
-            else
-                q_=q;
-            end
-            V = zeros(this.ItemSize,size(p_,2),this.ItemSize-1);
-            V(:,:,1) = this.log(p_,q_);
-            normsv = sqrt(sum(V(:,:,1).^2,1));
-            V(:,normsv>eps,1) = V(:,normsv>eps,1)./repmat(normsv(normsv>eps),[this.ItemSize,1,1]);
-            if this.ItemSize==3 %S2 -> cross
-                V(:,:,2) = cross( squeeze(V(:,:,1)), p_);
-            else
-                for col=1:size(V,2)
-                    if (normsv(col)>eps)
-                        % The remaining Tangential vectors are the orthogonal
-                        % to p(:,col) and V(:,col,1), i.e. the nullspace of the
-                        % matrix p V V ... V
-                        V(:,col,2:this.ItemSize-1) = null([p_(:,col), V(:,col,1)].');
-                    end
-                end
-            end
+            v = reshape(v,dimen);
         end
     end
 end

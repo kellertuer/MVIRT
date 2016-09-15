@@ -7,7 +7,7 @@ classdef SymPosDef < manifold & handle
     % PROPERTIES
     %    tau   : stepsize in the subgradient descent inside each of the
     %            proximal mappings of the second order differences
-    %    steps : number of steps in the just mntioned subgradient descent.
+    %    steps : number of steps in the just mentioned subgradient descent.
     %
     % FUNCTIONS
     %    parallelTransport(X,Z) : Compute the mid point on the geodesic
@@ -20,8 +20,9 @@ classdef SymPosDef < manifold & handle
     properties
         type = 'SymPosDef';
         tau = 1;
-        steps = 50;
+        steps = 10;
         ItemSize;
+        Dimension;
     end
     
     methods
@@ -29,6 +30,7 @@ classdef SymPosDef < manifold & handle
             % Create a Manifold for mxm symmetric positive definite matrices
             obj.type = ['symmetric positive definite ',num2str(m),'x',num2str(m),' matrices'];
             obj.ItemSize = [m,m];
+            obj.Dimension = m*(m+1)/2;
         end
         function x = mean(this,varargin)
             % mean(f) calculates the mean of the input data with a gradient
@@ -50,7 +52,7 @@ classdef SymPosDef < manifold & handle
             % OPTIONAL
             % 'Weights' : (1/n*ones([m,n]) 1xn or mxn weights for the mean
             %            the first case uses the same weights for all means
-            % 'InitVal' : m Initial Data points for the gradient descent 
+            % 'InitVal' : m Initial Data points for the gradient descent
             % 'MaxIterations': Maximal Number of Iterations
             % 'Epsilon'      : Maximal change before stopping
             %
@@ -70,6 +72,10 @@ classdef SymPosDef < manifold & handle
                 f = vars.f;
                 dims = size(f);
                 if length(dims) ~= length(this.ItemSize)+2
+                    if all(dims(1:length(this.ItemSize)) == this.ItemSize) && length(dims)<length(this.ItemSize)+2
+                        x = f;
+                        return
+                    end
                     error('f wrong size');
                 end
                 % shift manDim in first dimension
@@ -177,10 +183,9 @@ classdef SymPosDef < manifold & handle
                 d = this.localDist(X,Y);
             end
         end
-        function W = parallelTransport(this,X,Y,V,t)
-            % W = parallelTransport(X,Y,V,t) parallel transport a tangential
-            % vector V at X along a geodesic from X to Y to Y or the fraction t
-            % along that geodesic
+        function W = parallelTransport(this,X,Y,V)
+            % W = parallelTransport(X,Y,V) parallel transport a tangential
+            % vector V at X along a geodesic from X to Y to Y
             %
             % INPUT
             %    X : a point( set) on P(m)
@@ -195,21 +200,19 @@ classdef SymPosDef < manifold & handle
             %    W : tangential vector( set, one) at (each) Y
             %
             % ---
-            % Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann ~ 2015-01-29 | 2015-04-10
+            % ManImRes 1.0, R. Bergmann ~ 2015-01-29 | 2015-04-10
             
             % Changelog
             %   2015-04-10 Introduced Mex-Files
-            if nargin > 5
+            if nargin > 4
                 error('Too many input arguments for parallelTransport');
-            elseif nargin==4
-                t = 1;
             elseif nargin< 4
                 error('Not enough input arguments for parallelTransport');
             end
             if this.useMex
-                W = SPDParallelTransport(X,Y,V,t);
+                W = SPDParallelTransport(X,Y,V);
             else
-                W = this.localParallelTransport(X,Y,V,t);
+                W = this.localParallelTransport(X,Y,V);
             end
         end
         function ds = dot(this,X,V,W)
@@ -394,7 +397,7 @@ classdef SymPosDef < manifold & handle
                 x(:,:,(missingpoints(:,1)>0)&inpaintpts,1) = x(:,:,(missingpoints(:,1)>0)&inpaintpts,2);
                 x(:,:,(missingpoints(:,2)>0)&inpaintpts,2) = x(:,:,(missingpoints(:,2)>0)&inpaintpts,1);
             elseif (length(w)==3) && all(w==[1,-2,1]')
-                    %
+                %
                 % Iterative subgradient descent
                 x = vars.f;
                 % Gradient descent
@@ -416,7 +419,7 @@ classdef SymPosDef < manifold & handle
                     grad2 = this.log(x(:,:,proxpts,2),vars.f(:,:,proxpts,2)) + vars.lambda*V;
                     % Gradient Z
                     grad3 = this.log(x(:,:,proxpts,3),vars.f(:,:,proxpts,3)) + vars.lambda*this.grad_X_D2(x(:,:,proxpts,3),x(:,:,proxpts,2),x(:,:,proxpts,1));
-                    tauit = this.tau/i; 
+                    tauit = this.tau/i;
                     x(:,:,proxpts,1) = this.exp(x(:,:,proxpts,1), tauit*grad1);
                     x(:,:,proxpts,2) = this.exp(x(:,:,proxpts,2), tauit*grad2);
                     x(:,:,proxpts,3) = this.exp(x(:,:,proxpts,3), tauit*grad3);
@@ -481,21 +484,20 @@ classdef SymPosDef < manifold & handle
         % local functions as fallback from Mex
         %
         function d = localDist(~,X,Y)
+            % Instead of sqrt(trace(log(sqrt(X)^-1 Y sqrt(X)^-1)^2)) we can
+            % compute the generalized eigenvalues of X and Y, i.e., 
+            % l_i X x_i = Y x_i and take sqrt(sum(log^2(l_i)) idea from
+            % Torben Fetzer
             dims = size(X);
             X = reshape(X,dims(1),dims(2),[]);
             Y = reshape(Y,dims(1),dims(2),[]);
             d = zeros(1,size(X,3));
             for i=1:size(X,3)
-                [U,S,~]=svd(X(:,:,i));
-                if all(S(:)==0) && (all(all(Y(:,:,i)==0)))
-                    d(i) = 0; %S = zeros(size(A))
+                S =real(eig(X(:,:,i),Y(:,:,i)));
+                if any(S(:)<=eps)
+                    d(i) = 0; % Either X or Y not SPD
                 else
-                    S= diag(sqrt(max(diag(S),0))); %Avoid rounding errors, elementwise sqrt
-                    sX=U*S*U';
-                    A = sX\(Y(:,:,i))/sX;
-                    [U,S,~]=svd(0.5*(A+A'));
-                    S = diag(log(max(diag(S),eps))); %Avoid rounding errors, elementwise log
-                    d(i) = norm(U*S*U','fro');
+                    d(i) = sqrt(sum(abs(log(S)).^2));
                 end
             end
             if length(dims)==3
@@ -506,9 +508,9 @@ classdef SymPosDef < manifold & handle
         end
         function ds = localDot(~,X,V,W)
             dims = size(X);
-            X = reshape(X,3,3,[]);
-            V = reshape(V,3,3,[]);
-            W = reshape(W,3,3,[]);
+            X = reshape(X,dims(1),dims(2),[]);
+            V = reshape(V,dims(1),dims(2),[]);
+            W = reshape(W,dims(1),dims(2),[]);
             ds = zeros(size(X,3),1);
             for i=1:size(X,3)
                 ds(i) = trace(V(:,:,i)/X(:,:,i) * W(:,:,i)/X(:,:,i));
@@ -568,11 +570,12 @@ classdef SymPosDef < manifold & handle
             end
             V = reshape(V,dims);
         end
-        function W = localParallelTransport(~,X,Y,V,t)
+ function W = localParallelTransport(~,X,Y,V,t)
             dims = size(X);
-            X = reshape(X,3,3,[]);
-            Y = reshape(Y,3,3,[]);
-            V = reshape(V,3,3,[]);
+            X = reshape(X,dims(1),dims(2),[]);
+            Y = reshape(Y,dims(1),dims(2),[]);
+            V = reshape(V,dims(1),dims(2),[]);
+            W = zeros(size(X));            V = reshape(V,3,3,[]);
             W = zeros(size(X));
             t = ones(1,size(X,3)).*t;
             for i=1:size(X,3)
@@ -618,7 +621,9 @@ classdef SymPosDef < manifold & handle
             %     V : a corresponding tangential vector
             %
             % OUTPUT
-            %     W : a set of vectors forming the eigenframe
+            %      W : a set of vectors forming the eigenframe
+            % lambda : values characterizing the curvature (-\lambda =
+            %          kappa)
             % ---
             % Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann ~2015-01-29
             n = this.ItemSize(1)*(this.ItemSize(1)+1)/2;
@@ -674,11 +679,11 @@ classdef SymPosDef < manifold & handle
                         + repmat(...
                         permute(...
                         (sinh(lambda(i,nonZeroL)*0.5))./sinh(lambda(i,nonZeroL)) .* alpha(i,nonZeroL), ...
-                        [4,3,2,1]), [this.ItemSize,1,1]).*permute(Vm(:,:,i,nonZeroL),[1,2,4,3]); %nonzero eigenvalue
+                        [4,3,2,1]), [this.ItemSize,1,1]).*permute(Vx(:,:,i,nonZeroL),[1,2,4,3]); %nonzero eigenvalue
                 end
                 if sum(~nonZeroL)>0
                     G(:,:,~nonZeroL) = G(:,:,~nonZeroL) ...
-                        + repmat(permute(0.5*alpha(i,~nonZeroL),[4,3,2,1]),[this.ItemSize,1,1]).*permute(Vm(:,:,i,~nonZeroL),[1,2,4,3]);
+                        + repmat(permute(0.5*alpha(i,~nonZeroL),[4,3,2,1]),[this.ItemSize,1,1]).*permute(Vx(:,:,i,~nonZeroL),[1,2,4,3]);
                     % zero eigenvalue
                 end
             end

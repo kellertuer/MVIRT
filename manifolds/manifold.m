@@ -1,4 +1,4 @@
-classdef (Abstract) manifold < handle
+classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
     % A Manifold.
     % This class provides all generell functions available on manifolds and
     % implements those, that are only based on these function interfaces
@@ -34,6 +34,7 @@ classdef (Abstract) manifold < handle
     properties (Abstract)
         type; % Type of manifold
         ItemSize; % Data Item dimension, given as size(q), q from M; might differ from manifold dimensions
+        Dimension; % Dimension of the manifold
     end
     methods (Abstract)
         % proxad(f,lambda,w,<options>)
@@ -131,6 +132,7 @@ classdef (Abstract) manifold < handle
             %
             % INPUT
             %   x,y : two points of the manifold
+            % OPTIONAL
             %   pts : (100) optional length of geodesic, or set to length t
             %               if t is chosen
             %     t : vector of points lead to geo = \gamma_{x,y}(t) 
@@ -176,6 +178,16 @@ classdef (Abstract) manifold < handle
            end
            geo = reshape(geo,[this.ItemSize,pts]);
         end
+        function v = var(this,f)
+            % var(f) computes the empirical variance 
+            %       1/(numel(f)-1) * sum (f-mean(f))^2
+            % of f
+            dimen = size(f);
+            num_el = prod(dimen(length(this.ItemSize)+1:end));
+            f = reshape(f,[this.ItemSize,1,num_el]);
+            mean_f = this.mean(f);
+            v = 1/(num_el-1)*sum(this.dist(repmat(mean_f,[ones(1,length(this.ItemSize)),1,num_el]),f).^2)/this.Dimension;
+        end
     end
     methods (Access=protected)
         function x = mean_gd(this,varargin)
@@ -212,6 +224,10 @@ classdef (Abstract) manifold < handle
             f = vars.f;
             dims = size(f);
             if length(dims) ~= length(this.ItemSize)+2
+                if all(dims(1:length(this.ItemSize)) == this.ItemSize) && length(dims)<length(this.ItemSize)+2
+                    x = f;
+                    return
+                end
                 error('f wrong size');
             end
             % shift manDim in first dimension
@@ -232,6 +248,7 @@ classdef (Abstract) manifold < handle
                 if any(size(w) ~= [m,n])
                     error('dim w do not match data points');
                 end
+                w = w./repmat(sum(w,2),1,n);
             end
             % Resize w to fit to the Manifold
             w = repmat(permute(w,[2+(1:length(this.ItemSize)),1,2]),[this.ItemSize,1,1]);
