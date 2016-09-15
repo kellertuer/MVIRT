@@ -84,18 +84,42 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
              end
              x = this.exp(g, t.*v);
         end
+        function [x1,x2] = proxTVSq(this,f1,f2,lambda)
+            % proxTV(f,lambda)
+            % Proximal steps of the discrete total variation squared of
+            % f1 and f2 with parameter lambda on an arbitrary manifold.
+            % This is the proximal map of
+            % the piointwise distance function squared d^2(f1,f2).
+            % INPUT
+            %  f1,f2    : data columns
+            %  lambda   : proxParameter 
+            % OUTPUT
+            %  x1,x2    : resulting columns of the proximal map
+                        % ---
+            % ManImRes 1.0, R. Bergmann ~ 2014-10-19
+            if all(f1(:) == f2(:))
+                x1=f1;
+                x2=f2;
+                return
+            end
+            % Calculate step length in (0,1/2]
+            step = lambda/(1+2*lambda)*this.dist(f1,f2);
+            step = permute(repmat(step(:),[1,this.ItemSize]),[length(this.ItemSize)+1:-1:1]);
+            x1 = this.exp(f1,step.*this.log(f1,f2));
+            x2 = this.exp(f2,step.*this.log(f2,f1));
+        end
         function [x1,x2] = proxTV(this,f1,f2,lambda)
             % proxTV(f,lambda)
-            % Proximal steps from f1 to f2 and f2 to f1 with parameter
-            % lambda on an arbitrary manifold. This is the proximal map of
-            % the piointwise distance function d(f1,f2).
+            % Proximal steps for the total variation term of f1 and f2 with
+            % parameter lambda on an arbitrary manifold. This is
+            % the proximal map of the piointwise distance function d(f1,f2).
             % INPUT
             %  f1,f2    : data columns
             %  lambda   : proxParameter 
             % OUTPUT
             %  x1,x2    : resulting columns of the proximal map
             % ---
-            % Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann ~ 2014-10-19
+            % ManImRes 1.0, R. Bergmann ~ 2014-10-19
             if all(f1(:) == f2(:))
                 x1=f1;
                 x2=f2;
