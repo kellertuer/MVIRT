@@ -21,30 +21,15 @@ using namespace Eigen;
 void mexFunction( int nlhs, mxArray *plhs[],
                   int nrhs, const mxArray *prhs[])   {
     /* variables (IX, IY input) */
-    const mxArray *IXA, *IYA, *IVA, *ItA; //Just names
-    double *OW, *IX, *IY, *IV, *It;
-    double t;
-    bool isTdouble=false;
+    const mxArray *IXA, *IYA, *IVA; //Just names
+    double *OW, *IX, *IY, *IV;
     /*For-Loops*/
     mwSize i,j,k, ItemSize, numel;
     if (nlhs > 1)
         mexErrMsgTxt("Too many output parameters");
     if (nrhs < 3)
         mexErrMsgTxt("Not enough input parameters, at least three (arrays of) matrices needed");
-    else if (nrhs < 4) {
-        t = 1.0;
-        isTdouble = true;
-    }
-    else if (nrhs == 4) {
-        if ( mxIsDouble(prhs[3]) ) {
-            t = *mxGetPr(prhs[3]);
-            isTdouble=true;
-        } else {
-            ItA = prhs[3];
-            It = mxGetPr(ItA);
-            isTdouble = false;
-        }
-    } else
+    else if (nrhs > 3) 
         mexErrMsgTxt("Too many input parameters");
     /* Input Names */
     IXA = prhs[0];
@@ -58,23 +43,13 @@ void mexFunction( int nlhs, mxArray *plhs[],
     size_t Ys = mxGetNumberOfDimensions(IYA);
     const mwSize *Yn = mxGetDimensions(IYA);
     size_t Vs = mxGetNumberOfDimensions(IVA);
-    const mwSize *Vn = mxGetDimensions(IVA);
-    size_t Ts;
-    const mwSize *Tn;
-    if (!isTdouble) {
-        Ts = mxGetNumberOfDimensions(ItA);
-        Tn = mxGetDimensions(ItA);
-    }
+    const mwSize *Vn = mxGetDimensions(IVA);    
     numel=1;
     if (Xs<1)
         mexErrMsgTxt("No Vector X given, only a number.");
-    else if ( (Xs==1) && (!isTdouble) )
-        mexErrMsgTxt("The coefficient t is of wrong dimensions");        
     else if (Xs>1) {
         for (i=1; i<Xs; i++) {
-            numel *= Xn[i];
-            if ( (!isTdouble) && (Xn[i] != Tn[i-2]))
-                mexErrMsgTxt("The coefficient t is of wrong dimensions");        
+            numel *= Xn[i];             
         }
     }    
     /* get dimensions of the input matrix */
@@ -94,16 +69,14 @@ void mexFunction( int nlhs, mxArray *plhs[],
 
     // Initialize result: V matrix array
     VectorXd lW(ItemSize), lX(ItemSize), lV(ItemSize), lY(ItemSize);
-    for (i=0; i<numel; i++) {//for all matrices
-        if (!isTdouble)
-            t = It[i];
+    for (i=0; i<numel; i++) {//for all matrices       
         for (j=0; j<ItemSize; j++) {
                 //Extract local copies of submatrices
                 lX(j) = IX[j + ItemSize*i];
                 lV(j) = IV[j + ItemSize*i];
                 lY(j) = IY[j + ItemSize*i];
         }
-        lW = mSnParallelTransport(lX,lY,lV,t);
+        lW = mSnParallelTransport(lX,lY,lV);
         for (j=0; j<ItemSize; j++) {
                 //Extract copy back to result V
                 OW[j + ItemSize*i] = lW(j);

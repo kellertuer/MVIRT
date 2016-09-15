@@ -183,7 +183,7 @@ classdef SymPosDef < manifold & handle
                 d = this.localDist(X,Y);
             end
         end
-        function W = parallelTransport(this,X,Y,V)
+        function W = parallelTransport(this,X,Y,V,t)
             % W = parallelTransport(X,Y,V) parallel transport a tangential
             % vector V at X along a geodesic from X to Y to Y
             %
@@ -204,15 +204,17 @@ classdef SymPosDef < manifold & handle
             
             % Changelog
             %   2015-04-10 Introduced Mex-Files
-            if nargin > 4
+            if nargin > 5
                 error('Too many input arguments for parallelTransport');
+            elseif nargin==3
+                t=1.0;
             elseif nargin< 4
                 error('Not enough input arguments for parallelTransport');
             end
             if this.useMex
-                W = SPDParallelTransport(X,Y,V);
+                W = SPDParallelTransport(X,Y,V,t);
             else
-                W = this.localParallelTransport(X,Y,V);
+                W = this.localParallelTransport(X,Y,V,t);
             end
         end
         function ds = dot(this,X,V,W)

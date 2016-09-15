@@ -40,11 +40,10 @@ double mSnDist(VectorXd X, VectorXd Y)
     return acos(max(min(X.dot(Y),1.0),-1.0));
 }
 VectorXd mSnParallelTransport(VectorXd X, VectorXd Y, VectorXd V) {
-    return mSnParallelTransport(X, Y, V,1.0);
-}    
-VectorXd mSnParallelTransport(VectorXd X, VectorXd Y, VectorXd V, double t) {
-    VectorXd dir = t*mSnLog(X,Y);
-    return V - dir.dot(V)*(dir+mSnLog(Y,X));
+    VectorXd dir = mSnLog(X,Y);
+    double norm_dir = dir.norm();
+    dir = dir/norm_dir;
+    return V - dir.dot(V)*(dir+mSnLog(Y,X)/norm_dir);
 }
 MatrixXd mSnTxM_ONB(VectorXd X, VectorXd Y) {
 // internal function using X as base point and Log_xY as first direction in TxM to build the ONB
@@ -119,4 +118,29 @@ VectorXd mSnGrad_X_D2(VectorXd X, VectorXd Y, VectorXd Z) {
         }
      }
     return (VectorXd) G;
+}
+
+VectorXd mSnMean(VectorXd *F, double *W, double E, double I,size_t L){
+    VectorXd X,V,Xold;
+    X = F[0];
+    int ItemSize = X.size();
+    int iter =  0;
+    double step_size = 1.;
+    double change = 1+E;    
+    mwSize i,j,k;    
+    while( ( iter < I) && (change > E)){
+        Xold = X;  
+        V = VectorXd::Zero(ItemSize);
+        // Sum the Tangentvectors up according to their weights
+        for (i = 0; i < L; i++)
+        {  
+            V = V+W[i]*mSnLog(X,F[i]); 
+        }
+        // go in the right direction
+        X = mSnExp(X,V,step_size);        
+        change = mSnDist(X,Xold);
+        iter++;        
+       // mexPrintf("\n%d, %3.16f",iter,change);
+    }        
+    return X;
 }

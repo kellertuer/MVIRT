@@ -53,7 +53,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
      * Checks
      */
     if (ItemSize != Xn[1])
-        mexErrMsgTxt("Matrices have to be suqare.");
+        mexErrMsgTxt("Matrices have to be square.");
     if (Xs!=Ys)
         mexErrMsgTxt("Matrix arrays have to be of same dimension.");
     for (i=0; i<Xs; i++) {

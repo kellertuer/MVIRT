@@ -8,7 +8,8 @@
  */
 #include "manifoldSPD.h"
 #include "mex.h"
-
+#include "iostream"
+using namespace std;
 MatrixXd mSPDExp(MatrixXd X, MatrixXd V) {
     return mSPDExp(X,V,1.0);
 }
@@ -133,29 +134,16 @@ MatrixXd mSPDLogAtId(MatrixXd X, MatrixXd Y) {
 double mSPDDist(MatrixXd X, MatrixXd Y) {
     int ItemSize = X.rows();
     int i;
-    JacobiSVD<MatrixXd> svd;
-    EigenSolver<MatrixXd> eig;
+    GeneralizedEigenSolver<MatrixXd> ges;
+    ArrayXXd S;
     if (ItemSize != X.cols())
         return 0;
-    MatrixXd S(ItemSize,ItemSize), U(ItemSize,ItemSize), Xsqrt(ItemSize,ItemSize), lY(ItemSize,ItemSize);
     if ( (X.isZero()) || (Y.isZero()) )
         return 0;
-    svd = JacobiSVD<MatrixXd>(X, ComputeFullU);
-    S = DiagonalMatrix<double,Dynamic,Dynamic>(svd.singularValues());
-    for (i=0; i<ItemSize; i++)
-        S(i,i) = sqrt(S(i,i));
-    U = svd.matrixU();
-    Xsqrt = U*S*U.transpose();
-    for (i=0; i<ItemSize; i++)
-        S(i,i) = 1/S(i,i);
-    lY = U*S*U.transpose()*Y*U*S*U.transpose(); //A in Matlab
-    svd.compute(0.5*(lY+lY.transpose()), ComputeFullU);
-    S = DiagonalMatrix<double,Dynamic,Dynamic>(svd.singularValues());
-    for (i=0; i<ItemSize; i++)
-        S(i,i) = log(S(i,i));
-    U = svd.matrixU();
-    U = U*S*U.transpose();
-    return U.norm();
+    ges.compute(X,Y);
+    S = ges.eigenvalues().transpose().cwiseAbs();
+    S = log(S);
+    return sqrt((S*S).sum()) ;
 }
 double mSPDDot(MatrixXd X, MatrixXd V, MatrixXd W) {
     int ItemSize = X.rows();
@@ -203,7 +191,7 @@ MatrixXd mSPDParallelTransport(MatrixXd X, MatrixXd Y, MatrixXd V, double t) {
         S(i,i) = log(S(i,i));
     U = svd2.matrixU();
     lY = U*S*U.transpose(); //temp for 3rd svd
-    EigenSolver<MatrixXd> eig(0.25*t*(lY+lY.transpose()), true);
+    EigenSolver<MatrixXd> eig(0.5*0.5*(lY+lY.transpose()), true);// 0.5 from formula and 0.5 for stability
     S = eig.pseudoEigenvalueMatrix();
     U = eig.pseudoEigenvectors();
     for (i=0; i<ItemSize; i++)
@@ -268,9 +256,9 @@ MatrixXd mSPDGrad_X_D2(MatrixXd X, MatrixXd Y, MatrixXd Z) {
             else
                 alpha = mSPDDot(M,R,Wm)/r;
              if ( lambda>0 ) // eigenvalue > 0
-                G = G + ( (sinh(lambda/2)/sinh(lambda)*alpha)*Wm);
+                G = G + ( (sinh(lambda/2)/sinh(lambda)*alpha)*Wx);
              else // eigenvalue 0
-                G = G + (0.5*alpha*Wm);
+                G = G + (0.5*alpha*Wx);
         }
     } //end running through all basis matrices W
     return G;
@@ -322,9 +310,9 @@ MatrixXd mSPDGrad_X_D2_Sq(MatrixXd X, MatrixXd Y, MatrixXd Z) {
             lambda = abs((S(i,i) - S(j,j)));
             //Compute corresponding basis element (matrix Wx)
             if (i==j)
-                Wx = sqrt(0.5)*( U.col(i)*U.col(j).transpose() + U.col(j)*U.col(i).transpose() );
-            else
                 Wx = 0.5*( U.col(i)*U.col(j).transpose() + U.col(j)*U.col(i).transpose() );
+            else
+                Wx = sqrt(0.5)*( U.col(i)*U.col(j).transpose() + U.col(j)*U.col(i).transpose() );
             Wx = Xsqrt*Wx*Xsqrt;
             // Basis Vector in X, transport it to M
             Wm = mSPDParallelTransport(X, M, Wx);
@@ -333,9 +321,10 @@ MatrixXd mSPDGrad_X_D2_Sq(MatrixXd X, MatrixXd Y, MatrixXd Z) {
             else
                 alpha = 2*mSPDDot(M,R,Wm);
              if ( lambda>0 ) // eigenvalue > 0
-                G = G + ( (sinh(lambda/2)/sinh(lambda)*alpha)*Wm);
+                G = G + ( (sinh(lambda/2)/sinh(lambda)*alpha)*Wx);
              else // eigenvalue 0
-                G = G + (0.5*alpha*Wm);
+                G = G + (0.5*alpha*Wx);
+            
         }
     } //end running through all basis matrices W
     return G;
