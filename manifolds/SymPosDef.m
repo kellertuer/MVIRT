@@ -183,7 +183,7 @@ classdef SymPosDef < manifold & handle
                 d = this.localDist(X,Y);
             end
         end
-        function W = parallelTransport(this,X,Y,V,t)
+        function W = parallelTransport(this,X,Y,V)
             % W = parallelTransport(X,Y,V) parallel transport a tangential
             % vector V at X along a geodesic from X to Y to Y
             %
@@ -204,17 +204,15 @@ classdef SymPosDef < manifold & handle
             
             % Changelog
             %   2015-04-10 Introduced Mex-Files
-            if nargin > 5
+            if nargin > 4
                 error('Too many input arguments for parallelTransport');
-            elseif nargin==3
-                t=1.0;
             elseif nargin< 4
                 error('Not enough input arguments for parallelTransport');
             end
             if this.useMex
-                W = SPDParallelTransport(X,Y,V,t);
+                W = SPDParallelTransport(X,Y,V);
             else
-                W = this.localParallelTransport(X,Y,V,t);
+                W = this.localParallelTransport(X,Y,V);
             end
         end
         function ds = dot(this,X,V,W)
@@ -338,7 +336,7 @@ classdef SymPosDef < manifold & handle
                 vars = varargin{1};
                 assert(isfield(vars,'f')&&isfield(vars,'lambda')&&isfield(vars,'w'),...
                     'Not all required parameters given in the struct');
-                if ~isfield(vars,'RegMask');
+                if ~isfield(vars,'RegMask')
                     vars.RegMask = [];
                 end
                 d = size(vars.f,4);

@@ -296,12 +296,9 @@ classdef Sn < manifold & handle
             end
             fn = reshape(fn,fs);
         end
-        function W = parallelTransport(this,X,Y,V,t)
-            if nargin<5
-                t=1;
-            end
+        function W = parallelTransport(this,X,Y,V)
             if this.useMex
-               W = SnParallelTransport(X,Y,V,t);
+                W = SnParallelTransport(X,Y,V);
             else
                 % Parallel Transport the vector V from TxM to TyM
                 %
