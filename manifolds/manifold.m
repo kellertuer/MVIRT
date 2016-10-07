@@ -20,14 +20,14 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
     % _normal functions
     %    proxDist(g,f,lambda) : proximal mapping of distance terms
     %    mean(f)              : Karcher mean of the values f
-    %    median(f)            : median on a manifold of the values of f
+    %    meadian(f)           : median of the values of f
     %    midPoint(x,z)        : Compute the mid point between x and z.
     %    geodesic(x,y,pts)    : Compute the geodesic between x and y with
     %                           pts points
     %
     % ---
     % Manifold-valued Image Restoration Toolbox 1.0
-    % R. Bergmann ~ 2014-10-18, last edit: 2016-10-07
+    % R. Bergmann ~ 2014-10-18 | 2016-10-07
     % see LICENSE.txt
     properties
         useMex = true; %Whether or not to use mex-files in the manifold-functions
@@ -54,7 +54,7 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
         % addNoise(X,sigma) add noise w.r.t. the manifold itself and a
         % standard deviation sigma to a (multidimensional) signal X of
         % manifold valued pixels.
-        Y = addNoise(X,sigma)
+        Y = addNoise(this,X,sigma)
     end
     methods
         function x = proxDist(this,g,f,lambda)
@@ -68,7 +68,7 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
             % OUTPUT
             %       x : result point( sets) of the proximal map
             % ---
-            % Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann ~ 2014-10-19
+            % Manifold-valued Image Restoration Toolbox 1.0 ~ R. Bergmann, 2014-10-19
             if all(g(:) == f(:))
                 x=f;
                 return
@@ -120,7 +120,7 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
             % OUTPUT
             %  x1,x2    : resulting columns of the proximal map
             % ---
-            % ManImRes 1.0, R. Bergmann ~ 2014-10-19
+            % Manifold-valued Image Restoration Toolbox 1.0 ~ R. Bergmann, 2014-10-19
             if all(f1(:) == f2(:))
                 x1=f1;
                 x2=f2;
@@ -137,7 +137,7 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
             x = this.mean_gd(varargin{:});
         end
         function x = median(this,varargin)
-            % mean(f) calculates the median of the input data with a gradient
+            % mean(f) calculates the mean of the input data with a gradient
             % descent algorithm. This implementation is based on
             %
             % B. Afsari, Riemannian Lp center of mass: Existence,
@@ -160,15 +160,17 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
             % 'InitVal' : m Initial Data points for the gradient descent 
             % 'MaxIterations': Maximal Number of Iterations
             % 'Epsilon'      : Maximal change before stopping
+            % 'Alpha'        : Step Size in (0,2)
             %
             %
-            % MVIRT 1.0, R. Bergmann 2016-10-07
+            % Manifold-valued Image Restoration Toolbox 1.0, J. Persch 2015-07-24 | R. Bergmann 2015-07-30
             ip = inputParser;
             addRequired(ip,'f');
             addParameter(ip,'Weights',NaN);
             addParameter(ip,'InitVal',NaN);
-            addParameter(ip,'MaxIterations',50);
-            addParameter(ip,'Epsilon',5*10^-7);
+            addParameter(ip,'Alpha',1);
+            addParameter(ip,'MaxIterations',100);
+            addParameter(ip,'Epsilon',10^-5);
             parse(ip, varargin{:});
             vars = ip.Results;
             f = vars.f;
@@ -239,8 +241,9 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
                 d = repmat(permute(d,[2+(1:l),1,2]),[this.ItemSize,1,1]); 
                 V(d>0) = V(d>0)./d(d>0);
                 V = V.*w;
+                weight = sum(d.*w,3);
                 V = sum(V,length(this.ItemSize)+2);
-                x = this.exp(x,V);
+                x = this.exp(x,vars.Alpha*weight.*V);
                 i= i+1;
             end
         end
@@ -255,7 +258,7 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
             %      m : resulting mid point( sets)
             %
             % ---
-            % Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann ~ 2014-10-19 | 2015-01-29
+            % Manifold-valued Image Restoration Toolbox 1.0 ~ R. Bergmann ~ 2014-10-19 | 2015-01-29
             m = this.exp(x, this.log(x,z)./2);
         end
         function geo = geodesic(varargin)
@@ -274,7 +277,7 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
             %   geo : the geodesic between x,y with geo(1) = x, geo(pts)=y
             %
             % ---
-            % Manifold-Valued Image Restoration Toolbox 1.0 J. Persch ~2015-10-29
+            % Manifold-valued Image Restoration Toolbox 1.0 ~ J. Persch ~2015-10-29
             ip = inputParser;
             addRequired(ip,'this');
             addRequired(ip,'x');
@@ -344,8 +347,7 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
             % 'MaxIterations': Maximal Number of Iterations
             % 'Epsilon'      : Maximal change before stopping
             %
-            %
-            % Manifold-Valued Image Restoration Toolbox 1.0, J. Persch 2015-07-24 | R. Bergmann 2015-07-30
+            % Manifold-valued Image Restoration Toolbox 1.0 ~ J. Persch 2015-07-24 | R. Bergmann 2015-07-30
             ip = inputParser;
             addRequired(ip,'f');
             addParameter(ip,'Weights',NaN);
@@ -449,7 +451,7 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
             % [1] M. Bacak, Computing medians and means in Hadamard spaces.
             % SIAM Journal on Optimization, 24(3), pp. 1542-1566, 2013.
             % ---
-            % Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann ~ 2015-07-16
+            % Manifold-valued Image Restoration Toolbox 1.0 ~ R. Bergmann ~ 2015-07-16
             ip = inputParser;
             addRequired(ip,'f');
             addRequired(ip,'lambda');
