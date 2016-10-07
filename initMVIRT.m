@@ -39,6 +39,7 @@ if vars.Make
     mex -I../include/eigen -Imanifolds SnDist.cpp manifolds/manifoldSn.cpp
     mex -I../include/eigen -Imanifolds SnExp.cpp manifolds/manifoldSn.cpp
     mex -I../include/eigen -Imanifolds SnLog.cpp manifolds/manifoldSn.cpp
+    mex -I../include/eigen -Imanifolds SnMean.cpp manifolds/manifoldSn.cpp
     mex -I../include/eigen -Imanifolds SnParallelTransport.cpp manifolds/manifoldSn.cpp
     mex -I../include/eigen -Imanifolds SnGrad_X_D2.cpp manifolds/manifoldSn.cpp
     % Hyperbolic space
@@ -55,6 +56,7 @@ if vars.Make
     mex -I../include/eigen -Imanifolds SPDExp.cpp manifolds/manifoldSPD.cpp
     mex -I../include/eigen -Imanifolds SPDGrad_X_D2.cpp manifolds/manifoldSPD.cpp
     mex -I../include/eigen -Imanifolds SPDLog.cpp manifolds/manifoldSPD.cpp
+    mex -I../include/eigen -Imanifolds SPDMean.cpp manifolds/manifoldSPD.cpp
     mex -I../include/eigen -Imanifolds SPDParallelTransport.cpp manifolds/manifoldSPD.cpp
     mex -I../include/eigen -Imanifolds SPDMean.cpp manifolds/manifoldSPD.cpp
     cd ..

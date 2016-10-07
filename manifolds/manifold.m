@@ -20,13 +20,14 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
     % _normal functions
     %    proxDist(g,f,lambda) : proximal mapping of distance terms
     %    mean(f)              : Karcher mean of the values f
+    %    median(f)            : median on a manifold of the values of f
     %    midPoint(x,z)        : Compute the mid point between x and z.
     %    geodesic(x,y,pts)    : Compute the geodesic between x and y with
     %                           pts points
     %
     % ---
     % Manifold-valued Image Restoration Toolbox 1.0
-    % R. Bergmann ~ 2014-10-18, last edit: 2015-12-05
+    % R. Bergmann ~ 2014-10-18, last edit: 2016-10-07
     % see LICENSE.txt
     properties
         useMex = true; %Whether or not to use mex-files in the manifold-functions
@@ -134,6 +135,114 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
         end
         function x = mean(this,varargin)
             x = this.mean_gd(varargin{:});
+        end
+        function x = median(this,varargin)
+            % mean(f) calculates the median of the input data with a gradient
+            % descent algorithm. This implementation is based on
+            %
+            % B. Afsari, Riemannian Lp center of mass: Existence,
+            %    uniqueness, and convexity,
+            %    Proc. AMS 139(2), pp.655-673, 2011.
+            % and adapted to the median defined in
+            % P. T. Fletcher, S. Venkatasubramanian, and S. Joshi:
+            %    The geometric median on Riemannian manifolds with
+            %    application to robust atlas estimation.
+            %
+            % INPUT
+            %    f :  m x n Data points ([this.Itemsize,m,n]) to compute
+            %         m means of n points each, pp.
+            % OUTPUT
+            %    x :  m data points of the medians calculated
+            %
+            % OPTIONAL
+            % 'Weights' : (1/n*ones([m,n]) 1xn or mxn weights for the mean
+            %            the first case uses the same weights for all means
+            % 'InitVal' : m Initial Data points for the gradient descent 
+            % 'MaxIterations': Maximal Number of Iterations
+            % 'Epsilon'      : Maximal change before stopping
+            %
+            %
+            % MVIRT 1.0, R. Bergmann 2016-10-07
+            ip = inputParser;
+            addRequired(ip,'f');
+            addParameter(ip,'Weights',NaN);
+            addParameter(ip,'InitVal',NaN);
+            addParameter(ip,'MaxIterations',50);
+            addParameter(ip,'Epsilon',5*10^-7);
+            parse(ip, varargin{:});
+            vars = ip.Results;
+            f = vars.f;
+            dims = size(f);
+            if length(dims) ~= length(this.ItemSize)+2
+                if all(dims(1:length(this.ItemSize)) == this.ItemSize) && length(dims)<length(this.ItemSize)+2
+                    x = f;
+                    return
+                end
+                error('f wrong size');
+            end
+            % shift manDim in first dimension
+            f = reshape(f,[prod(this.ItemSize),dims(1+length(this.ItemSize):end)]);
+            con_dim = size(f);
+            m = con_dim(end-1);
+            n = con_dim(end);
+            if isnan(vars.Weights)
+                w = 1/n*ones(m,n);
+            elseif isvector(vars.Weights)
+                w = vars.Weights(:)';
+                if length(w) ~=n
+                    error('length(w) does not match data points');
+                end
+                w = repmat(w,m,1);
+            else
+                w = vars.Weights;
+                if any(size(w) ~= [m,n])
+                    error('dim w do not match data points');
+                end
+                w = w./repmat(sum(w,2),1,n);
+            end
+            % Resize w to fit to the Manifold
+            w = repmat(permute(w,[2+(1:length(this.ItemSize)),1,2]),[this.ItemSize,1,1]);
+            if isnan(vars.InitVal)
+                x = reshape(f,[prod(this.ItemSize),m,n]);
+                x = reshape(x(:,:,1),[this.ItemSize,m]);
+            else
+                x = vars.InitVal;
+                if (length(size(x))== length(this.ItemSize)) ...
+                        && (all(size(x) == this.ItemSize))
+                    x = repmat(x,[ones(1,length(this.ItemSize)),m]);
+                elseif any(size(x) ~= [this.ItemSize,m])
+                    error(['InitVal has to be of size [',num2str(this.ItemSize),'] or [',...
+                        num2str([this.ItemSize,m]),'].']);
+                end
+            end
+            if vars.Epsilon > 0
+                epsilon = vars.Epsilon;
+            else
+                warning('Epsilon should be larger than zero, set Epsilon to 10^-6')
+                epsilon = 10^-6;
+            end
+            if vars.MaxIterations > 0
+                iter = vars.MaxIterations;
+            else
+                warning('Iterations should be larger than zero, set Iterations to 100')
+                iter = 100;
+            end
+            f  = reshape(f, [this.ItemSize,m,n]);
+            x_old = x;
+            i = 0;
+            while (max(this.dist(x,x_old)) > epsilon && i < iter) || i == 0
+                x_old = x;
+                V = this.log(repmat(x,[ones(1,length(this.ItemSize)+1),n]),f);
+                % Divide by the distance
+                d = this.dist(repmat(x,[ones(1,length(this.ItemSize)+1),n]),f);
+                l = length(this.ItemSize);
+                d = repmat(permute(d,[2+(1:l),1,2]),[this.ItemSize,1,1]); 
+                V(d>0) = V(d>0)./d(d>0);
+                V = V.*w;
+                V = sum(V,length(this.ItemSize)+2);
+                x = this.exp(x,V);
+                i= i+1;
+            end
         end
         function m = midPoint(this,x,z)
             % m = midPoint(x,z)

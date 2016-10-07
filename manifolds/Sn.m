@@ -358,7 +358,7 @@ classdef Sn < manifold & handle
                 end
             end
         end
-        function ds = dot(this,P,V,W)
+        function ds = dot(~,P,V,W)
             % Sn.dot(P,V,W)
             %     Compute the inner product of two tangent vectors in T_P M
             %
