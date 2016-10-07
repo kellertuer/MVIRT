@@ -43,4 +43,7 @@ VectorXd mSnParallelTransport(VectorXd X, VectorXd Y, VectorXd V, double t);
  */
 VectorXd mSnParallelTransport(VectorXd X, VectorXd Y, VectorXd V);
 
+VectorXd mSnMean(VectorXd *F, double *W, double E, double I,size_t L);
+// Caluculates the mean of the j points in F with weights W stops after I iteration or if change less than E
+
 #endif /* MANIFOLD_H */
