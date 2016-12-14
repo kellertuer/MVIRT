@@ -6,6 +6,7 @@ classdef S1 < manifold & handle
     properties
         type = 'S1';
         ItemSize = 1;
+        Dimension =1;        
     end
     
     methods
