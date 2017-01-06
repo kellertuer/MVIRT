@@ -72,7 +72,7 @@ elseif getDebugLevel('LoadData')
     metaData = dir([resultsFolder,dataName,'.mat']);
     debug('text',3,'Text',['Using File Data generated ',datestr(metaData.date),'.']);
 else
-    error('Either Loading or Creating(Wirting) Data must be set');
+    error('Either Loading or Creating (Writing) Data must be set');
 end
 numel = size(Zn,1)*size(Zn,2);
 %
