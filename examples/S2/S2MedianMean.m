@@ -15,7 +15,7 @@ start = pwd;
 if ~isempty(fileparts(which(mfilename)))
     cd(fileparts(which(mfilename)));
 end
-run('../initMVIRT.m')
+run('../../initMVIRT.m')
 
 setDebugLevel('LevelMin',0);     % Lower bound
 setDebugLevel('LevelMax',3);     % Upper bound
