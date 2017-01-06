@@ -127,6 +127,50 @@ classdef Sn < manifold & handle
             % Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann ~ 2014-10-19
             m = this.exp(x, this.log(x,z)./2);
         end
+        function G = grad_X_D2(this,X,Y,Z)
+            % grad_X_D2_sq(X,Z,Y) Compute the gradient with respect to the first
+            % variable of the second order difference term
+            % d(c(X,Z),Y). This can also
+            % be used for the third, Z, exchanging X and Z
+            %
+            % INPUT
+            %   X : A point( set)
+            %   Y : A point( set)
+            %   Z : A point( set)
+            %
+            % OUTPUT
+            %   G : A (set of) tangent vector(s, one) at (each) X.
+            %
+            % ---
+            % Manifold-Valued Image Restoration Toolbox 1.1, J. Persch  2016-09-21
+            if this.useMex
+                G = SnGrad_X_D2(X,Y,Z);
+            else
+                G = this.localGrad_X_D2(X,Y,Z);
+            end
+        end
+        function G = grad_X_D2_Sq(this,X,Y,Z)
+            % grad_X_D2_sq(X,Z,Y) Compute the gradient with respect to the first
+            % variable of the squared second order difference term
+            % d^2(c(X,Z),Y). This can also
+            % be used for the third, Z, exchanging X and Z
+            %
+            % INPUT
+            %   X : A point( set)
+            %   Y : A point( set)
+            %   Z : A point( set)
+            %
+            % OUTPUT
+            %   G : A (set of) tangent vector(s, one) at (each) X.
+            %
+            % ---
+            % Manifold-Valued Image Restoration Toolbox 1.0, J. Persch  2016-09-21
+            if this.useMex
+                G = SnGrad_X_D2_Sq(X,Y,Z);
+            else
+                G = this.localGrad_X_D2_Sq(X,Y,Z);
+            end
+        end
         function x = proxad(this,varargin)
             % proxad(f, lambda, w) - Compute the proximal mapping of the
             % data f with respect to lambda an the weight w.
@@ -174,7 +218,6 @@ classdef Sn < manifold & handle
                 x = vars.f;
                 return
             end
-            %% TODO RegMask
             assert(d==length(w),['The length of the weight (',...
                 num2str(length(w)),') does not fit to the data size (',...
                 num2str(d),').']);
@@ -304,11 +347,12 @@ classdef Sn < manifold & handle
                 %
                 % directional part that changes
                 sV = size(V);
-                dir = t.*this.log(X,Y);
-                dir = dir./repmat(sqrt(sum(dir.^2,1)),[3,ones(1,length(sV(2:end)))]);
+                dir = this.log(X,Y);
+                norm_dir = repmat(sqrt(sum(dir.^2,1)),[3,ones(1,length(sV(2:end)))]);
+                dir = dir./norm_dir;
                 scp = sum(dir.*V,1);
-                % substract V-part (scp*dir) and add the negative direction 
-                W = V - repmat(scp,[this.ItemSize,ones(1,sV(2:end))]).*(dir+this.log(Y,X)./repmat(sqrt(sum(this.log(Y,X).^2,1)),[3,ones(1,length(sV(2:end)))]));
+                % substract V-part (scp*dir) and add the negative direction
+                W = V - repmat(scp,[this.ItemSize,ones(1,sV(2:end))]).*(dir+this.log(Y,X)./norm_dir);
             end
         end
         function V = TpMONB(this,p,q)
@@ -437,7 +481,7 @@ classdef Sn < manifold & handle
                 if any(size(w) ~= [m,n])
                     error('dim w do not match data points');
                 end
-            end          
+            end
             if vars.Epsilon > 0
                 epsilon = vars.Epsilon;
             else
@@ -452,48 +496,82 @@ classdef Sn < manifold & handle
             end
             if ~this.useMex || getDebugLevel('MatlabMean')==1
                 x=this.mean@manifold(f,'Weights',w,'Epsilon',epsilon,'MaxIterations',iter);
-            else            
-            x = SnMean(f,w,epsilon,iter);
-            end            
+            else
+                x = SnMean(f,w,epsilon,iter);
+            end
         end
     end
-    methods (Access = private)
-        function G = grad_X_D2(this,X,Y,Z)
-            if this.useMex
-                G = SnGrad_X_D2(X,Y,Z);
-            else
-                l = size(X,2);
-                m = this.exp(X, this.log(X,Z)./2);
-                % Common directions to middle points y
-                r = this.log(m,Y);
-                normr = permute(sqrt(sum(r.^2,1)),[2:length(size(r)),1]);
-                % Grad X
-                V = this.TpMONB(m,Z);
-                % Instead of
-                % W = this.TpMONB(X,Z);
-                % we have would have to use PT
-                % W = this.ParallelTransport(m,X,V);
-                % but we can also just adapt the first column, because the
-                % rest stays as it is
-                W = V;
-                W(:,:,1) = this.log(p_,q_);
-                normsw = sqrt(sum(W(:,:,1).^2,1));
-                W(:,normsw>eps,1) = W(:,normsw>eps,1)./repmat(normsw(normsw>eps),[this.ItemSize,1,1]);
-                alpha = zeros(l,this.ItemSize-1);
-                if any(normr>eps)
-                    alpha(normr>eps,:) = sum(...
-                        repmat(r(:,normr>eps),[1,1,this.ItemSize-1]).*...
-                        V(:,normr>eps,:)./repmat(permute(normr(normr>eps),[2,1]),[this.ItemSize,1,this.ItemSize-1]),1);
-                end
-                % and even inplace, i.e. we rename the basis at M (W) also
-                % to V
-                G = W(:,:,1).*repmat(0.5*permute(alpha(:,1),[2,1]),[this.ItemSize,1]) ...
-                    + sum(W(:,:,2:this.ItemSize-1).*...
-                    repmat(...
-                    repmat(permute( 1./(2*cos(this.dist(X,Z)./2)) ,[3,1,2]),[1,1,this.ItemSize-2]).*...
-                    permute(alpha(:,2:this.ItemSize-1),[3,1,2]),...
-                    [this.ItemSize,1,1]),3);
+    methods (Access = protected)
+        function G = localGrad_X_D2(this,X,Y,Z)
+            l = size(X,2);
+            m = this.exp(X, this.log(X,Z)./2);
+            % Common directions to middle points y
+            r = this.log(m,Y);
+            normr = permute(sqrt(sum(r.^2,1)),[2:length(size(r)),1]);
+            % Grad X
+            V = this.TpMONB(m,Z);
+            % Instead of
+            % W = this.TpMONB(X,Z);
+            % we have would have to use PT
+            % W = this.ParallelTransport(m,X,V);
+            % but we can also just adapt the first column, because the
+            % rest stays as it is
+            W = V;
+            W(:,:,1) = this.log(X,Z);
+            normsw = sqrt(sum(W(:,:,1).^2,1));
+            W(:,normsw>eps,1) = W(:,normsw>eps,1)./repmat(normsw(normsw>eps),[this.ItemSize,1,1]);
+            alpha = zeros(l,this.ItemSize-1);
+            if any(normr>eps)
+                alpha(normr>eps,:) = sum(...
+                    repmat(r(:,normr>eps),[1,1,this.ItemSize-1]).*...
+                    V(:,normr>eps,:)./repmat(permute(normr(normr>eps),[2,1]),[this.ItemSize,1,this.ItemSize-1]),1);
             end
+            % and even inplace, i.e. we rename the basis at M (W) also
+            % to V
+            G = W(:,:,1).*repmat(0.5*permute(alpha(:,1),[2,1]),[this.ItemSize,1]) ...
+                + sum(W(:,:,2:this.ItemSize-1).*...
+                repmat(...
+                repmat(permute( 1./(2*cos(this.dist(X,Z)./2)) ,[3,1,2]),[1,1,this.ItemSize-2]).*...
+                permute(alpha(:,2:this.ItemSize-1),[3,1,2]),...
+                [this.ItemSize,1,1]),3);            
+        end
+        function G = localGrad_X_D2_Sq(this,X,Y,Z)
+            dimen = size(X);
+            X = reshape(X,this.ItemSize,[]);
+            Y = reshape(Y,this.ItemSize,[]);
+            Z = reshape(Z,this.ItemSize,[]);
+            l = size(X,2);
+            m = this.exp(X, this.log(X,Z)./2);
+            % Common directions to middle points y
+            r = this.log(m,Y);
+            normr = permute(sqrt(sum(r.^2,1)),[2:length(size(r)),1]);
+            % Grad X
+            V = this.TpMONB(m,Z);
+            % Instead of
+            % W = this.TpMONB(X,Z);
+            % we have would have to use PT
+            % W = this.ParallelTransport(m,X,V);
+            % but we can also just adapt the first column, because the
+            % rest stays as it is
+            W = V;
+            W(:,:,1) = this.log(X,Z);
+            normsw = sqrt(sum(W(:,:,1).^2,1));
+            W(:,normsw>eps,1) = W(:,normsw>eps,1)./repmat(normsw(normsw>eps),[this.ItemSize,1,1]);
+            alpha = zeros(l,this.ItemSize-1);
+            if any(normr>eps)
+                alpha(normr>eps,:) = sum(...
+                    2*repmat(r(:,normr>eps),[1,1,this.ItemSize-1]).*...
+                    V(:,normr>eps,:),1);
+            end
+            % and even inplace, i.e. we rename the basis at M (W) also
+            % to V
+            G = W(:,:,1).*repmat(0.5*permute(alpha(:,1),[2,1]),[this.ItemSize,1]) ...
+                + sum(W(:,:,2:this.ItemSize-1).*...
+                repmat(...
+                repmat(permute( 1./(2*cos(this.dist(X,Z)./2)) ,[3,1,2]),[1,1,this.ItemSize-2]).*...
+                permute(alpha(:,2:this.ItemSize-1),[3,1,2]),...
+                [this.ItemSize,1,1]),3);
+            G = reshape(G,dimen);
         end
         function d = localDist(~,p,q)
             if ( size(p,2) > 1) && (size(q,2) > 1) %both nonsingleton

@@ -427,6 +427,7 @@ classdef SymPosDef < manifold & handle
                     xvals = 1/2*sum(this.dist(vars.f(:,:,proxpts,:),xoptt).^2,2) + vars.lambda*this.dist(this.midPoint(xoptt(:,:,:,1),xoptt(:,:,:,3)),xoptt(:,:,:,2));
                     xopt(:,:,xvals<xoptvals,:) = xoptt(:,:,xvals<xoptvals,:);
                     xoptvals(xvals<xoptvals) = xvals(xvals<xoptvals);
+                    x(:,:,proxpts,:) = xopt;
                 end
                 x(:,:,proxpts,:) = xopt;
                 %we do not interpolate up to now!
@@ -463,20 +464,56 @@ classdef SymPosDef < manifold & handle
                 x=vars.f;
             end
         end
-        function Y = addNoise(this,X,sigma)
+        function Y = addNoise(this,X,sigma,varargin)
+            ip = inputParser;
+            addParameter(ip,'Distribution','Rician');
+            parse(ip,varargin{:});
+            vars = ip.Results;
             sizes = size(X);
             manDim = sizes(1:length(this.ItemSize));
             assert(all(manDim==this.ItemSize),...
                 ['Manifold Dimnsions of signal X (',num2str(manDim)...
                 ,') do not fit to this manifold (',num2str(this.ItemSize),').']);
             dataDim = sizes((length(this.ItemSize)+1):end);
-            assert(length(dataDim)<4,'This method only works up to 3-dimensional data');
-            Y = zeros(size(X));
-            for l=1:prod(dataDim)
-                [i,j,k] = ind2sub(dataDim,l);
-                T = chol(X(:,:,i,j,k)) + triu( sqrt(sigma)*randn(this.ItemSize));
-                Y(:,:,i,j,k) = T*permute(T,[2,1]);
+            if strcmp(vars.Distribution,'Rician')
+                X = reshape(X,[manDim,prod(dataDim)]);
+                Y = zeros(size(X));                
+                for l=1:prod(dataDim)
+                    T = chol(X(:,:,l)) + triu( sqrt(sigma)*randn(this.ItemSize));
+                    Y(:,:,l) = T*permute(T,[2,1]);
+                end
+                Y = reshape(Y,sizes);
+            elseif strcmp(vars.Distribution,'Gaussian')
+                % Should be done in C
+                ONB_Id = zeros([this.ItemSize,this.Dimension]);
+                n = this.ItemSize(1);
+                n_sq = n^2;
+                ONB = reshape(eye(n_sq),n,n,[]);
+                ONB_Id(:,:,1:n) = ONB(:,:,(1:n:(n_sq-n+1))+(0:(n-1)));
+                ONB = ONB(:,:,find(tril(ones(n),-1)));
+                ONB_Id(:,:,n+1:end) = 1/sqrt(2)*(ONB+permute(ONB,[2,1,3]));
+                X = reshape(X,[manDim,prod(dataDim)]);
+                V = sum(repmat(sigma*randn(1,1,prod(dataDim),this.Dimension),n,n,1,1).*repmat(permute(ONB_Id,[1,2,4,3]),1,1,prod(dataDim),1),4);
+                Y = this.exp(X,this.parallelTransport(repmat(eye(n),1,1,prod(dataDim)),X,V));
+                Y = reshape(Y,sizes);
+            else
+                warning('Distribution unknown, output equals input');
+                Y = X;
             end
+        end
+        function [ONB] = TpMONB(this,p)
+            % V = TpMONB(p)
+            % Compute an ONB in TpM
+            %
+            % INPUT
+            %     p : base point( sets)
+            % OUTPUT
+            %    ONB : orthonormal bases ( n x n x SetDim x n(n+1)/2 )
+            % ---
+            % ManImRes 1.0, J. Persch ~ 2016-06-13
+            dimen = size(p);
+            [~,ONB] = this.localJacobianEigenFrame(p,this.log(p,repmat(eye(dimen(1)),[1,1,dimen(3:end)])));
+            ONB = permute(ONB,[1:2, 3+(1:max(length(dimen(3:end)),1)), 3]);
         end
     end
     methods (Access = private)
@@ -570,14 +607,12 @@ classdef SymPosDef < manifold & handle
             end
             V = reshape(V,dims);
         end
- function W = localParallelTransport(~,X,Y,V,t)
+ function W = localParallelTransport(~,X,Y,V)
             dims = size(X);
             X = reshape(X,dims(1),dims(2),[]);
             Y = reshape(Y,dims(1),dims(2),[]);
             V = reshape(V,dims(1),dims(2),[]);
-            W = zeros(size(X));            V = reshape(V,3,3,[]);
             W = zeros(size(X));
-            t = ones(1,size(X,3)).*t;
             for i=1:size(X,3)
                 [U,S,~]=svd(X(:,:,i));
                 S= diag(sqrt(max(diag(S),0)));
@@ -590,7 +625,7 @@ classdef SymPosDef < manifold & handle
                 B = sX\Y(:,:,i)/sX;
                 [U,S,~]=svd(0.5*(B+B'));
                 S= diag(log(max(diag(S),eps))); %log(X,Y) without outer sqrtm(x)e, they vanish in the following exp
-                [U,S,] = eig((0.5*t(i)*0.5*( (U*S*U') + (U*S*U')')));
+                [U,S,] = eig((0.5*0.5*( (U*S*U') + (U*S*U')')));%first 0.5 from formula second for numerical stability
                 S = diag(exp(diag(S))); % i.e. Z = U*S*U'
                 
                 W(:,:,i) = sX*(U*S*U')*(0.5*(A+A'))*(U*S*U')*sX;
@@ -631,7 +666,7 @@ classdef SymPosDef < manifold & handle
             S= diag(sqrt(max(diag(S),0))); %Avoid rounding errors, elementwise sqrt
             lambda = zeros(1,n);
             W = zeros(this.ItemSize(1),this.ItemSize(2),n);
-            if ~(all(S(:)==0) || all(V(:)==0))
+            if ~(all(S(:)==0)) %|| all(V(:)==0))
                 sX=U*S*U';
                 VE = 0.5*(sX\V/sX + (sX\V/sX)');
                 [cpointV,D] = eig(VE);
@@ -669,6 +704,40 @@ classdef SymPosDef < manifold & handle
                 alpha(i,Rl>eps) = ...
                     this.dot( M(:,:,Rl>eps),R(:,:,Rl>eps),squeeze(Vm(:,:,i,Rl>eps)))...
                     ./(Rl(Rl>eps)); % <normed_log..., B_{ij}(T/2)>
+            end
+            G = zeros(this.ItemSize(1),this.ItemSize(2),size(X,3));
+            for i=1:n %the gradient is a weighted sum of the tangential vectors in X
+                % w.,r.t the just computed weights and the eigenvalues lambda
+                nonZeroL = squeeze(lambda(i,:)>eps); % times the effect of D_vc[b_{ij}]
+                if sum(nonZeroL)>0
+                    G(:,:,nonZeroL) = G(:,:,nonZeroL) ...
+                        + repmat(...
+                        permute(...
+                        (sinh(lambda(i,nonZeroL)*0.5))./sinh(lambda(i,nonZeroL)) .* alpha(i,nonZeroL), ...
+                        [4,3,2,1]), [this.ItemSize,1,1]).*permute(Vx(:,:,i,nonZeroL),[1,2,4,3]); %nonzero eigenvalue
+                end
+                if sum(~nonZeroL)>0
+                    G(:,:,~nonZeroL) = G(:,:,~nonZeroL) ...
+                        + repmat(permute(0.5*alpha(i,~nonZeroL),[4,3,2,1]),[this.ItemSize,1,1]).*permute(Vx(:,:,i,~nonZeroL),[1,2,4,3]);
+                    % zero eigenvalue
+                end
+            end
+        end
+        function G = localGrad_X_D2_Sq(this,X,Y,Z)
+            M = this.exp(X, this.log(X,Z)/2);
+            n = this.ItemSize(1)*(this.ItemSize(1)+1)/2;
+            % Solve Eigenvalue problem in Z (in Z with direction towards X)
+            [lambda, Vx] = this.JacobianEigenFrame(X,this.log(X,Z));
+            Vm = zeros(size(Vx));
+            for i=1:n %transport frame(s) into tangential planes of X and M
+                %                Vx(:,:,i,:) = this.parallelTransport(Z,X,squeeze(Vz(:,:,i,:)));
+                Vm(:,:,i,:) = this.parallelTransport(X,M,squeeze(Vx(:,:,i,:)));
+            end
+            R = this.log(M,Y); % log_c(x) y
+            alpha = zeros(n,size(M,3));
+            for i=1:n
+                % <log..., B_{ij}(T/2)>
+                alpha(i,:) = 2* this.dot( M,R,squeeze(Vm(:,:,i,:)));
             end
             G = zeros(this.ItemSize(1),this.ItemSize(2),size(X,3));
             for i=1:n %the gradient is a weighted sum of the tangential vectors in X

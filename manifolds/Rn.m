@@ -14,7 +14,7 @@ classdef Rn < manifold & handle
             obj.ItemSize = n;
             obj.Dimension = n;
         end
-        function q = exp(~,p,v)
+        function q = exp(this,p,v,t)
             % exp(p,v) - Exponential map at the point p with respect to v in
             % TpM.
             %
@@ -25,8 +25,17 @@ classdef Rn < manifold & handle
             % OUTPUT
             %   q : resulting point(s) on Rn
             % ---
-            % Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann ~ 2014-10-26
-            q = p+v;
+            %  % Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann ~ 2014-10-26
+            %               J. Persch ~ 2016-10-26
+            if nargin < 4
+                t=1;
+            end
+            if isscalar(t)
+                q = p+t*v;
+            else
+                assert([this.ItemSize,size(t)] == size(v),'t should be scalar or match dimension of v');
+                q = p+repmat(permute(t,[length(size(t))+1,1:length(size(t))]),[this.ItemSize,ones(size(size(t)))])*v;
+            end
         end
         function v = log(~,p,q)
             % log(q,p) - Inverse Exponential Map at p of q.
@@ -190,6 +199,46 @@ classdef Rn < manifold & handle
                         permute(vars.RegMask(proxsets,:),[2,1]).*repmat(vars.w,[1,sum(proxsets)]),...
                         [3,2,1]),[k,1,1]).*...
                     repmat(s.*repmat(mins,[k,1,1]),[1,1,d]);
+            end
+        end
+        function G = grad_X_D2_Sq(this,X,Y,Z)
+            % grad_X_D2_sq(X,Z,Y) Compute the gradient with respect to the first
+            % variable of the squared second order difference term
+            % d^2(c(X,Z),Y). This can also
+            % be used for the third, Z, exchanging X and Z
+            %
+            % INPUT
+            %   X : A point( set)
+            %   Y : A point( set)
+            %   Z : A point( set)
+            %
+            % OUTPUT
+            %   G : A (set of) tangent vector(s, one) at (each) X.
+            %
+            % ---
+            % Manifold-Valued Image Restoration Toolbox 1.0, J. Persch, 2016-10-21
+            G = -1/2*(X+Z-2*Y);
+        end
+        function ds = dot(this,P,V,W)
+            % Sn.dot(P,V,W)
+            %     Compute the inner product of two tangent vectors in T_P M
+            %
+            % INPUT
+            %     X  : a point(Set) in P(n)
+            %     V  : a first tangent vector( set) to (each) X
+            %     W  : a secod tangent vector( set) to (each) X
+            %
+            % OUTPUT
+            %     ds : the corresponding value(s) of the inner product of (each triple) V,W at X
+            %
+            % ---
+            % Manifold-Valued Image Restoration Toolbox 1.0, J. Persch 2016-10-23
+            %
+            dimen = size(P);
+            if all(size(V) == dimen & size(W) == dimen)
+                ds = permute(sum(V.*W,1),[2:length(dimen),1]);
+            else
+                error('Dimensions of Input must coincide')
             end
         end
         function fn = addNoise(~,f,sigma)

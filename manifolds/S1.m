@@ -30,7 +30,7 @@ classdef S1 < manifold & handle
                 assert(all(size_p(2:end)==size(t)),'t should either be a scalar or have the same size as p'); 
             end
             assert(all(size(p)==size(v)),'p and q have to be of same size');
-            q = symMod(v+p,2*pi);
+            q = symMod(t*v+p,2*pi);
         end
         function v = log(~,p,q)
         % log(q,p) - Inverse Exponential Map at p of q.
@@ -71,7 +71,7 @@ classdef S1 < manifold & handle
             if (any(size(p_)~=size(q_)))
                 error('Distances can only be computed for equal length vectors p and q');
             end
-            d = squeeze(abs(symMod(p_-q_,2*pi))); %squeeze first dimension if both are not vectors
+            d = shiftdim(abs(symMod(p_-q_,2*pi)),1); %squeeze first dimension if both are not vectors
         end
         function x = proxad(this,varargin)
             % proxad(f,lambda,w) compute the [PROX]imal mapping for
@@ -216,6 +216,46 @@ classdef S1 < manifold & handle
         end
         function fn = addNoise(~,f,sigma)
             fn = symMod(f + sigma*randn(size(f)),2*pi);
+        end
+        function G = grad_X_D2_Sq(this,X,Y,Z)
+            % grad_X_D2_sq(X,Z,Y) Compute the gradient with respect to the first
+            % variable of the squared second order difference term
+            % d^2(c(X,Z),Y). This can also
+            % be used for the third, Z, exchanging X and Z
+            %
+            % INPUT
+            %   X : A point( set)
+            %   Y : A point( set)
+            %   Z : A point( set)
+            %
+            % OUTPUT
+            %   G : A (set of) tangent vector(s, one) at (each) X.
+            %
+            % ---
+            % Manifold-Valued Image Restoration Toolbox 1.0, J. Persch  2016-09-21
+            G  = -1/2*symMod((X+Z)-2*Y,2*pi);
+        end
+        function ds = dot(this,P,V,W)
+            % S1.dot(P,V,W)
+            %     Compute the inner product of two tangent vectors in T_P M
+            %
+            % INPUT
+            %     X  : a point(Set) in S1
+            %     V  : a first tangent vector( set) to (each) X
+            %     W  : a secod tangent vector( set) to (each) X
+            %
+            % OUTPUT
+            %     ds : the corresponding value(s) of the inner product of (each triple) V,W at X
+            %
+            % ---
+            % Manifold-Valued Image Restoration Toolbox 1.0, J. Persch 2016-12-06
+            %
+            dimen = size(P);
+            if all(size(V) == dimen & size(W) == dimen)
+                ds = permute(V.*W,[2:length(dimen),1]);
+            else
+                error('Dimensions of Input must coincide')
+            end
         end
     end
 end

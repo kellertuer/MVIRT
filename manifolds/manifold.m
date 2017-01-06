@@ -54,7 +54,7 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
         % addNoise(X,sigma) add noise w.r.t. the manifold itself and a
         % standard deviation sigma to a (multidimensional) signal X of
         % manifold valued pixels.
-        Y = addNoise(this,X,sigma)
+        Y = addNoise(this,X,sigma,varargin)
     end
     methods
         function x = proxDist(this,g,f,lambda)
@@ -126,7 +126,7 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
                 x2=f2;
                 return
             end
-            
+
             % Calculate step length in (0,1/2]
             step = min(1/2,lambda./this.dist(f1,f2));
             step = permute(repmat(step(:),[1,this.ItemSize]),[length(this.ItemSize)+1:-1:1]);
@@ -286,11 +286,11 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
             addParameter(ip,'t',[]);
             parse(ip, varargin{:});
             vars = ip.Results;
-            
+
             this = vars.this;
             x = vars.x;
             y = vars.y;
-            
+
             if size(x,length(this.ItemSize)+1)>1 ||size(y,length(this.ItemSize)+1)>1
                 error('x,y should be points on the manifold');
             end
@@ -301,7 +301,7 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
             end
             if isvector(vars.t)
                 t = vars.t;
-                pts = length(t);       
+                pts = length(t);
             elseif isempty(vars.t)
                 t = 0:1/(pts-1):1;
             else
@@ -314,10 +314,17 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
            end
            geo = reshape(geo,[this.ItemSize,pts]);
         end
-        function v = var(this,f)
-            % var(f) computes the empirical variance 
+        function [v, mean_f] = var(this,f)
+            % var(f) computes the empirical variance
             %       1/(numel(f)-1) * sum (f-mean(f))^2
             % of f
+            % INPUT:
+            % f      Manifold valued Set
+            % OUTPUT:
+            % v      variance of the set (scalar)
+            % mean_f mean value of the set
+            %
+            % Manifold-valued Image Restoration Toolbox 1.2 - J. Persc, R. bergmann, 2017-01-06
             dimen = size(f);
             num_el = prod(dimen(length(this.ItemSize)+1:end));
             f = reshape(f,[this.ItemSize,1,num_el]);
@@ -343,11 +350,12 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
             % OPTIONAL
             % 'Weights' : (1/n*ones([m,n]) 1xn or mxn weights for the mean
             %            the first case uses the same weights for all means
-            % 'InitVal' : m Initial Data points for the gradient descent 
+            % 'InitVal' : m Initial Data points for the gradient descent
             % 'MaxIterations': Maximal Number of Iterations
             % 'Epsilon'      : Maximal change before stopping
             %
-            % Manifold-valued Image Restoration Toolbox 1.0 ~ J. Persch 2015-07-24 | R. Bergmann 2015-07-30
+            %
+            % Manifold-valued Image Restoration Toolbox 1.0, J. Persch 2015-07-24 | R. Bergmann 2015-07-30
             ip = inputParser;
             addRequired(ip,'f');
             addParameter(ip,'Weights',NaN);
@@ -432,7 +440,7 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
             % INPUT
             %    f     :  m x n Data points ([this.Itemsize,m,n]) to compute
             %            m means of n points each, pp.
-            %   lambda : initial value for the sequence lambda_k in the CPPA 
+            %   lambda : initial value for the sequence lambda_k in the CPPA
             %
             % OUTPUT
             %   x     : manifold mean of the values in (each column of) f depending on q
