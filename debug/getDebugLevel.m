@@ -13,7 +13,7 @@ function lvl = getDebugLevel( type )
 % LMDLO, R. Bergmann, 2014-04-21
     global LMDLO_active LMDLO_struct;
     if (isempty(LMDLO_active)) %not initailized by any setDebugLevel
-        warning('getDebugLevel() should bot be called without initialization first');
+        warning('getDebugLevel() should not be called without initialization first');
         lvl = -1;
         return;
     end

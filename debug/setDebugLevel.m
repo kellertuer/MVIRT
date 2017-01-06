@@ -9,7 +9,7 @@ function setDebugLevel(varargin)
 %       level : level the type is set to
 %
 % ---
-% LMDLO ~ R. Bergmann ~ 2014-04-21 | 2014-04-22
+% LMDLO ~ R. Bergmann ~ 2014-04-21, last edit: 2014-04-22
 
     global LMDLO_struct;
     % if debug was not active before, calling setDebugLevel activates it.

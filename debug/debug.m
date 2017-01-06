@@ -12,6 +12,7 @@ function debug(type, level, varargin)
 %   OPTIONAL
 %        'StartTimer' : start global timer saved in the global struct timer
 %        'StopTimer'  : stop global timer number
+%        'GetTimer'   : get global timer
 %        'TimeFormat' : number format for the timer (see fprintf, std: (%09.8f) 
 %        'Text'       : Display a Text
 %
@@ -38,6 +39,7 @@ function debug(type, level, varargin)
     p = inputParser;
     addParameter(p, 'StartTimer','');
     addParameter(p, 'StopTimer','');
+    addParameter(p, 'GetTimer','');
     addParameter(p, 'TimeFormat','%09.8f');
     addParameter(p, 'Text','');
     parse(p, varargin{:});
@@ -70,6 +72,14 @@ function debug(type, level, varargin)
                 debug('text',3,'Text',['Timer stopped for ',debugparams.StopTimer,'.']);
                 debug('text',2,'Text',['Computation for ',debugparams.StopTimer,' took ',sprintf(debugparams.TimeFormat,temptime),' sec.']);
                 timers.remove(debugparams.StopTimer);
+            else
+                warning(['There was no timer running for ',debugparams.StopTimer]);
+            end
+        end
+        if (numel(debugparams.GetTimer)>0)
+            if (timers.isKey(debugparams.GetTimer))
+                temptime = toc(timers(debugparams.GetTimer));
+                debug('text',2,'Text',['Computation for ',debugparams.StopTimer,' runs already ',sprintf(debugparams.TimeFormat,temptime),' sec.']);
             else
                 warning(['There was no timer running for ',debugparams.StopTimer]);
             end
