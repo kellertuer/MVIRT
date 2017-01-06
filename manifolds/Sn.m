@@ -440,7 +440,7 @@ classdef Sn < manifold & handle
             % OPTIONAL
             % 'Weights' : (1/n*ones([m,n]) 1xn or mxn weights for the mean
             %            the first case uses the same weights for all means
-            % 'InitVal' : m Initial Data points for the gradient descent 
+            % 'InitVal' : m Initial Data points for the gradient descent
             % 'MaxIterations': Maximal Number of Iterations
             % 'Epsilon'      : Maximal change before stopping
             %

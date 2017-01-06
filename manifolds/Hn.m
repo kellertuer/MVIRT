@@ -159,11 +159,12 @@ classdef Hn < manifold & handle
                 d = this.localDist(X,Y);
             end
         end
-        function ds = dot(this,V,W)
+        function ds = dot(this,X,V,W)
             % dot(V,W)
             %     Compute the inner product of two tangent vectors in TXHn
             %
             % INPUT
+            %     X  : base point (optional because all TXM are equal)
             %     V  : a first tangent vector( set)
             %     W  : a secod tangent vector( set)
             %
@@ -172,6 +173,10 @@ classdef Hn < manifold & handle
             %
             % ---
             % Manifold-Valued Image Restoration Toolbox 1.1, R. Bergmann ~ 2015-10-20
+            if nargin < 4 
+                W = V;
+                V = X;
+            end
             if this.useMex
                 ds = HnDot(V,W);
             else
@@ -271,7 +276,7 @@ classdef Hn < manifold & handle
                 error('the second order difference proximal map is not yet available on the hyperbolic manifold');
             end
         end
-        function Y = addNoise(this,X,sigma)
+        function Y = addNoise(~,X,sigma)
             sizes = size(X);
             error('This method is not yet implemented.');
         end

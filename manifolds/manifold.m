@@ -93,7 +93,7 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
             % the piointwise distance function squared d^2(f1,f2).
             % INPUT
             %  f1,f2    : data columns
-            %  lambda   : proxParameter 
+            %  lambda   : proxParameter
             % OUTPUT
             %  x1,x2    : resulting columns of the proximal map
                         % ---
@@ -116,7 +116,7 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
             % the proximal map of the piointwise distance function d(f1,f2).
             % INPUT
             %  f1,f2    : data columns
-            %  lambda   : proxParameter 
+            %  lambda   : proxParameter
             % OUTPUT
             %  x1,x2    : resulting columns of the proximal map
             % ---
@@ -157,11 +157,10 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
             % OPTIONAL
             % 'Weights' : (1/n*ones([m,n]) 1xn or mxn weights for the mean
             %            the first case uses the same weights for all means
-            % 'InitVal' : m Initial Data points for the gradient descent 
+            % 'InitVal' : m Initial Data points for the gradient descent
             % 'MaxIterations': Maximal Number of Iterations
             % 'Epsilon'      : Maximal change before stopping
             % 'Alpha'        : Step Size in (0,2)
-            %
             %
             % Manifold-valued Image Restoration Toolbox 1.0, J. Persch 2015-07-24 | R. Bergmann 2015-07-30
             ip = inputParser;
@@ -238,7 +237,7 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
                 % Divide by the distance
                 d = this.dist(repmat(x,[ones(1,length(this.ItemSize)+1),n]),f);
                 l = length(this.ItemSize);
-                d = repmat(permute(d,[2+(1:l),1,2]),[this.ItemSize,1,1]); 
+                d = repmat(permute(d,[2+(1:l),1,2]),[this.ItemSize,1,1]);
                 V(d>0) = V(d>0)./d(d>0);
                 V = V.*w;
                 weight = sum(d.*w,3);
@@ -271,7 +270,7 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
             % OPTIONAL
             %   pts : (100) optional length of geodesic, or set to length t
             %               if t is chosen
-            %     t : vector of points lead to geo = \gamma_{x,y}(t) 
+            %     t : vector of points lead to geo = \gamma_{x,y}(t)
             %
             % OUTPUT
             %   geo : the geodesic between x,y with geo(1) = x, geo(pts)=y
@@ -305,7 +304,7 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
             elseif isempty(vars.t)
                 t = 0:1/(pts-1):1;
             else
-               error('t should be a vector'); 
+               error('t should be a vector');
             end
            geo = zeros([prod(this.ItemSize),pts]);
            v = this.log(x,y);
@@ -324,7 +323,7 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
             % v      variance of the set (scalar)
             % mean_f mean value of the set
             %
-            % Manifold-valued Image Restoration Toolbox 1.2 - J. Persc, R. bergmann, 2017-01-06
+            % Manifold-valued Image Restoration Toolbox 1.2 - J. Persch, R. bergmann, 2017-01-06
             dimen = size(f);
             num_el = prod(dimen(length(this.ItemSize)+1:end));
             f = reshape(f,[this.ItemSize,1,num_el]);
@@ -446,7 +445,7 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
             %   x     : manifold mean of the values in (each column of) f depending on q
             %
             % OPTIONAL PARAMETERS
-            %   'InitVal'       : m Initial Data points for the cppa 
+            %   'InitVal'       : m Initial Data points for the cppa
             %   'Weights'       : [ones(size(f,2))] perform a karcher mean
             %                   with differen weights.
             %   'MaxIterations' : (400) Maximal number of Iterations

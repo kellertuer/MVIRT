@@ -429,7 +429,6 @@ classdef SymPosDef < manifold & handle
                     xoptvals(xvals<xoptvals) = xvals(xvals<xoptvals);
                     x(:,:,proxpts,:) = xopt;
                 end
-                x(:,:,proxpts,:) = xopt;
                 %we do not interpolate up to now!
             elseif (length(w)==4) && all(w==[-1,1,-1,1]')
                 x=vars.f;
@@ -457,8 +456,8 @@ classdef SymPosDef < manifold & handle
                     xvals = sum(this.dist(vars.f(:,:,proxpts,:),xoptt).^2,2)/2 + vars.lambda*this.dist(this.midPoint(xoptt(:,:,:,1),xoptt(:,:,:,3)),this.midPoint(xoptt(:,:,:,2),xoptt(:,:,:,4)));
                     xopt(:,:,xvals<xoptvals,:) = xoptt(:,:,xvals<xoptvals,:);
                     xoptvals(xvals<xoptvals) = xvals(xvals<xoptvals);
+                    x(:,:,proxpts,:) = xopt;
                 end
-                x(:,:,proxpts,:) = xopt;
             else
                 warning(['Unknown discrete difference on ',this.type,': ',num2str(w'),'. Returning the input f.']);
                 x=vars.f;
