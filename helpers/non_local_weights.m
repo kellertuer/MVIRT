@@ -17,10 +17,12 @@ function W = non_local_weights(M, F, patch_size, window_size, k, sigma_patch, si
 % center_element ['m'] Char indicating which weight to use for the center
 %                   patch before averaging, 'm' maximum over neighbors
 %                                           'z' dist=0 i.e. w = 1
+% OUTPUT:
+% W                 Weight matrix with normalized columns
 %
 %   For further details see
-%     F. Laus, M. Nikolova, J. Persch, G. Steidl: A Nonlocal Denoising
-%     Algorithm for Manifold-Valued Images Using Second Order Statistics.
+%     F. Laus, M. Nokolova, J. Persch, G. Steidl: A Nonlocal Denoising Algorithm for
+%     Manifold-Valued Images Using Second Order Statistics.
 %     (ArXiv Preprint 1607.08481)
 % ---
 % Manifold-valued Image Restoration Toolbox 1.0
@@ -82,17 +84,29 @@ W = W + W';
 W = -W/(2*sigma_weights^2);
 W = spfun(@exp,W);
 
-[weights,ind_i] = sort(W,'descend');
+
+weights = zeros(k,N);
+ind_i = zeros(k,N);
+Maximum = zeros(N,1);
+%only keep k largest weights
+for j=1:N   
+    w = W(:,j);    
+    [~, index] = sort(w, 'descend');
+    weights(:,j) = w(index(1:k));
+    Maximum(j) = w(index(1)); 
+    ind_i(:,j) = index(1:k);
+end   
 weights = reshape(weights(1:k,:),[],1);
 ind_i = reshape(ind_i(1:k,:),[],1);
 ind_j = kron((1:N)',ones(k,1));
 W = sparse(ind_i,ind_j,weights,N,N);
 if center_element == 'm'
-    W = W+spdiags(max(W)',0,N,N);
+    W = W+spdiags(Maximum,0,N,N);
 else
     W = W+speye(N);
 end
     
 W = max(W,W');
-W = spdiags(1./sum(W,2),0,N,N)*W;
+W = W*spdiags(1./sum(W,2),0,N,N);
 end
+

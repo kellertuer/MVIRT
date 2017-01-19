@@ -20,15 +20,10 @@ function Res = NL_Mean(M, F, patch_size, window_size, K, sigma_patch, sigma_weig
 % OUTPUT:
 % Res           Restored manifold valued image
 %
-%   For futher details see
-%     F. Laus, M. Nikolova, J. Persch, G. Steidl: A Nonlocal Denoising
-%     Algorithm for Manifold-Valued Images Using Second Order Statistics.
-%     (ArXiv Preprint 1607.08481)
-% ---
-% Manifold-valued Image Restoration Toolbox 1.1
-%  J. Persch  ~ 2017-01-06 | R. Bergmann 2016-01-07
-% see LICENSE.txt
-
+% See also 
+% non_local_weights_fast
+%
+% MVRIT 1.2 J. Persch 05.07.2016
 if nargin < 8
     center_element = 'm';
 end
@@ -44,11 +39,16 @@ debug('text',3,'text',...
 F = reshape(F,prod(M.ItemSize),[]);
 weights = zeros(N,max(sum(W~=0)));
 FF = zeros([size(F),size(weights,2)]);
-% Capture the weights and neighbors
-for i = 1:N
-    w = W(i,W(i,:)~=0);
-    weights(i,1:length(w)) = w;
-    FF(:,i,1:length(w)) = F(:,W(i,:)~=0);
+% Extract the non zero weights
+[neighbors,ind_i,w] = find(W);
+% get the indeces of each pixel
+[~,ind_i,~] = unique(ind_i);
+% add the last element for the loop
+ind_i = [ind_i;length(w)];
+% Capture the weights and neighbors of each pixel
+for i = 1:N    
+    weights(i,1:(ind_i(i+1)-ind_i(i))) = w(ind_i(i):(ind_i(i+1)-1));
+    FF(:,i,1:(ind_i(i+1)-ind_i(i))) = F(:,neighbors(ind_i(i):(ind_i(i+1)-1)));
 end
 % Calculate the mean
 Res = reshape(M.mean(reshape(FF,[M.ItemSize,N,size(weights,2)]),'Weights',weights),dimen);
