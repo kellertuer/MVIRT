@@ -5,7 +5,7 @@
 %   TV restorations run the S1 Example "syntheticSARImage"
 %
 %
-%   This example is published in
+%   This example is published in Sect 5.5 of
 %     F. Laus, M. Nikolova, J. Persch, G. Steidl: A Nonlocal Denoising
 %       Algorithm for Manifold-Valued Images Using Second Order Statistics.
 %     (ArXiv Preprint 1607.08481)
