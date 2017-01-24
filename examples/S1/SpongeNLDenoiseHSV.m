@@ -3,7 +3,7 @@
 %   Denoising of the hue of a color image, with the NL MMSE method.
 %
 %
-%   This example is published in
+%   This example is published in Sect 5.3 of
 %     F. Laus, M. Nikolova, J. Persch, G. Steidl: A Nonlocal Denoising
 %     Algorithm for Manifold-Valued Images Using Second Order Statistics.
 %     (ArXiv Preprint 1607.08481)
