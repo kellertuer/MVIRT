@@ -79,9 +79,9 @@ function debug(type, level, varargin)
         if (numel(debugparams.GetTimer)>0)
             if (timers.isKey(debugparams.GetTimer))
                 temptime = toc(timers(debugparams.GetTimer));
-                debug('text',2,'Text',['Computation for ',debugparams.StopTimer,' runs already ',sprintf(debugparams.TimeFormat,temptime),' sec.']);
+                debug('text',2,'Text',['Computation for ',debugparams.GetTimer,' runs already ',sprintf(debugparams.TimeFormat,temptime),' sec.']);
             else
-                warning(['There was no timer running for ',debugparams.StopTimer]);
+                warning(['There was no timer running for ',debugparams.GetTimer]);
             end
         end
     end
