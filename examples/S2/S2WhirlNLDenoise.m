@@ -15,7 +15,7 @@
 %  itself
 %
 % Manifold-valued Image Restoration Toolbox 1.2
-%  J. Persch  ~ 2016-07-05 | R. Bergmann ~ 2017-01-2
+%  J. Persch  ~ 2016-07-05 | R. Bergmann ~ 2017-01-25
 % see LICENSE.txt
 run('../../initMVIRT.m')
 %% Debug
