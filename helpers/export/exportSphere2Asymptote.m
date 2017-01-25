@@ -31,13 +31,13 @@ function fileStr = exportSphere2Asymptote(varargin)
     addParameter(ip,'File','');
     addParameter(ip,'ColorMap', parula(256));
     addParameter(ip,'ScaleAxes', [1/3,1/3,1/3]);
-    addParameter(ip,'ExportHeader', false);
+    addParameter(ip,'ExportHeader', true);
     parse(ip, varargin{:});
     vars = ip.Results;
     fe = reshape(vars.f,3,[]);
-    minB = [0,0,0];
+    minB = [1,1,1];
     sizes = size(vars.f);
-    maxB = [0,0,0]; maxB(1:length(sizes(2:end))) = sizes(2:end);
+    maxB = [1,1,1]; maxB(1:length(sizes(2:end))) = sizes(2:end);
     [Xpl,Ypl,Zpl] = meshgrid(minB(1):maxB(1),minB(2):maxB(2),minB(3):maxB(3));
     Xe = reshape(Xpl,1,[]);
     Ye = reshape(Ypl,1,[]);
@@ -63,7 +63,7 @@ function fileStr = exportSphere2Asymptote(varargin)
             fprintf(fID,lineS);
         end
     end
-    for i=1:size(fe,2);
+    for i=1:size(fe,2)
         % Color encode elevation angle
         cInd = min(max( round((asin(...
             min(max(fe(3,i),-1),1)...
