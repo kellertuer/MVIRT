@@ -51,7 +51,8 @@ An implementation minimizing a model of first and second order differences, i.e.
 *   specify convergence criteria
     *   for the subgradient method inside the second order differences as number of steps
     *   for the CPPA a number of maximal iterations or a lower bound \(\epsilon\) for the maximal movement of the data items in \(u\)
-* Denoising using second order statistics on manifolds
+
+Another algorithm models tangential Gaussian noise and employes a patch based approximation of means and variances of the local noise to denoise manifold-valued images.
 
 ### Visualisation
 
