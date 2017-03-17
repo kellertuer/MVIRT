@@ -51,6 +51,7 @@ An implementation minimizing a model of first and second order differences, i.e.
 *   specify convergence criteria
     *   for the subgradient method inside the second order differences as number of steps
     *   for the CPPA a number of maximal iterations or a lower bound \(\epsilon\) for the maximal movement of the data items in \(u\)
+* Denoising using second order statistics on manifolds
 
 ### Visualisation
 
@@ -76,6 +77,10 @@ There are a few people, toolboxes, and data sources, this toolbox owes kudos to,
 
 The Toolbox includes several examples, namely nearly all examples from the following publications.
 
+*   F. Laus, M. Nikolova, J. Persch, G. Steidl (2017).  
+    **A Nonlocal Denoising Algorithm for Manifold-Valued Images Using Second Order Statistics.**
+    _SIAM Journal on Imaging Sciences. Accepted._  
+    [[www]](http://arxiv.org/abs/1607.08481)
 *   M. Bačák, R. Bergmann, G. Steidl, A. Weinmann (2015).  
     **A Second Order Non-Smooth Variational Model for Restoring Manifold-Valued Images.**  
     _SIAM Journal on Scientific Computing._ **38**, (1), A567–A597.  
