@@ -240,7 +240,7 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
                 d = repmat(permute(d,[2+(1:l),1,2]),[this.ItemSize,1,1]);
                 V(d>0) = V(d>0)./d(d>0);
                 V = V.*w;
-                weight = sum(d.*w,3);
+                weight = sum(d.*w,length(this.ItemSize)+2);
                 V = sum(V,length(this.ItemSize)+2);
                 x = this.exp(x,vars.Alpha*weight.*V);
                 i= i+1;
@@ -309,7 +309,7 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
            geo = zeros([prod(this.ItemSize),pts]);
            v = this.log(x,y);
            for i = 1:pts
-               geo(:,i) = reshape(this.exp(x,t(i)*v),prod(this.ItemSize),1);
+               geo(:,i) = reshape(this.exp(x,v,t(i)),prod(this.ItemSize),1);
            end
            geo = reshape(geo,[this.ItemSize,pts]);
         end
