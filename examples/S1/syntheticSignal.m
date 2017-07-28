@@ -50,7 +50,7 @@ N = 500;
 iter = 4000;
 epsilon = 0;
 alphas = [0.75,0,0.25];
-betas= [0,1.5,0.5];
+betas= [0,1.5,.75];
 % Details for the data - these are ignored if data is loaded
 sigma = 0.2;
 name = ['S1-syntheticSignalN',num2str(N)];
@@ -93,6 +93,13 @@ for i=1:length(alphas)
     problem.beta = betas(i);
     fresults(i,:) = cppa_ad_1D(problem);
 end
+debug('text',2,'Text',['- TV1 Minimization by CPPA on R, alpha=',num2str(alphas(1)),', beta=0 -']);
+    M2 = Rn(1);
+    problem.alpha = alphas(1);
+    problem.beta = 0;
+    problem.M = M2;
+    fResult = cppa_ad_1D(problem);
+
 if getDebugLevel('Figures')
     for i=1:length(alphas)
         figure(i+1);
@@ -101,6 +108,18 @@ if getDebugLevel('Figures')
         title(['Result of parameters \alpha=',num2str(alphas(i)),', \beta=',num2str(betas(i)),...
             ' MSE ',num2str(sum(M.dist(fo,fresults(i,:)).^2)*1/length(fo(:)),'%6.5f')]);
     end
+    figure(length(alphas)+2)
+    plot(t,fo,'.b',t,fResult,'.k');
+    ylim([-pi,pi]);
+    title(['Result of real-valued TV parameters \alpha=',num2str(alphas(i)),', \beta=0',...
+        ' MSE (on R) ',num2str(sum(M2.dist(fo,fResult).^2)*1/length(fo(:)),'%6.5f')]);
+end
+if getDebugLevel('WriteImages')
+    fo2 = fo; fo2(157:344) = fo2(157:344)+2*pi; %adapt to general N?
+    T = table(...
+      t.',fo.',fo2.',fn.',fresults(1,:).',fresults(2,:).',fresults(3,:).',fResult.',...
+      'VariableNames',{'x','orig','origS','noisy','TV','TV2','TV1a2','TV1R'});
+    writetable(T,[resultsFolder,name,'.dat']);
 end
 %% End logfile
 if getDebugLevel('logfile')
