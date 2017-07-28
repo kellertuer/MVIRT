@@ -1,4 +1,4 @@
-function [dataStr,gD] = exportSPD2AsymptoteTry(varargin)
+function [dataStr,gD] = exportSPD2Asymptote(varargin)
 % dataStr = exportSPD2Asymptote(f) - generate a File for a POVRay plot a given
 %          1D, 2D or 3D signal of symmetric positive definite matrices.
 %

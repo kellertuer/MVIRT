@@ -4,7 +4,7 @@ function [fhB,gD] = plotSPD(varargin)
 %
 % INPUT
 %   f : given (1D, 2D or 3D) data of symmetric positive definite matrices, i.e.
-%       an 3x3xImageSize-d aray
+%       an 3x3xImageSize-d array
 %
 % OPTIONAL
 %   'Colors'          : ([]) provide a color data image, i.e. an array
