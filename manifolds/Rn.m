@@ -96,6 +96,34 @@ classdef Rn < manifold & handle
                 d = shiftdim(sum( d.^norm, 1).^(1/norm)); %eliminate leading zeros
             end
         end
+        function W = parallelTransport(this,X,Y,V)
+            % W = parallelTransport(X,Y,V) parallel transport a tangential
+            % vector V at X along a geodesic from X to Y to Y
+            %
+            % INPUT
+            %    X : a point( set) on P(m)
+            %    Y : a point( set) on P(m)
+            %    V : a tangential vector( set, one) at (each) X
+            %
+            % OPTIONAL
+            %    t : value or vector to only take a fraction along the
+            %    geodesic(s)
+            %
+            % OUTPUT
+            %    W : tangential vector( set, one) at (each) Y
+            %
+            % ---
+            % ManImRes 1.0, R. Bergmann ~ 2015-01-29 | 2015-04-10
+            
+            % Changelog
+            %   2015-04-10 Introduced Mex-Files
+            if nargin > 4
+                error('Too many input arguments for parallelTransport');
+            elseif nargin< 4
+                error('Not enough input arguments for parallelTransport');
+            end
+            W = V;
+        end
         function x = proxad(this,varargin)
         % data f with respect to lambda an the weight w.
         % Any unknown point containing a NaN is inpainted if

@@ -64,6 +64,18 @@ classdef Hn < manifold & handle
                 V = this.localLog(X,Y);
             end
         end
+        function W = parallelTransport(this,X,Y,V)
+                % Parallel Transport the vector V from TxM to TyM
+                %
+                % directional part that changes
+                sV = size(V);
+                dir = this.log(X,Y);
+                norm_dir = repmat(sqrt(sum(dir.^2,1)),[this.ItemSize,ones(1,length(sV(2:end)))]);
+                dir = dir./norm_dir;
+                scp = sum(dir.*V,1);
+                % substract V-part (scp*dir) and add the negative direction
+                W = V - repmat(scp,[this.ItemSize,ones(1,sV(2:end))]).*(dir+this.log(Y,X)./norm_dir);
+        end
         function x = mean(this,varargin)
             % mean(f) calculates the mean of the input data with a gradient
             % descent algorithm. This implementation is based on
