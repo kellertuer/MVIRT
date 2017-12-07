@@ -42,6 +42,8 @@ double mSnDist(VectorXd X, VectorXd Y)
 VectorXd mSnParallelTransport(VectorXd X, VectorXd Y, VectorXd V) {
     VectorXd dir = mSnLog(X,Y);
     double norm_dir = dir.norm();
+    if (norm_dir==0)
+        return V; //X=Y -> no transport necessary
     dir = dir/norm_dir;
     return V - dir.dot(V)*(dir+mSnLog(Y,X)/norm_dir);
 }

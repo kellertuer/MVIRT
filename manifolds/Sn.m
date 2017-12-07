@@ -348,11 +348,14 @@ classdef Sn < manifold & handle
                 % directional part that changes
                 sV = size(V);
                 dir = this.log(X,Y);
-                norm_dir = repmat(sqrt(sum(dir.^2,1)),[3,ones(1,length(sV(2:end)))]);
+                norms = sqrt(sum(dir.^2,1));
+                norm_dir = repmat(norms,[3,ones(1,length(sV(2:end)))]);
+                normMask = repmat(norms==0,[3,ones(1,length(sV(2:end)))]);
                 dir = dir./norm_dir;
                 scp = sum(dir.*V,1);
                 % substract V-part (scp*dir) and add the negative direction
-                W = V - repmat(scp,[this.ItemSize,ones(1,sV(2:end))]).*(dir+this.log(Y,X)./norm_dir);
+                W = V - repmat(scp,[this.ItemSize,ones(1,length(sV(2:end)))]).*(dir+this.log(Y,X)./norm_dir);
+                W(normMask) = V(normMask); %those that need not to be transported
             end
         end
         function V = TpMONB(this,p,q)
@@ -583,7 +586,11 @@ classdef Sn < manifold & handle
             if nargin < 4
                 t=1;
             elseif ~isscalar(t)
-                if size(p_) ~= [this.ItemSize,size(t)]
+                sP = size(p_);
+                sP = sP(2:end);
+                sT = size(t);
+                sT = sT(sT>1);
+                if any(sP(2:end) ~= sT)
                     error('t needs to be of same dimension as p_ and v_ or a scalar')
                 end
             end
