@@ -1,26 +1,18 @@
- --- Logfile of Experiment S1-HuberN500 started 13-Apr-2016 16:30:16 ---
-Using File Data generated 06-Dec-2015 11:00:22.
-i=1000 where lastdiff is 3.4853e-05 and lambdait=0.0031416
-i=2000 where lastdiff is 1.4187e-05 and lambdait=0.0015708
-i=3000 where lastdiff is 6.5135e-06 and lambdait=0.0010472
-i=4000 where lastdiff is 3.1535e-06 and lambdait=0.0007854
-4000 iterations, last difference:3.1535e-06
-i=1000 where lastdiff is 0.16729 and lambdait=0.0031416
-i=2000 where lastdiff is 0.047898 and lambdait=0.0015708
-i=3000 where lastdiff is 0.063304 and lambdait=0.0010472
-i=4000 where lastdiff is 0.048204 and lambdait=0.0007854
-4000 iterations, last difference:0.048204
+ --- Logfile of Experiment S1-HuberN500 started 09-Feb-2018 15:13:01 ---
+1000 last change: 9.5207e-06.
+2000 last change: 3.5772e-06.
+3000 last change: 1.7057e-06.
+4000 last change: 9.8554e-07.
+Elapsed time is 15.082041 seconds.
+1000 last change: 1.9825e-06.
+2000 last change: 5.0425e-07.
+3000 last change: 2.2477e-07.
+4000 last change: 1.2691e-07.
+clear all; close all, clc
 RadialInpaint
-Debug Level of LevelMin set to 0
-Debug Level of LevelMax set to 50
-Debug Level of time set to 3
-Debug Level of text set to 3
-Initializing the Manifold-valued Image Restoration Toolbox.
-Debug Level of LevelMin set to 0
-Debug Level of LevelMax set to 1000
-Debug Level of text set to 3
-Debug Level of IterationStep set to 10000
-Debug Level of WriteImages set to 1
-Debug Level of time set to 3
-Debug Level of Figures set to 1
-Debug Level of logfile set to 1
+[Warning: Name is nonexistent or not a directory: /Users/bergmann/Repositories/MVIRT/algorithms/functionals] 
+[> In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('path', '/Applications/MATLAB_R2017b.app/toolbox/matlab/general/path.m', 109)" style="font-weight:bold">path</a> (<a href="matlab: opentoline('/Applications/MATLAB_R2017b.app/toolbox/matlab/general/path.m',109,0)">line 109</a>)
+  In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('addpath', '/Applications/MATLAB_R2017b.app/toolbox/matlab/general/addpath.m', 94)" style="font-weight:bold">addpath</a> (<a href="matlab: opentoline('/Applications/MATLAB_R2017b.app/toolbox/matlab/general/addpath.m',94,0)">line 94</a>)
+  In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('initMVIRT', '/Users/bergmann/Repositories/MVIRT/initMVIRT.m', 23)" style="font-weight:bold">initMVIRT</a> (<a href="matlab: opentoline('/Users/bergmann/Repositories/MVIRT/initMVIRT.m',23,0)">line 23</a>)
+  In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('run', '/Applications/MATLAB_R2017b.app/toolbox/matlab/lang/run.m', 91)" style="font-weight:bold">run</a> (<a href="matlab: opentoline('/Applications/MATLAB_R2017b.app/toolbox/matlab/lang/run.m',91,0)">line 91</a>)
+  In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('RadialInpaint', '/Users/bergmann/Repositories/MVIRT/examples/S1/RadialInpaint.m', 25)" style="font-weight:bold">RadialInpaint</a> (<a href="matlab: opentoline('/Users/bergmann/Repositories/MVIRT/examples/S1/RadialInpaint.m',25,0)">line 25</a>)] 

@@ -1,38 +1,41 @@
- --- Logfile of Experiment PhaseBlocks started 13-Apr-2016 16:20:40 ---
- --- CPPA TV1&2 on R ---
-Timer started for Cyclic proximal point algorithm on manifolds
-i=1000 where lastdiff is 0.00033217 and lambdait=0.0031416
-i=2000 where lastdiff is 0.00012222 and lambdait=0.0015708
-i=3000 where lastdiff is 6.5439e-05 and lambdait=0.0010472
-i=4000 where lastdiff is 4.0505e-05 and lambdait=0.0007854
-Timer stopped for Cyclic proximal point algorithm on manifolds.
-Computation for Cyclic proximal point algorithm on manifolds took 145.54742448 sec.
-4000 iterations, last difference:4.0505e-05
+ --- Logfile of Experiment PhaseBlocks started 09-Feb-2018 14:50:33 ---
+1000 last change: 4.7785e-06.
+2000 last change: 1.2707e-06.
+3000 last change: 6.1755e-07.
+4000 last change: 4.0124e-07.
+5000 last change: 2.9139e-07.
+6000 last change: 2.2659e-07.
+7000 last change: 1.8442e-07.
+8000 last change: 1.55e-07.
+Elapsed time is 169.849842 seconds.
  --- CPPA TV1&2 ---
-Timer started for Cyclic proximal point algorithm on manifolds
-i=1000 where lastdiff is 0.00033217 and lambdait=0.0031416
-i=2000 where lastdiff is 0.00010692 and lambdait=0.0015708
-i=3000 where lastdiff is 5.5641e-05 and lambdait=0.0010472
-i=4000 where lastdiff is 4.0505e-05 and lambdait=0.0007854
-Timer stopped for Cyclic proximal point algorithm on manifolds.
-Computation for Cyclic proximal point algorithm on manifolds took 180.65929364 sec.
-4000 iterations, last difference:4.0505e-05
+1000 last change: 6.1277e-06.
+2000 last change: 1.6855e-06.
+3000 last change: 7.7667e-07.
+4000 last change: 4.6224e-07.
+5000 last change: 3.2705e-07.
+6000 last change: 2.4863e-07.
+7000 last change: 1.9915e-07.
+8000 last change: 1.6551e-07.
+Elapsed time is 156.370449 seconds.
  --- CPPA TV ---
-Timer started for Cyclic proximal point algorithm on manifolds
-i=1000 where lastdiff is 0.00041111 and lambdait=0.0031416
-i=2000 where lastdiff is 0.0002008 and lambdait=0.0015708
-i=3000 where lastdiff is 1.9753e-05 and lambdait=0.0010472
-i=4000 where lastdiff is 1.0989e-05 and lambdait=0.0007854
-Timer stopped for Cyclic proximal point algorithm on manifolds.
-Computation for Cyclic proximal point algorithm on manifolds took 102.61088895 sec.
-4000 iterations, last difference:1.0989e-05
+1000 last change: 3.8348e-06.
+2000 last change: 6.4401e-07.
+3000 last change: 2.8079e-07.
+4000 last change: 1.5698e-07.
+5000 last change: 1.0011e-07.
+6000 last change: 6.9361e-08.
+7000 last change: 5.0873e-08.
+8000 last change: 3.8902e-08.
+Elapsed time is 93.155262 seconds.
  --- CPPA TV2 ---
-Timer started for Cyclic proximal point algorithm on manifolds
-i=1000 where lastdiff is 8.2149e-05 and lambdait=0.0031416
-i=2000 where lastdiff is 4.7819e-05 and lambdait=0.0015708
-i=3000 where lastdiff is 3.002e-05 and lambdait=0.0010472
-i=4000 where lastdiff is 1.7923e-05 and lambdait=0.0007854
-Timer stopped for Cyclic proximal point algorithm on manifolds.
-Computation for Cyclic proximal point algorithm on manifolds took 128.38733954 sec.
-4000 iterations, last difference:1.7923e-05
- --- Logfile of Experiment PhaseBlocks ended 13-Apr-2016 16:30:11 ---
+1000 last change: 1.7205e-06.
+2000 last change: 7.4888e-07.
+3000 last change: 4.9056e-07.
+4000 last change: 3.5919e-07.
+5000 last change: 2.7329e-07.
+6000 last change: 2.1635e-07.
+7000 last change: 1.8023e-07.
+8000 last change: 1.5201e-07.
+Elapsed time is 117.538653 seconds.
+ --- Logfile of Experiment PhaseBlocks ended 09-Feb-2018 14:59:34 ---

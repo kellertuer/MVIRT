@@ -99,19 +99,20 @@ beta2s = [0,1/8,1/8];
 gammas = [0,1/8,0];
 
 clear problem
-problem.MaxIterations = iter;
-problem.Epsilon = epsilon;
-problem.lambda=pi;
 problem.M = S1;
+problem.lambdaIterate = @(iter) pi/iter;
+problem.stoppingCriterion = stopCritMaxIterEpsilonCreator(problem.M,iter,epsilon);
 problem.f = permute(Zn,[3,1,2]); %the (unseen, third) manifold dimension has to be the first one
 
 for i=1:length(alpha1s)
-    problem.alpha = [alpha1s(i),alpha2s(i) 0 0];
-    problem.beta = [beta1s(i),beta2s(i),gammas(i)];
-    Zr = permute(cppa_ad_2D(problem),[2,3,1]); %permute back for imaging
+    problem.alpha = diag([alpha1s(i),alpha2s(i)]);
+    problem.beta = [beta1s(i),gammas(i);0,beta2s(i)];
+    tic
+    ZrT = permute(CPP_AdditiveTV12(problem),[2,3,1]); %permute back for imaging
+    toc
     ME = sum(sum(problem.M.dist(Zr,Z).^2))/length(Z(:));
 debug('text',2,'Text',...
-    ['On ',num2str([problem.alpha problem.beta]),' the error is ME:',sprintf('%3.7G',ME)]);
+    ['On ',num2str([problem.alpha(:).' problem.beta(:).']),' the error is ME:',sprintf('%3.7G',ME)]);
     if getDebugLevel('WriteImages')
         map = colormap(hsv(256));
         frs = 255*(Zr+pi)/(2*pi);
@@ -119,7 +120,7 @@ debug('text',2,'Text',...
     end
     if getDebugLevel('Figures')
         figure(i+2); imagesc(Zr+pi); title(['Parameters ',...
-        num2str([problem.alpha problem.beta]),' ME:',sprintf('%3.7G',ME)]); colormap hsv;
+        num2str([problem.alpha(:).' problem.beta(:).']),' ME:',sprintf('%3.7G',ME)]); colormap hsv;
     end
 end
 % End logfile

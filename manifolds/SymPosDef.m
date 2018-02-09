@@ -23,6 +23,7 @@ classdef SymPosDef < manifold & handle
         steps = 10;
         ItemSize;
         Dimension;
+        allDims;
     end
     
     methods
@@ -31,6 +32,7 @@ classdef SymPosDef < manifold & handle
             obj.type = ['symmetric positive definite ',num2str(m),'x',num2str(m),' matrices'];
             obj.ItemSize = [m,m];
             obj.Dimension = m*(m+1)/2;
+            obj.allDims = repelem({':'},2);
         end
         function x = mean(this,varargin)
             % mean(f) calculates the mean of the input data with a gradient
@@ -139,6 +141,27 @@ classdef SymPosDef < manifold & handle
                 Y = this.localExp(X,V,t);
             end
         end
+        function W = geopoint(this,X,Y,t)
+            % geopoint(X,V,t) - Give the point \gamma_{XY}(t) of point(s) P 
+            %
+            % INPUT
+            %   X,Y : a point or set of points on the manifold P(m)
+            %   t : a scalar or set of scalars 
+            %
+           %
+            % OUTPUT
+            %   W : resulting point(s) on P(m)
+            % ---
+            % Manifold-Valued Image Restoration Toolbox 1.0, J. Persch ~ 2017-03-31
+            
+            % Changelog
+            %   2015-04-10 introduced mexfile            
+            if this.useMex
+                W = SPDGeo(X,Y,t);
+            else
+                W = this.exp(X,this.log(X,Y),t);
+            end
+      end
         function V = log(this,X,Y)%,verifyFlag)
             % log(X,Y) - Exponential map at the point(s) X of points(s) Y
             %      in TXP(m)
@@ -238,49 +261,7 @@ classdef SymPosDef < manifold & handle
                 ds = this.localDot(X,V,W);
             end
         end
-        function [lambda,W] = JacobianEigenFrame(this,X,V)
-            % [lambda,W] = JacobianEigenFrame(X,V) Compute the eigenframe and
-            % eigenvalues for the (each) tangential plane of the point( set) X
-            % w.r.t (one of each) V.
-            %
-            % INPUT
-            %    X : A point( set)
-            %    V : A tangential vector( set)
-            %
-            % OUTPUT
-            %     lambda : eigenvalue( set)s of the riemannian tensor at (each) X
-            %     W      : correspoinding eigenmatrices
-            %
-            % ---
-            % Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann ~ 2015-01-20 | 2015-04-11
-            
-            % Changelog
-            %   2015-04-11 Extracted to local; optimized GradX instead of
-            %              writing a Mex here o spare memory
-            [lambda,W] = this.localJacobianEigenFrame(X,V);
-        end
-        function G = grad_X_D2(this,X,Y,Z)
-            % grad_X_D2(X,Y,Z) Compute the gradient with respect to the first
-            % variable of the second order difference term. This can also
-            % be used for the third, Z, exchanging X and Z
-            %
-            % INPUT
-            %   X : A point( set)
-            %   Y : A point( set)
-            %   Z : A point( set)
-            %
-            % OUTPUT
-            %   G : A (set of) tangent vector(s, one) at (each) X.
-            %
-            % ---
-            % Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann  2015-01-29
-            % Compute mid point(s)
-            if this.useMex
-                G = SPDGrad_X_D2(X,Y,Z);
-            else
-                G = this.localGrad_X_D2(X,Y,Z);
-            end
-        end
+
         function G = grad_X_D2_Sq(this,X,Z,Y)
             % grad_X_D2_sq(X,Z,Y) Compute the gradient with respect to the first
             % variable of the squared second order difference term
@@ -304,163 +285,74 @@ classdef SymPosDef < manifold & handle
                 G = this.localGrad_X_D2_Sq(X,Y,Z);
             end
         end
-        function x = proxad(this,varargin)
-            % proxad(f, lambda, w) - Compute the proximal mapping of the
-            % data f with respect to lambda an the weight w.
-            % Any unknown point containing a NaN is inpainted if
-            % neighbouring known points or else left unchanged
-            %
+
+        function [x,y] = prox_midpoint_data_sq(this,varargin)
+            % prox_midpoint_data_sq(v,w,f, lambda) - Compute the proximal mapping of the
+            % images v,w to the data f with respect to lambda.            %
             % INPUT
-            %      f : data on P(m) (i.e. mxm), where [m,m,l,d] = size(f) and d
-            %          is the number of data points per prox and l is the
-            %          number of parallel proxes. A point is unknown if for
-            %          fixed d,l any of the three entries is NaN.
+            %      v,w,f : data on P(m) (i.e. mxm), where [m,m,l] = size(f) = size(v) = size(w)
+            %          and l is the number of parallel proxes.
             % lambda : weight of the proximal map (one value)
-            %      w : finite difference weight vector. For P(m) up to now
-            %          only [-1,1] and [1,-2,1] are supported
-            % OPTIONAL PARAMETERS
-            %     'UnknownMask'  : ([]) Specify a mask, which values of f are unknown
-            %                      (1) and initialized in the cycles otherwise, when
-            %                         possible (depending on the neighbours).
-            %     'RegMask'      : ([]) Specify a binary mask for values affected by
-            %                     (1) they are regularized, i.e. moved (or active, say)
-            %                     (0) fixed. RegMask is of the same size
-            %                         the data point set, i.e. [n,m].
-            %      If specified all Masks have to be the same size as f.
-            %
             % OUTPUT
-            %      x : resulting data of all proximal maps (mxmxdxl)
+            %      x : resulting data of all proximal maps (mxmxl)
             % ---
-            % Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann ~ 2015-01-20
+            % ManImRes 1.0, R. Bergmann ~ 2015-01-20
             if (length(varargin)==1 && isstruct(varargin{1})) %struct case
                 vars = varargin{1};
-                assert(isfield(vars,'f')&&isfield(vars,'lambda')&&isfield(vars,'w'),...
+                assert(isfield(vars,'f')&&isfield(vars,'lambda')&&isfield(vars,'v')&&isfield(vars,'w'),...
                     'Not all required parameters given in the struct');
-                if ~isfield(vars,'RegMask')
+                if ~isfield(vars,'RegMask');
                     vars.RegMask = [];
                 end
-                d = size(vars.f,4);
-                l = size(vars.f,3);
-                w = vars.w; %no check!
             else
                 ip = inputParser;
+                addRequired(ip,'v');
+                addRequired(ip,'w');
                 addRequired(ip,'f');
                 addRequired(ip,'lambda');
-                addRequired(ip,'w');
-                addParameter(ip, 'RegMask', []);
                 parse(ip, varargin{:});
                 vars = ip.Results;
-                [a,b,l,d] = size(vars.f);
+                [a,b,~] = size(vars.f);
                 if any([a,b]~=this.ItemSize)
-                    error(['The values of f (',num2str(d),' points in ',...
-                        num2str(l),' proximal mappings of dimension ',num2str(a),'x',num2str(b),...
-                        ') are not ',num2str(this.ItemSize(1)),'x',num2str(this.ItemSize(2)),' matrices.']);
+                    error(['The values of f are not ',num2str(this.ItemSize(1)),'x',num2str(this.ItemSize(2)),' matrices.']);
                 end
-                if (isrow(vars.w))
-                    w = vars.w';
-                else
-                    w = vars.w;
+                if any(size(vars.v)~=size(vars.w)) || any(size(vars.v)~=size(vars.f))
+                    error('Inputs v,w,f should be of the same size!');
                 end
             end
             if (vars.lambda==0)
-                x = vars.f;
+                x = vars.v;
+                y = vars.w;
                 return
             end
-            if sum(size(vars.RegMask))==0
-                vars.RegMask = ones(l,d);
-            end
-            assert(d==length(w),['The length of the weight (',...
-                num2str(length(w)),') does not fit to the data size (',...
-                num2str(d),').']);
-            x = vars.f;
-            x(isnan(vars.f)) = NaN;
-            missingpoints = squeeze(any(any(isnan(vars.f),1),2)); %sum along manifold dimensions & squeeze
-            if l==1
-                missingpoints = missingpoints';
-            end
-            % proxes that can be computed
-            proxpts = sum(missingpoints,2)==0; %last dimension d
-            proxpts = proxpts & (sum(vars.RegMask,2)==d); %only affected proxes
-            
-            % proxes that can be inpainted
-            inpaintpts = sum(missingpoints,2)==1;
-            if (length(w)==2) && all(w==[-1,1]')
-                vecls = this.dist(vars.f(:,:,proxpts,1), vars.f(:,:,proxpts,2));
-                t = zeros(size(vecls));
-                t(vecls>eps) = min(vars.lambda./(vecls(vecls>eps)), 0.5); %Not a unit speed geodesic -> divide by length
-                % Compute new values
-                x(:,:,proxpts,1) = this.exp(vars.f(:,:,proxpts,1), repmat(reshape(t,[ones(1,length(this.ItemSize)),length(t)]),[this.ItemSize,1]).*this.log(vars.f(:,:,proxpts,1),vars.f(:,:,proxpts,2)));
-                x(:,:,proxpts,2) = this.exp(vars.f(:,:,proxpts,2), repmat(reshape(t,[ones(1,length(this.ItemSize)),length(t)]),[this.ItemSize,1]).*this.log(vars.f(:,:,proxpts,2),vars.f(:,:,proxpts,1)));
-                %
-                % Inpaint all first missing points, the second one is
-                % existing due to limiting the missing number to 1
-                x(:,:,(missingpoints(:,1)>0)&inpaintpts,1) = x(:,:,(missingpoints(:,1)>0)&inpaintpts,2);
-                x(:,:,(missingpoints(:,2)>0)&inpaintpts,2) = x(:,:,(missingpoints(:,2)>0)&inpaintpts,1);
-            elseif (length(w)==3) && all(w==[1,-2,1]')
-                %
-                % Iterative subgradient descent
-                x = vars.f;
-                % Gradient descent
-                xopt = x(:,:,proxpts,:);
-                xoptvals = vars.lambda*this.dist(this.midPoint(x(:,:,proxpts,1),x(:,:,proxpts,3)),x(:,:,proxpts,2)); %x=f hence first term zero
-                for i=1:this.steps
-                    % midpoints between firsts and thirds
-                    % Gradient X
-                    grad1 = this.log(x(:,:,proxpts,1),vars.f(:,:,proxpts,1)) + vars.lambda*this.grad_X_D2(x(:,:,proxpts,1),x(:,:,proxpts,2),x(:,:,proxpts,3));
-                    % Gradient Y (easy)
-                    M = this.exp(x(:,:,proxpts,1), this.log(x(:,:,proxpts,1),x(:,:,proxpts,3))/2);
-                    V = this.log(x(:,:,proxpts,2),M);
-                    Vl = sqrt(this.dot(x(:,:,proxpts,2),V,V));
-                    % rearrange dimensions, let ./ do the singleton
-                    % expansion
-                    V(:,:,Vl>eps) = V(:,:,Vl>eps)./...
-                        repmat(reshape(Vl(Vl>eps),[ones(1,length(this.ItemSize)),length(Vl(Vl>eps))]),[this.ItemSize,1]);
-                    V(:,:,~(Vl>eps)) = 0;
-                    grad2 = this.log(x(:,:,proxpts,2),vars.f(:,:,proxpts,2)) + vars.lambda*V;
-                    % Gradient Z
-                    grad3 = this.log(x(:,:,proxpts,3),vars.f(:,:,proxpts,3)) + vars.lambda*this.grad_X_D2(x(:,:,proxpts,3),x(:,:,proxpts,2),x(:,:,proxpts,1));
-                    tauit = this.tau/i;
-                    x(:,:,proxpts,1) = this.exp(x(:,:,proxpts,1), tauit*grad1);
-                    x(:,:,proxpts,2) = this.exp(x(:,:,proxpts,2), tauit*grad2);
-                    x(:,:,proxpts,3) = this.exp(x(:,:,proxpts,3), tauit*grad3);
-                    xoptt = x(:,:,proxpts,:);
-                    xvals = 1/2*sum(this.dist(vars.f(:,:,proxpts,:),xoptt).^2,2) + vars.lambda*this.dist(this.midPoint(xoptt(:,:,:,1),xoptt(:,:,:,3)),xoptt(:,:,:,2));
-                    xopt(:,:,xvals<xoptvals,:) = xoptt(:,:,xvals<xoptvals,:);
-                    xoptvals(xvals<xoptvals) = xvals(xvals<xoptvals);
-                    x(:,:,proxpts,:) = xopt;
-                end
-                %we do not interpolate up to now!
-            elseif (length(w)==4) && all(w==[-1,1,-1,1]')
-                x=vars.f;
-                xopt = x(:,:,proxpts,:);
-                xoptvals = vars.lambda*this.dist(this.midPoint(x(:,:,proxpts,1),x(:,:,proxpts,3)),this.midPoint(x(:,:,proxpts,2),x(:,:,proxpts,4))); %x=f hence first term zero
-                for i=1:this.steps
-                    % Two arrays of midpoints
-                    M = zeros(this.ItemSize(1),this.ItemSize(2),size(x(1,1,proxpts,1),3),2);
-                    M(:,:,:,1) = this.exp(x(:,:,proxpts,1), this.log(x(:,:,proxpts,1),x(:,:,proxpts,3))/2);
-                    M(:,:,:,2) = this.exp(x(:,:,proxpts,2), this.log(x(:,:,proxpts,2),x(:,:,proxpts,4))/2);
-                    grad = zeros(this.ItemSize(1),this.ItemSize(2),size(M,3),4); % all four gradients
-                    for j=1:4
-                        j2 = mod(j+1,4)+1; %other index involved in same mid point, 1->3, 2->4, 3->1, 4->2
-                        mi = mod(j,2)+1; %opposite midpoint index (1,3)->2, (2,4)->1
-                        % similar to the approach for 1,-2,1 just that y is
-                        % the other middle point
-                        grad(:,:,:,j) = this.grad_X_D2(x(:,:,proxpts,j),M(:,:,:,mi),x(:,:,proxpts,j2));
-                    end
-                    %perform a gradient step
-                    tauit = this.tau/i;
-                    for j=1:4
-                        x(:,:,proxpts,j) = this.exp(x(:,:,proxpts,j), tauit*grad(:,:,:,j));
-                    end
-                    xoptt = x(:,:,proxpts,:);
-                    xvals = sum(this.dist(vars.f(:,:,proxpts,:),xoptt).^2,2)/2 + vars.lambda*this.dist(this.midPoint(xoptt(:,:,:,1),xoptt(:,:,:,3)),this.midPoint(xoptt(:,:,:,2),xoptt(:,:,:,4)));
-                    xopt(:,:,xvals<xoptvals,:) = xoptt(:,:,xvals<xoptvals,:);
-                    xoptvals(xvals<xoptvals) = xvals(xvals<xoptvals);
-                    x(:,:,proxpts,:) = xopt;
-                end
-            else
-                warning(['Unknown discrete difference on ',this.type,': ',num2str(w'),'. Returning the input f.']);
-                x=vars.f;
+            v = vars.v;
+            x = v;
+            w = vars.w;
+            y = w;
+            f = vars.f;
+            % Gradient descent
+            xopt = x;
+            yopt = y;
+            func_optvals =  vars.lambda*this.dist(this.midPoint(x,y),f).^2;
+            for i=1:this.steps
+                % midpoints between firsts and thirds
+                % Gradient X
+                grad1 = this.log(x,v) + vars.lambda*this.grad_X_D2_Sq(x,f,y);
+                % Gradient Y
+                grad2 = this.log(y,w) + vars.lambda*this.grad_X_D2_Sq(y,f,x);
+                tauit = this.tau/i;
+                x = this.exp(x, tauit*grad1);
+                y = this.exp(y, tauit*grad2);
+                % Testing if new values are better
+                xoptt = x;
+                yoptt = y;
+                func_vals = 1/2*this.dist(v,xoptt).^2+1/2*this.dist(w,yoptt).^2 +...
+                    vars.lambda*this.dist(this.midPoint(xoptt,yoptt),f).^2;
+                xopt(:,:,func_vals<func_optvals) = xoptt(:,:,func_vals<func_optvals);
+                yopt(:,:,func_vals<func_optvals) = yoptt(:,:,func_vals<func_optvals);
+                y = yopt;
+                x = xopt;
+                func_optvals(func_vals<func_optvals) = func_vals(func_vals<func_optvals);
             end
         end
         function Y = addNoise(this,X,sigma,varargin)
@@ -500,19 +392,61 @@ classdef SymPosDef < manifold & handle
                 Y = X;
             end
         end
-        function [ONB] = TpMONB(this,p)
+        function [W,k] = TpMONB(this,Xp,Yp)
             % V = TpMONB(p)
             % Compute an ONB in TpM
             %
             % INPUT
             %     p : base point( sets)
+            % OPTIONAL:
+            %     q : directional indicator( sets) for the first vector(s).
             % OUTPUT
-            %    ONB : orthonormal bases ( n x n x SetDim x n(n+1)/2 )
+            %    W : orthonormal bases ( n x n x SetDim x Dimension )
+            %    k : (optional) curvature coefficients (Dimension x SetDim)
             % ---
-            % ManImRes 1.0, J. Persch ~ 2016-06-13
-            dimen = size(p);
-            [~,ONB] = this.localJacobianEigenFrame(p,this.log(p,repmat(eye(dimen(1)),[1,1,dimen(3:end)])));
-            ONB = permute(ONB,[1:2, 3+(1:max(length(dimen(3:end)),1)), 3]);
+            % MVIRT R. Bergmann, 2017-12-03
+            n = this.Dimension;  
+            dataDim  =size(Xp);
+            dataDim = dataDim(length(this.ItemSize)+1:end);  
+            if isempty(dataDim)
+                dataDim = 1;
+            end
+            X = reshape(Xp,[this.ItemSize,prod(dataDim)]);
+            m = size(X,3);
+            dimen = size(X);
+            if nargin < 3
+               V = repmat(eye(dimen(1)),[1,1,dimen(3:end)]);
+            else
+               Y = reshape(Yp,[this.ItemSize,prod(dataDim)]);
+               V = this.log(X,Y);
+            end
+            W = zeros(this.ItemSize(1),this.ItemSize(2),m,n);
+            k = zeros(m,n);
+            for l=1:m
+                [U,S,~]=svd(X(this.allDims{:},l));
+                S = diag(sqrt(max(diag(S),0))); %Avoid rounding errors, elementwise sqrt
+                if ~(all(S(:)==0)) 
+                    sX=U*S*U';
+                    VE = 0.5*(sX\V(:,:,l)/sX + (sX\V(:,:,l)/sX)');
+                    [cpointV,D] = eig(VE);
+                    cpointlambda = diag(D);
+                    % lazy double for loop - optimize later
+                    s = 1;
+                    for i=1:this.ItemSize(1)
+                        for j=i:this.ItemSize(2)
+                            k(l,s) = -1/4*abs(cpointlambda(i)-cpointlambda(j)).^2;%*norm(V,'fro');
+                            t = 0.5;
+                            if (i~=j)
+                                t = sqrt(t);
+                            end
+                            thisV = t*( cpointV(:,i)*cpointV(:,j)' + cpointV(:,j)*cpointV(:,i)');
+                            W(:,:,l,s) =  sX*(thisV)*sX;
+                            s = s+1; %also lazy
+                        end
+                    end
+                end
+            end
+            W = reshape(W,[this.ItemSize,dataDim,this.Dimension]);
         end
     end
     methods (Access = private)
@@ -560,6 +494,8 @@ classdef SymPosDef < manifold & handle
         function Y = localExp(~,X,V,t)
             if isrow(t)
                 pt = t';
+            else 
+                pt = t;
             end
             dims = size(X);
             X = reshape(X,dims(1),dims(2),[]);
@@ -575,12 +511,13 @@ classdef SymPosDef < manifold & handle
                 elseif all(all(X(:,:,i)==0))
                     Y(:,:,i)=X(:,:,i);
                 else
-                    S= diag(sqrt(max(diag(S),0))); %Avoid rounding errors, elementwise sqrt
+                    S= diag(sqrt(max(diag(S),0))); %Avoid rounding errors, elementwise sqrt                    
                     sX=U*S*U';
                     A = sX\(Vt(:,:,i))/sX;
-                    [U,S]=eig(0.5*(A+A'));
+                    [U,S]=eig(0.5*(A+A'));                 
                     S= diag(exp(diag(S))); %Avoid rounding errors, elementwise exp
                     Y(:,:,i) = sX*(U*S*U')*sX;
+                    Y(:,:,i) = 1/2*(Y(:,:,i)+ Y(:,:,i).');% Symmetrize to avoid numerical errors
                 end
             end
             Y = reshape(Y,dims);
@@ -602,11 +539,12 @@ classdef SymPosDef < manifold & handle
                     [U,S,~]=svd(0.5*(A+A'));
                     S= diag(log(max(diag(S),eps))); %Avoid rounding errors, elementwise log
                     V(:,:,i) = sX*U*S*U'*sX;
+                    V(:,:,i) = 1/2*(V(:,:,i)+V(:,:,i).');% Symmetrize to avoid numerical errors
                 end
             end
             V = reshape(V,dims);
         end
- function W = localParallelTransport(~,X,Y,V)
+        function W = localParallelTransport(~,X,Y,V)
             dims = size(X);
             X = reshape(X,dims(1),dims(2),[]);
             Y = reshape(Y,dims(1),dims(2),[]);
@@ -630,61 +568,6 @@ classdef SymPosDef < manifold & handle
                 W(:,:,i) = sX*(U*S*U')*(0.5*(A+A'))*(U*S*U')*sX;
             end
             W = reshape(W,dims);
-        end
-        function [lambda,W] = localJacobianEigenFrame(this,X,V)
-            n = (this.ItemSize(1)+1)*this.ItemSize(2)/2;
-            dims = size(X);
-            X = reshape(X,dims(1),dims(2),[]);
-            V = reshape(V,dims(1),dims(2),[]);
-            W = zeros(dims(1),dims(2),n,size(X,3));
-            lambda = zeros(n,size(X,3));
-            for i=1:size(X,3)
-                [lambda(:,i),W(:,:,:,i)] = this.localEigenFrame(X(:,:,i),V(:,:,i));
-            end
-            if length(dims)>2 % back to original shape
-                W = reshape(W,[dims(1:2),n,dims(3:end)]);
-                lambda = reshape(lambda,[n,dims(3:end)]);
-            end
-        end
-        function [lambda,W] = localEigenFrame(this,X,V)
-            % W = localEigenframe(X,Y) Compute the Eigenframe w.r.t. the
-            %     eigenvectors of V (from TXP(m)) at X
-            %
-            % INPUT
-            %     X : a point on P(m)
-            %     V : a corresponding tangential vector
-            %
-            % OUTPUT
-            %      W : a set of vectors forming the eigenframe
-            % lambda : values characterizing the curvature (-\lambda =
-            %          kappa)
-            % ---
-            % Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann ~2015-01-29
-            n = this.ItemSize(1)*(this.ItemSize(1)+1)/2;
-            [U,S,~]=svd(X);
-            S= diag(sqrt(max(diag(S),0))); %Avoid rounding errors, elementwise sqrt
-            lambda = zeros(1,n);
-            W = zeros(this.ItemSize(1),this.ItemSize(2),n);
-            if ~(all(S(:)==0)) %|| all(V(:)==0))
-                sX=U*S*U';
-                VE = 0.5*(sX\V/sX + (sX\V/sX)');
-                [cpointV,D] = eig(VE);
-                cpointlambda = diag(D);
-                % lazy double for loop - optimize later
-                s = 1;
-                for i=1:this.ItemSize(1)
-                    for j=i:this.ItemSize(2)
-                        lambda(s) = abs(cpointlambda(i)-cpointlambda(j))*norm(V,'fro');
-                        t = 0.5;
-                        if (i~=j)
-                            t = sqrt(t);
-                        end
-                        thisV = t*( cpointV(:,i)*cpointV(:,j)' + cpointV(:,j)*cpointV(:,i)');
-                        W(:,:,s) =  sX*(thisV)*sX;
-                        s = s+1; %also lazy
-                    end
-                end
-            end
         end
         function G = localGrad_X_D2(this,X,Y,Z)
             M = this.exp(X, this.log(X,Z)/2);
@@ -730,15 +613,15 @@ classdef SymPosDef < manifold & handle
             Vm = zeros(size(Vx));
             for i=1:n %transport frame(s) into tangential planes of X and M
                 %                Vx(:,:,i,:) = this.parallelTransport(Z,X,squeeze(Vz(:,:,i,:)));
-                Vm(:,:,i,:) = this.parallelTransport(X,M,squeeze(Vx(:,:,i,:)));
+                Vm(:,:,i,:) = this.parallelTransport(X(:,:,:),M(:,:,:),squeeze(Vx(:,:,i,:)));
             end
             R = this.log(M,Y); % log_c(x) y
-            alpha = zeros(n,size(M,3));
+            alpha = zeros(n,size(M(:,:,:),3));
             for i=1:n
                 % <log..., B_{ij}(T/2)>
-                alpha(i,:) = 2* this.dot( M,R,squeeze(Vm(:,:,i,:)));
+                alpha(i,:) = 2* this.dot( M(:,:,:),R(:,:,:),squeeze(Vm(:,:,i,:)));
             end
-            G = zeros(this.ItemSize(1),this.ItemSize(2),size(X,3));
+            G = zeros(this.ItemSize(1),this.ItemSize(2),size(X(:,:,:),3));
             for i=1:n %the gradient is a weighted sum of the tangential vectors in X
                 % w.,r.t the just computed weights and the eigenvalues lambda
                 nonZeroL = squeeze(lambda(i,:)>eps); % times the effect of D_vc[b_{ij}]
@@ -755,6 +638,7 @@ classdef SymPosDef < manifold & handle
                     % zero eigenvalue
                 end
             end
+            G = reshape(G,size(X));
         end
     end
 end

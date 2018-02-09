@@ -83,16 +83,18 @@ beta1s = 3/4;
 beta2s = 3/4;
 gammas = 3/4;
 
-problem.MaxIterations = iter;
-problem.Epsilon = epsilon;
-problem.lambda=pi;
-problem.M = S1;
-problem.f = permute(imgg,[3,1,2]); %the (unseen, third) manifold dimension has to be the first one
+problem2.M = S1();
+problem2.lambdaIterate = @(iter) pi/iter;
+problem2.stoppingCriterion = stopCritMaxIterEpsilonCreator(problem.M,iter,epsilon);
+problem2.f = permute(imgg,[3,1,2]);
 
 for i=1:length(alpha1s)
-    problem.alpha = [alpha1s(i),alpha2s(i) 0 0];
-    problem.beta = [beta1s(i),beta2s(i),gammas(i)];
-    imgr = permute(cppa_ad_2D(problem),[2,3,1]); %permute back for imaging
+    problem2.alpha = diag( [alpha1s(i),alpha2s(i)] );
+    problem2.beta = [beta1s(i),gammas(i);0,beta2s(i)];
+    tic
+        imgr = permute(CPP_AdditiveTV12(problem2),[2,3,1]); %permute back for imaging
+    toc
+        
     if getDebugLevel('WriteImages')
         map = colormap(hsv(256));
         frs = 255*(imgr+pi)/(2*pi);
@@ -100,7 +102,7 @@ for i=1:length(alpha1s)
     end
     if getDebugLevel('Figures')
         figure(i+1); imagesc(imgr+pi); title(['Reconstruction',...
-        num2str([problem.alpha problem.beta]),' .']); colormap hsv;
+        num2str([problem.alpha(:).', problem.beta(:).']),' .']); colormap hsv;
         axis image; axis off
     end
 end

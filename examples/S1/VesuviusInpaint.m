@@ -105,19 +105,17 @@ end
 
 %% Parameters for the CPPA
 clear problem
-problem.alpha = 1/4*[1,1,0,0];
-problem.beta=3/4*[1,1,1];
-problem.lambda = pi;
-problem.f = permute(Vl,[3,1,2]);
-problem.MaxIterations = 4000;
-problem.Epsilon = 10^(-9);
+
 problem.M = S1();
+problem.alpha = 1/2*eye(2);
+problem.beta = 3/4*[1,1;0,1];
+problem.f = permute(Vl,[3,1,2]);
 problem.UnknownMask = ~Mask;
-%
-% Datamask (1=existent, 0 nonexistent data)
-% RegMask (1=pixel affected by surrounding TV terms, 0 not affected (just
-% data applied if that's 1)
-Vres = permute(cppa_ad_2D(problem),[2,3,1]);
+problem.stoppingCriterion = stopCritMaxIterEpsilonCreator(problem.M, 4000,10^(-9));
+tic
+Vres = permute(CPP_AdditiveTV12(problem),[2,3,1]);
+toc
+
 if getDebugLevel('Figures')
     figure(4); imagesc(Vres,[-pi,pi]); colormap(hsv(1024));
     axis image; axis off
@@ -129,10 +127,14 @@ if getDebugLevel('WriteImages')
     imwrite(Vresexp,colormap(hsv(255)),[resultsFolder,name,'-impainted-',num2str(problem.alpha(1),4),'-',num2str(problem.beta(1),4),'.png'],'png');
     % Compare to usual denoise
 end
-problem.alpha = problem.alpha/2;
-problem.alpha = problem.beta/2;
+
+
+problem.alpha = problem.alpha./2;
+problem.beta = problem.beta./2;
 problem.f = permute(V,[3,1,2]);
-Vcomp = permute(cppa_ad_2D(problem),[2,3,1]);
+tic
+Vcomp = permute(CPP_AdditiveTV12(problem),[2,3,1]);
+toc
 VDist = problem.M.dist(Vcomp,Vres);
 %
 if getDebugLevel('Figures')

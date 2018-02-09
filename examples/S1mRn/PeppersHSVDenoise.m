@@ -37,11 +37,11 @@ setDebugLevel('Figures',1);         % 0: no figure display, 1: figures are displ
 setDebugLevel('logfile',1);         % 0: no logfile 1: logfile
 format compact
 
-folder = ['examples',filesep,'S2',filesep];
-results = ['Peppers',filesep];
+folder = ['examples',filesep,'S1mRn',filesep];
+results = ['PeppersHSV',filesep];
 dataFolder = ['..',filesep,'..',filesep,'data',filesep];
 dataName = 'peppers';
-name = 'DenoisePeppers_HSV1';
+name = 'PeppersHSVDenoise';
 
 if getDebugLevel('logfile')
     clc
@@ -84,9 +84,7 @@ Vhsvs(:,:,1) = symMod(Vhsvs(:,:,1),2 * pi);
 %% Parameters
 alphas = [1/16 3/32] * 2*pi;
 betas = [0 1/32] * 2*pi;
-problem.Epsilon = 10^(-9);
-problem.MaxIterations = 400;
-problem.lambda = pi/2;
+problem.stoppingCriterion = stopCritMaxIterEpsilonCreator(problem.M, 400,10^(-9));
 %
 problem.M = S1mRn(1,2);
 problem.f = permute(Vhsvs,[3,1,2]); 
@@ -112,7 +110,7 @@ for beta = betas
             problem.alpha = alpha;
             problem.beta= beta;
             tic;
-            Vhsvr = permute(cppa_ad_2D(problem),[2,3,1])/(2*pi);
+            Vhsvr = permute(CPP_AdditiveTV12(problem),[2,3,1])/(2*pi);
             Vhsvr(:,:,1) = mod(Vhsvr(:,:,1),1); %back from (-.5,.5) to (0,1)
             toc
             %
@@ -144,7 +142,7 @@ disp(['Best PSNR',num2str(bestPSNR),' obtained for ',num2str(bestParams),'.']);
 if bestPSNRTV1 > 0
     disp(['Best PSNR for TV1 ',num2str(bestPSNRTV1),' obtained for ',num2str(bestParamTV1),'.']); 
 end
-if getDebugLevel('logfile');
+if getDebugLevel('logfile')
     diary off;
 end
 cd(start)

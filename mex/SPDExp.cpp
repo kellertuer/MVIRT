@@ -38,7 +38,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
         isTdouble = true;
     }
     else if (nrhs == 3) {
-        if ( mxIsDouble(prhs[2]) ) {
+        if ( mxIsScalar(prhs[2]) ) {
             t = *mxGetPr(prhs[2]);
             isTdouble=true;
         } else {
@@ -71,7 +71,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
     else if( (Xs>2) && (!isTdouble) ) {
         if (Vs!=Xs)
             mexErrMsgTxt("The input parameter V is of wrong size.");
-        if (Ts!=(Xs-2))
+        if (Ts>(Xs-1))
             mexErrMsgTxt("The input parameter t is of wrong size.");
         for (i=2; i<Xs; i++) {
             numel *= Xn[i];

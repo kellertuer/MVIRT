@@ -85,21 +85,30 @@ if getDebugLevel('Figures')
 end
 M=S1;
 fresults = zeros(length(alphas),N);
-problem.M = S1; problem.f = fn; problem.lambda = pi;
-problem.MaxIterations = iter; problem.Epsilon = epsilon;
+
+problem.M = S1();
+problem.lambdaIterate = @(iter) pi/iter;
+problem.stoppingCriterion = stopCritMaxIterEpsilonCreator(problem.M,iter,epsilon);
+problem.f = fn;
+
 for i=1:length(alphas)
-    debug('text',2,'Text',['- TV1&2 Minimization by CPPA, alpha=',num2str(alphas(i)),', beta=',num2str(betas(i)),' -']);
+    debug('text',2,'Text',['- TV1&2 Minimization by CPPA, alpha=',num2str(alphas(i)),', beta=',num2str(betas(i)),' -']);    
     problem.alpha = alphas(i);
     problem.beta = betas(i);
-    fresults(i,:) = cppa_ad_1D(problem);
+    tic
+    fresults(i,:) = CPP_AdditiveTV12(problem);
+    toc
 end
 debug('text',2,'Text',['- TV1 Minimization by CPPA on R, alpha=',num2str(alphas(1)),', beta=0 -']);
-    M2 = Rn(1);
-    problem.alpha = alphas(1);
-    problem.beta = 0;
+    M2 = Rn(1);    
     problem.M = M2;
-    fResult = cppa_ad_1D(problem);
-
+    problem.alpha=alphas(1);
+    problem.beta = 0;
+    tic
+    fResult = CPP_AdditiveTV12(problem);
+    toc;
+    
+    
 if getDebugLevel('Figures')
     for i=1:length(alphas)
         figure(i+1);

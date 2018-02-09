@@ -14,6 +14,7 @@ classdef S1mRn < manifold & handle
         RComponents;
         ItemSize;
         Dimension;
+        allDims;
     end
     
     methods
@@ -32,6 +33,7 @@ classdef S1mRn < manifold & handle
             end
             obj.ItemSize = length(obj.SComponents);
             obj.Dimension = obj.ItemSize;
+            obj.allDims = repelem({':'},length(obj.ItemSize));
         end
         function q = exp(this,p,v,t)
             % exp(p,v) - Exponential map at the point p with respect to v in
@@ -85,26 +87,6 @@ classdef S1mRn < manifold & handle
             v = q-p;
             v(this.SComponents,:) = symMod(v(this.SComponents,:),2*pi);
         end
-        function x = proxDist(this,g,f,lambda)
-            % proxDist(g,f,lambda)
-            % Proximal step towards f from given data g with parameter
-            % lambda on (S1)mRn arbitrary manifold.
-            % INPUT
-            %  f,g    : data point( sets/columns )
-            %  lambda : stepsize towards f
-            %
-            % OUTPUT
-            %       x : result point( sets) of the proximal map
-            % ---
-            % Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann ~ 2014-10-19
-            t = this.dist(g,f,0); %do not sum
-            v = this.log(g,f);
-            % t = repmat(t,[this.ItemSize,1]); %repeat t into the dimensions
-            % Instead of the line above - for product manifolds we do the
-            % following
-            v = sign(v); %norm v in each factor of the product manifold
-            x = this.exp(g, repmat(lambda./(1+lambda),[this.ItemSize,1]).*t.*v);
-        end
         function d = dist(this,p,q,n)
             % dist(a,b) computes the length of the smaller arc of a,b on
             % SnRm and returns the vector of distances. If n is specified,
@@ -148,123 +130,13 @@ classdef S1mRn < manifold & handle
                 d = shiftdim(sum( d.^n, 1).^(1/n)); %eliminate leading zeros
             end
         end
-        function x = proxad(this,varargin)
-        % data f with respect to lambda an the weight w.
-        % Any unknown point containing a NaN is inpainted if
-        % neighbouring known points or else left unchanged
-        %
-        % INPUT
-        %      f : data on SnRm, k=n+m, where [k,l,d] = size(f) and d
-        %          is the number of data points per prox and l is the
-        %          number of parallel proxes. A point is unknown if for
-        %          fixed d,l any of the three entries is NaN.
-        % lambda : weight of the proximal map
-        %      w : finite difference weight vector. For S2 up to now
-        %          only [-1,1] and [-1,2,1] are supported
-        %
-        % OUTPUT
-        %      x : resulting data of all proximal maps
-        %
-        % OPTIONAL PARAMETERS
-        %     'RegMask'     : ([]) Specify a binary mask for values affected by
-        %                      (1) they are regularized, i.e. moved (or active, say)
-        %                      (0) fixed. RegMask is of the same size
-        %                      the data point set, i.e. [d,l].
-        % ---
-        % Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann ~ 2014-10-26 | 2014-02-13
-        
-        % Changelog
-        % 2015-02-13 Changed order of data, such that the manifold values
-        %            are first
-        
-        if (length(varargin)==1 && isstruct(varargin{1})) %struct case
-            vars = varargin{1};
-            assert(all(isfield(vars,{'f','lambda','w'})),...
-                'Not all required parameters given in the struct');
-            [k,l,d] = size(vars.f);
-            if ~isfield(vars,'RegMask');
-                 vars.RegMask = ones(l,d); %move all
-            end
-        else
-            ip = inputParser;
-            addRequired(ip,'f');
-            addRequired(ip,'lambda');
-            addRequired(ip,'w');
-            addParameter(ip, 'RegMask', []);
-            parse(ip, varargin{:});
-            vars = ip.Results;
-            [k,l,d] = size(vars.f);
-            if (numel(vars.RegMask)>0) % Mask given
-                if (any(size(vars.RegMask)~=[l,d]))
-                    warning(['Size of the regularization mask (',...
-                        num2str(size(vars.regMask)),') does not fit the size of f (',...
-                        num2str([l,d]),'). Hence it is ignored.']);
-                    vars.RegMask = ones(l,d); %move all
-                end
-            else
-                vars.RegMask = ones(l,d); %move all
-            end
-            assert(k==length(this.SComponents),['The values of f (',...
-                num2str(d),' points in ',num2str(l),...
-                ' proximal mappings of dimension ',num2str(k),...
-                ') are not of dimension ',num2str(length(this.SComponents)),'.']);
-            if (isrow(vars.w))
-                vars.w = vars.w';
-            else
-                vars.w = vars.w;
-            end
-            if (vars.lambda==0)
-                x = vars.f;
-                return
-            end
-            assert(d==length(vars.w),['The length of the weight (',...
-                num2str(length(vars.w)),') does not fit to the data size (',...
-                num2str(d),').']);
-        end
-            x = vars.f;
-            x(isnan(vars.f)) = NaN;
-            missingpoints = any(isnan(vars.f),1);
-            % proxes that can be computed
-            proxsets = (sum(missingpoints,3)==0)';
-            % proxes that can be inpainted
-            inpaintpts = (sum(missingpoints,3)==1)'; %count all, where just one is missing
-            missingpoints = squeeze(missingpoints);
-            if sum(inpaintpts)>0 && length(vars.w)==2 && all(vars.w==[-1;1]) %data exists, that can be inpainted with first order - do so.
-                % first point missing - set to second
-                x(:, (missingpoints(:,1)>0)&inpaintpts,1) = x(:, (missingpoints(:,1)>0)&inpaintpts,2);
-                % second point missing - set to first
-                x(:, (missingpoints(:,2)>0)&inpaintpts,2) = x(:, (missingpoints(:,2)>0)&inpaintpts,1);
-            end
-            if sum(proxsets)>0 %any points to prox?
-                % scalar products <f,w> for each row/column in 1&3 dim ->
-                % lxk result and also take S-components into account
-                sp =  dot(repmat(permute(vars.w,[3,2,1]),[k,sum(proxsets),1]),vars.f(:,proxsets,:),3);
-                % sum over last dimension -> kxlxd result
-                sp(this.SComponents,:,:) = symMod(sp(this.SComponents,:,:),2*pi);
-                spn = sqrt(sum(sp.^2,1)); %sp norm -> 1xl
-                s = sp./repmat(spn,[k,1,1]); %norm -> s - kxl
-                s(isnan(s)) = 0; %else case
-                % ||w^a||_2^2
-                nwsq = sum(permute(vars.RegMask(proxsets,:),[2,1]).*repmat(vars.w,[1,sum(proxsets)]).^2,1); % 1xl
-                % m -> 1xlx1 (one for each prox
-                mins = min( ones(size(spn)).*vars.lambda,spn./nwsq); % 1xl
-                x(:,proxsets,:) = vars.f(:,proxsets,:) - ...
-                    repmat(permute(...%into all dimensions
-                        permute(vars.RegMask(proxsets,:),[2,1]).*repmat(vars.w,[1,sum(proxsets)]),...
-                        [3,2,1]),[k,1,1]).*...
-                    repmat(s.*repmat(mins,[k,1,1]),[1,1,d]);
-            end
-            % modulo all computed on S components
-            x(this.SComponents,inpaintpts|proxsets,:) = ...
-                symMod(x(this.SComponents,inpaintpts|proxsets,:),2*pi);
-        end
         function fn = addNoise(this,f,sigma)
             fn = f + sigma*randn(size(f));
             fn = reshape(fn,this.ItemSize,[]);
             fn(this.SComponents,:) = symMod(fn(this.SComponents,:),2*pi);
             fn = reshape(fn,size(f));
         end
-        function ds = dot(this,P,V,W)
+        function ds = dot(~,P,V,W)
             % Sm1Rn.dot(P,V,W)
             %     Compute the inner product of two tangent vectors in T_P M
             %

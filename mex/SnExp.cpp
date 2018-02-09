@@ -33,7 +33,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
         isTdouble = true;
     }
     else if (nrhs == 3) {
-        if ( mxIsDouble(prhs[2]) ) {
+        if ( mxIsScalar(prhs[2]) ) {
             t = *mxGetPr(prhs[2]);
             isTdouble=true;
         } else {
@@ -61,7 +61,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
     if ((Ps==1) && (!isTdouble))
         mexErrMsgIdAndTxt("SnExp:WrongSizeOfT","The coefficient t is of wrong dimension."); 
     else if (Ps>1) {
-        if ((!isTdouble) && (ts!=(Ps-1)))
+        if ((!isTdouble) && (ts>Ps))
             mexErrMsgIdAndTxt("SnExp:WrongSizeOfT","The input t is of wrong size.");
         for (i=1; i<Ps; i++) {
             numel *= Pn[i];

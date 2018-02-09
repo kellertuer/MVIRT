@@ -37,7 +37,7 @@ setDebugLevel('LevelMin',0);
 setDebugLevel('LevelMax',1000);
 setDebugLevel('text',3); %verbose, but...
 setDebugLevel('IterationStep',1000); %only every 1000th iteration
-setDebugLevel('WriteImages',1); %0: no file writing, 1: file writing
+setDebugLevel('WriteImages',0); %0: no file writing, 1: file writing
 setDebugLevel('time',3); %many time measurements
 setDebugLevel('Figures',1); %0: no figure display, 1: figures are displayed (disable e.g. for cluster/console work)
 setDebugLevel('logfile',1); %0: no logfile 1: logfile
@@ -105,39 +105,46 @@ if getDebugLevel('WriteImages')
 end
 %% Parameters for the cyclic proximal point algorithm
 
-problem.alpha = 2*[1,1,1,1];
-problem.beta=[1,1,1];
-problem.lambda = pi;
+%%
+problem.M = Rn(1);
+problem.alpha = 2*ones(2);
+problem.beta = [1,1;0,1];
 problem.f = permute(img,[3,1,2]);
-problem.MaxIterations = 4000;
-problem.Epsilon = 10^(-9);
-problem.M = S1mRn(0,1);
 problem.UnknownMask = ~Mask;
-problem.RegMask = ~Mask;
-disp(' --- CPPA TV1&2 on R ---');
-VresTV12R = permute(cppa_ad_2D(problem),[2,3,1]);
+problem.FixedMask = Mask;
+problem.stoppingCriterion = stopCritMaxIterEpsilonCreator(problem.M, 8000,10^(-9));
+tic
+VresTV12R = permute(CPP_AdditiveTV12(problem),[2,3,1]);
+toc
+%%
 if getDebugLevel('Figures')
     figure(4); imagesc(VresTV12R,[-pi,pi]); colormap(hsv(1024));axis image; axis off;
-    title(['Result of the reconstruction using \alpha=',num2str(problem.alpha(1),4),' and \beta=',num2str(problem.beta(1),4),' on R.']);
+    title(['Result of the reconstruction using \alpha=',num2str(problem.alpha(1,1),4),' and \beta=',num2str(problem.beta(1,1),4),' on R.']);
 end
 problem.M = S1();
 disp(' --- CPPA TV1&2 ---');
-VresTV12 = permute(cppa_ad_2D(problem),[2,3,1]);
+tic
+VresTV12 = permute(CPP_AdditiveTV12(problem),[2,3,1]);
+toc
 if getDebugLevel('Figures')
     figure(5); imagesc(VresTV12,[-pi,pi]); colormap(hsv(1024));axis image; axis off;
     title(['Result of the reconstruction using \alpha=',num2str(problem.alpha(1),4),' and \beta=',num2str(problem.beta(1),4),'.']);
 end
-problem.beta = [0,0,0];
+problem.beta = zeros(2);
 disp(' --- CPPA TV ---');
-VresTV = permute(cppa_ad_2D(problem),[2,3,1]);
+tic
+VresTV = permute(CPP_AdditiveTV12(problem),[2,3,1]);
+toc
 if getDebugLevel('Figures')
     figure(6); imagesc(VresTV,[-pi,pi]); colormap(hsv(1024));axis image; axis off;
     title(['Result of the reconstruction using \alpha=',num2str(problem.alpha(1),4),' and \beta=0.']);
 end
 %use a small value of alpha for initialization
-problem.alpha = 0*[1,1,1,1]; problem.beta = [1,1,1];
+problem.alpha = zeros(2); problem.beta = [1,1;0,1];
 disp(' --- CPPA TV2 ---');
-VresTV2 = permute(cppa_ad_2D(problem),[2,3,1]);
+tic
+VresTV2 = permute(CPP_AdditiveTV12(problem),[2,3,1]);
+toc
 if getDebugLevel('Figures')
     figure(7); imagesc(VresTV2,[-pi,pi]); colormap(hsv(1024));axis image; axis off;
     title(['Result of the reconstruction using \alpha=0 and \beta=',num2str(problem.beta(1)),'.']);

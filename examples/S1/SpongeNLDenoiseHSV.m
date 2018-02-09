@@ -60,12 +60,13 @@ problem.window_size_2 = 81;
 problem.K_1 = 70;
 problem.K_2 = 70;
 % TV parameters
-problem.lambda = pi/2;
+problem.lambdaIterate = @(iter) pi/2/iter;
+problem.stoppingCriterion = stopCritMaxIterEpsilonCreator(problem.M,400,10^(-6));
 problem.alpha = 0.45;
 problem.beta = 0;
 %% Run Algorithm
 [u_final,u_oracle] = NL_MMSE_2D(problem);
-u_tv = cppa_ad_2D(problem);
+u_tv = CPP_AdditiveTV12(problem);
 %% get Images
 noisy = transformed_corals;
 noisy(:,:,1) = mod(squeeze(atan2(u_noisy_Sn1(2,:,:),u_noisy_Sn1(1,:,:)))/2/pi+0.5,1);

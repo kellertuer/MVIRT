@@ -32,7 +32,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
         isTdouble = true;
     }
     else if (nrhs == 3) {
-        if ( mxIsDouble(prhs[2]) ) {
+        if ( mxIsScalar(prhs[2]) ) {
             t = *mxGetPr(prhs[2]);
             isTdouble=true;
         } else {

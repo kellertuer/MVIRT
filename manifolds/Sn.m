@@ -18,8 +18,10 @@ classdef Sn < manifold & handle
         type = '';
         tau = 0.01;
         steps = 10;
+        one = NaN;
         ItemSize;
         Dimension;
+        allDims;
     end
     
     methods
@@ -27,6 +29,10 @@ classdef Sn < manifold & handle
             obj.ItemSize = n+1;
             obj.Dimension = n;
             obj.type = ['The ',num2str(n),'-sphere in R',num2str(n+1)];
+            if n == 3
+                obj.one = [1;0;0;0];
+            end
+            obj.allDims = repelem({':'},length(obj.ItemSize));
         end
         function q = exp(this,p,v,t)
             % exp(p,v) - Exponential map at the point p with respect to v in
@@ -56,6 +62,8 @@ classdef Sn < manifold & handle
             end
             if nargin < 4
                 t=1;
+            elseif isrow(t)
+                t = t.';
             end
             if this.useMex
                 q = SnExp(p_,v_,t);
@@ -171,159 +179,73 @@ classdef Sn < manifold & handle
                 G = this.localGrad_X_D2_Sq(X,Y,Z);
             end
         end
-        function x = proxad(this,varargin)
-            % proxad(f, lambda, w) - Compute the proximal mapping of the
-            % data f with respect to lambda an the weight w.
-            % Any unknown point containing a NaN is inpainted if
-            % neighbouring known points or else left unchanged
+        function [x,y] = prox_midpoint_data_sq(this,varargin)
+            % prox_midpoint_data_sq(v,w,f, lambda) - Compute the proximal mapping of the
+            % images v,w to the data f with respect to lambda.
             %
             % INPUT
-            %      f : data on Sn (i.e. R(n+1)), where [n+1,l,d] = size(f) and d
-            %          is the number of data points per prox and l is the
-            %          number of parallel proxes. A point is unknown if for
-            %          fixed d,l any of the three entries is NaN.
-            % lambda : weight of the proximal map
-            %      w : finite difference weight vector. For S2 up to now
-            %          only [-1,1] and [-1,2,1] are supported
+            %      v,w,l : data on S(m) (i.e. m), where [m,l] = size(f) = size(v) = size(w)
+            %          and l is the number of parallel proxes.
+            % lambda : weight of the proximal map (one value)
             %
             % OUTPUT
-            %      x : resulting data of all proximal maps
+            %      x : resulting data of all proximal maps (mxmxl)
             % ---
-            % MVIRT 1.0, R. Bergmann ~ 2014-10-19
+            % ManImRes 1.0, J. Persch ~ 2016-09-21
             if (length(varargin)==1 && isstruct(varargin{1})) %struct case
                 vars = varargin{1};
-                assert(all(isfield(vars,{'f','lambda','w'})),...
+                assert(isfield(vars,'f')&&isfield(vars,'lambda')&&isfield(vars,'v')&&isfield(vars,'w'),...
                     'Not all required parameters given in the struct');
-                if ~isfield(vars,'RegMask');
+                if ~isfield(vars,'RegMask')
                     vars.RegMask = [];
                 end
             else
                 ip = inputParser;
+                addRequired(ip,'v');
+                addRequired(ip,'w');
                 addRequired(ip,'f');
                 addRequired(ip,'lambda');
-                addRequired(ip,'w');
-                addParameter(ip, 'RegMask', []);
                 parse(ip, varargin{:});
                 vars = ip.Results;
+                [a,~] = size(vars.f);
+                if (a~=this.ItemSize)
+                    error(['The values of f are not ',num2str(this.ItemSize),' vectors.']);
+                end
+                if any(size(vars.v)~=size(vars.w)) || any(size(vars.v)~=size(vars.f))
+                    error('Inputs v,w,f should be of the same size!');
+                end
             end
-            [k,l,d] = size(vars.f);
-            assert(k==this.ItemSize,['The values of f (',num2str(d),' points in ',...
-                num2str(l),' proximal mappings of dimension ',num2str(k),') are not lying in R3']);
-            if (isrow(vars.w))
-                w = vars.w';
-            else
-                w = vars.w;
-            end
-            if (vars.lambda==0)
-                x = vars.f;
+            v = vars.v;
+            x = v;
+            w = vars.w;
+            y = w;
+            if (vars.lambda==0)% no prox
                 return
             end
-            assert(d==length(w),['The length of the weight (',...
-                num2str(length(w)),') does not fit to the data size (',...
-                num2str(d),').']);
-            x = vars.f;
-            x(isnan(vars.f)) = NaN;
-            missingpoints = squeeze(any(isnan(vars.f),1)); %sum along manifold dimensions & squeeze
-            if l==1
-                missingpoints = missingpoints';
-            end
-            % proxes that can be computed
-            proxpts = sum(missingpoints,2)==0; %last dimension d
-            % proxes that can be inpainted
-            inpaintpts = sum(missingpoints,2)==1;
-            if (length(w)==2) && all(w==[-1,1]')
-                t = min(vars.lambda, 0.5*this.dist(vars.f(:,proxpts,1),vars.f(:,proxpts,2)));
-                % Divide only those that are nonzero.
-                dir1 = this.log(vars.f(:,proxpts,1),vars.f(:,proxpts,2));
-                l1 = sqrt(sum(dir1.^2,1));
-                dir1(:,l1>eps) = dir1(:,l1>eps)./repmat(l1(l1>eps),[this.ItemSize,1]);
-                %
-                dir2 = this.log(vars.f(:,proxpts,2),vars.f(:,proxpts,1));
-                l2 = sqrt(sum(dir2.^2,1));
-                dir2(:,l2>eps) = dir2(:,l2>eps)./repmat(l2(l2>eps),[this.ItemSize,1]);
-                % permute brings one singleton dimension to the front in t
-                
-                x(:,proxpts,1) = this.exp(vars.f(:,proxpts,1), repmat(permute(t,[3,1,2]),[this.ItemSize,1]).*dir1);
-                x(:,proxpts,2) = this.exp(vars.f(:,proxpts,2), repmat(permute(t,[3,1,2]),[this.ItemSize,1]).*dir2);
-                %
-                % Inpaint all first missing points, the second one is
-                % existing due to limiting the missing number to 1
-                x(:,(missingpoints(:,1)>0)&inpaintpts,1) = x(:,(missingpoints(:,1)>0)&inpaintpts,2);
-                x(:,(missingpoints(:,2)>0)&inpaintpts,2) = x(:,(missingpoints(:,2)>0)&inpaintpts,1);
-            elseif (length(w)==3) && all(w==[1,-2,1]')
-                %
-                % Iterative subgradient descent
-                x = vars.f;
-                G = zeros(size(x));
-                % Gradient descent
-                xopt = x(:,proxpts,:);
-                xoptvals = vars.lambda .* this.dist(this.midPoint(x(:,proxpts,1),x(:,proxpts,3)),x(:,proxpts,2)); %x=f hence first term zero
-                for gradcount = 1:this.steps
-                    tauit = this.tau/gradcount;
-                    % GradX
-                    G(:,proxpts,1) = this.log(x(:,proxpts,1), vars.f(:,proxpts,1)) + ...
-                        vars.lambda*this.grad_X_D2(x(:,proxpts,1),x(:,proxpts,2),x(:,proxpts,3));
-                    % Grad Y
-                    V = this.log(x(:,proxpts,2),this.midPoint(x(:,proxpts,1),x(:,proxpts,3)));
-                    normV = sqrt(sum(V.^2,1));
-                    if any(normV>eps) %norm directions
-                        V(:,normV>eps) = V(:,normV>eps)./repmat(normV(normV>eps),[this.ItemSize,1]);
-                    end
-                    G(:,proxpts,2) = this.log(x(:,proxpts,2),vars.f(:,proxpts,2)) + vars.lambda.*V;
-                    % Grad Z
-                    G(:,proxpts,3) = this.log(x(:,proxpts,3), vars.f(:,proxpts,3)) + ...
-                        vars.lambda*this.grad_X_D2(x(:,proxpts,3),x(:,proxpts,2),x(:,proxpts,1));
-                    % Gradient step
-                    x = reshape(...
-                        this.exp(reshape(x,this.ItemSize,[]), tauit*reshape(G,this.ItemSize,[])),...
-                        [this.ItemSize,l,d]);
-                    x(:,proxpts,:) = x(:,proxpts,:)./repmat(sqrt(sum(x(:,proxpts,:).^2,1)),[this.ItemSize,1,1]); %sec?
-                    xoptt = x(:,proxpts,:);
-                    % -(l<2) fixes this summation for one point
-                    xvals = sum(this.dist(vars.f(:,proxpts,:),xoptt).^2,2)/2 + vars.lambda.*this.dist(this.midPoint(xoptt(:,:,1),xoptt(:,:,3)),xoptt(:,:,2));
-                    xvalsInd = xvals<xoptvals;
-                    if any(xvalsInd(:))
-                        xopt(:,xvalsInd,:) = xoptt(:,xvalsInd,:);
-                        xoptvals(xvalsInd) = xvals(xvalsInd);
-                    end
-                end
-                x(:,proxpts,:) = xopt;
-                % No Inpainting for now
-            elseif (length(w)==4) && all(w==[-1,1,-1,1]')
-                % Iterative subgradient descent
-                x = vars.f;
-                % Gradient descent
-                xopt = x(:,proxpts,:);
-                xoptvals = vars.lambda.*this.dist(this.midPoint(x(:,proxpts,1),x(:,proxpts,3)),this.midPoint(x(:,proxpts,2),x(:,proxpts,4))); %x=f hence first term zero
-                for gradcount = 1:this.steps
-                    tauit = this.tau/gradcount;
-                    %midpoints between pairs of points
-                    M = zeros(size(x(:,proxpts,1:2)));
-                    M(:,:,1) = this.midPoint(x(:,proxpts,1), x(:,proxpts,3));
-                    M(:,:,2) = this.midPoint(x(:,proxpts,2), x(:,proxpts,4));
-                    % Common
-                    % Grad Xi
-                    G = zeros(size(x(:,proxpts,:)));
-                    for i=1:4
-                        i2 = mod(i+1,4)+1; %other index involved in same mid point, 1-3, 2-4, 3-1, 4-2
-                        G(:,:,i) = this.log(x(:,proxpts,i), vars.f(:,proxpts,i))...
-                            + vars.lambda*this.grad_X_D2(x(:,proxpts,i),...
-                            M(:,:,mod(i,2)+1),... %opposite mid point as Y
-                            x(:,proxpts,i2));
-                    end
-                    x(:,proxpts,:) = reshape(...
-                        this.exp(reshape(x(:,proxpts,:),this.ItemSize,[]), tauit*reshape(G,this.ItemSize,[])),...
-                        [this.ItemSize,sum(proxpts),d]);
-                    x(:,proxpts,:) = x(:,proxpts,:)./repmat(sqrt(sum(x(:,proxpts,:).^2,1)),[this.ItemSize,1,1]); %sec?
-                    xoptt = x(:,proxpts,:);
-                    xvals = sum(this.dist(vars.f(:,proxpts,:),xoptt).^2,2)/2 +  vars.lambda.*this.dist(this.midPoint(xoptt(:,:,1),xoptt(:,:,3)),this.midPoint(xoptt(:,:,2),xoptt(:,:,4)));
-                    xopt(:,xvals<xoptvals,:) = xoptt(:,xvals<xoptvals,:);
-                    xoptvals(xvals<xoptvals) = xvals(xvals<xoptvals);
-                end %end of mixed derivative gradient steps
-                x(:,proxpts,:) = xopt;
-            else
-                warning(['Unknown discrete difference on ',this.type,': ',num2str(w'),'. Returning the input f.']);
-                x=vars.f;
+            f = vars.f;
+            % Gradient descent
+            xopt = x;
+            yopt = y;
+            func_optvals =  vars.lambda*this.dist(this.midPoint(x,y),f).^2;
+            for i=1:this.steps
+                % midpoints between firsts and thirds
+                % Gradient X
+                grad1 = this.log(x,v) + vars.lambda*this.grad_X_D2_Sq(x,f,y);
+                % Gradient Y
+                grad2 = this.log(y,w) + vars.lambda*this.grad_X_D2_Sq(y,f,x);
+                tauit = this.tau/i;
+                x = this.exp(x, tauit*grad1);
+                y = this.exp(y, tauit*grad2);
+                % Testing if new values are better
+                xoptt = x;
+                yoptt = y;
+                func_vals = 1/2*this.dist(v,xoptt).^2+1/2*this.dist(w,yoptt).^2 +...
+                    vars.lambda*this.dist(this.midPoint(xoptt,yoptt),f).^2;
+                xopt(:,func_vals<func_optvals) = xoptt(:,func_vals<func_optvals);
+                yopt(:,func_vals<func_optvals) = yoptt(:,func_vals<func_optvals);
+                y = yopt;
+                x = xopt;
+                func_optvals(func_vals<func_optvals) = func_vals(func_vals<func_optvals);
             end
         end
         function fn = addNoise(this,f,sigma)
@@ -358,7 +280,7 @@ classdef Sn < manifold & handle
                 W(normMask) = V(normMask); %those that need not to be transported
             end
         end
-        function V = TpMONB(this,p,q)
+        function [V,k] = TpMONB(this,p,q)
             % V = TpMONB(p,q)
             % Compute an ONB in TpM, where the first vector points to q,
             % whin given.
@@ -370,6 +292,8 @@ classdef Sn < manifold & handle
             %
             % OUTPUT
             %    V : basiscolumn matrice(s)
+            %    k : (optional) curvature coefficients, here
+            %           all are 1 except the first which is 0
             % ---
             % MVIRT 1.0, R. Bergmann ~ 2014-10-19 | 2014-10-23
             if isrow(p)
@@ -378,17 +302,21 @@ classdef Sn < manifold & handle
                 p_=p;
             end
             q_given = 0;
-            if nargin == 3
-                q_given =1;
-                if isrow(q)
-                    q_=q';
-                else
-                    q_=q;
-                end
+            if nargin < 3
+                q=p;
+            else
+                q_given=1;
+            end
+            pS = size(p);
+            p_ = reshape(p_,pS(1),[]);
+            q_ = reshape(q, pS(1),[]);
+            if nargin == 3 && min(this.dist(q_,p_))>10^-8
                 V = zeros(this.ItemSize,size(p_,2),this.ItemSize-1);
                 V(:,:,1) = this.log(p_,q_);
                 normsv = sqrt(sum(V(:,:,1).^2,1));
-                V(:,normsv>eps,1) = V(:,normsv>eps,1)./repmat(normsv(normsv>eps),[this.ItemSize,1,1]);
+                if ~all(normsv<=eps)
+                    V(:,normsv>eps,1) = V(:,normsv>eps,1)./repmat(normsv(normsv>eps),[this.ItemSize,1,1]);
+                end
             else
                 V = zeros(this.ItemSize,size(p_,2),this.ItemSize-1);
             end
@@ -403,6 +331,12 @@ classdef Sn < manifold & handle
                         V(:,col,1+q_given:this.Dimension) = null([p_(:,col), V(:,col,1)].');
                     end
                 end
+            end
+            V = reshape(V,[pS,this.ItemSize-1]);
+            if nargout > 1
+                k = ones(size(p_,2),this.ItemSize-1);
+                k(:,1)=0;
+                k = reshape(k,[pS(2:end),this.ItemSize-1]);
             end
         end
         function ds = dot(~,P,V,W)
@@ -503,7 +437,61 @@ classdef Sn < manifold & handle
                 x = SnMean(f,w,epsilon,iter);
             end
         end
+        function W = geopoint(this,X,Y,t)
+            % geopoint(X,Y,t) - Give the point \gamma_{XY}(t)
+            %
+            % INPUT
+            %   X,Y : a point or set of points on the manifold Sn(n)
+            %   t : a scalar or set of scalars
+            %
+            %
+            % OUTPUT
+            %   W : resulting point(s) on Sn(n)
+            % ---
+            % Manifold-Valued Image Restoration Toolbox 1.0, J. Persch ~ 2017-03-31
+            
+            % Changelog
+            %   2015-04-10 introduced mexfile
+            W = this.exp(X,this.log(X,Y),t);
+        end
+        function s = inv(this,s)
+            % S1.inv(s) inverts s in the sense of rotations about that angle
+            if this.Dimension == 3                
+                s(2:4,:) = -s(2:4,:);
+            else 
+                error('No group structure implemented')
+            end
+        end
+         function s = ga(this,s_1,s_2)
+            % S1.ga(s_1,s_2) performs the group action s_1 o s_2
+            s = s_1;
+            if this.Dimension == 3                
+                s(1,:) = s_1(1,:).*s_2(1,:)-sum(s_1(2:4,:).*s_2(2:4,:),1);
+                s(2:4,:) = s_1(1,:).*s_2(2:4,:)+s_2(1,:).*s_1(2:4,:)+cross(s_1(2:4,:),s_2(2:4,:));
+            else 
+                error('No group structure implemented')
+            end
+         end
+         function sv = DL_s(this,s,v)
+            % Sn.DL_s(s_1,s_2) performs the derivative of the left group
+            % action of s onto v \in T_t S1, which goes into sv\in\T_st S1
+            if this.Dimension == 3                
+            	sv = this.ga(s,v);
+            else 
+                error('No group structure implemented')
+            end
+         end
+         function vs = DR_s(this,s,v)
+            % S1.DR_s(s_1,s_2) performs the derivative of the right group
+            % action of s onto v \in T_t S1, which goes into vs\in\T_ts S1
+            if this.Dimension == 3                
+            vs = this.ga(v,s);
+            else 
+                error('No group structure implemented')
+            end
+        end
     end
+    
     methods (Access = protected)
         function G = localGrad_X_D2(this,X,Y,Z)
             l = size(X,2);
@@ -536,7 +524,7 @@ classdef Sn < manifold & handle
                 repmat(...
                 repmat(permute( 1./(2*cos(this.dist(X,Z)./2)) ,[3,1,2]),[1,1,this.ItemSize-2]).*...
                 permute(alpha(:,2:this.ItemSize-1),[3,1,2]),...
-                [this.ItemSize,1,1]),3);            
+                [this.ItemSize,1,1]),3);
         end
         function G = localGrad_X_D2_Sq(this,X,Y,Z)
             dimen = size(X);
@@ -613,8 +601,8 @@ classdef Sn < manifold & handle
                     q(:,normv>eps) = p_(:,normv>eps).*repmat(cos(t*normv(:,normv>eps)),[this.ItemSize,1])...
                         + v_(:,normv>eps).*repmat(sin(t*normv(:,normv>eps))./normv(:,normv>eps),[this.ItemSize,1]);
                 else
-                    q(:,normv>eps) = p_(:,normv>eps).*repmat(cos(t(normv>eps).*normv(:,normv>eps)),[this.ItemSize,1])...
-                        + v_(:,normv>eps).*repmat(sin(t(normv>eps).*normv(:,normv>eps))./normv(:,normv>eps),[this.ItemSize,1]);
+                    q(:,normv>eps) = p_(:,normv>eps).*repmat(cos(t(normv>eps).'.*normv(:,normv>eps)),[this.ItemSize,1])...
+                        + v_(:,normv>eps).*repmat(sin(t(normv>eps).'.*normv(:,normv>eps))./normv(:,normv>eps),[this.ItemSize,1]);
                 end
             end
         end

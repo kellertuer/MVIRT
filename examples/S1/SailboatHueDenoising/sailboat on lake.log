@@ -1,91 +1,82 @@
- --- Logfile of Experiment sailboat on lake started 13-Apr-2016 16:35:13 ---
-Using File Data generated 06-Dec-2015 11:00:22.
-Timer started for Cyclic proximal point algorithm on manifolds
-i=100 where lastdiff is 0.031934 and lambdait=0.031416
-i=200 where lastdiff is 0.14857 and lambdait=0.015708
-i=300 where lastdiff is 0.080947 and lambdait=0.010472
-i=400 where lastdiff is 0.11884 and lambdait=0.007854
-i=500 where lastdiff is 0.16386 and lambdait=0.0062832
-i=600 where lastdiff is 0.13026 and lambdait=0.005236
-i=700 where lastdiff is 0.073863 and lambdait=0.004488
-i=800 where lastdiff is 0.039769 and lambdait=0.003927
-i=900 where lastdiff is 0.0084506 and lambdait=0.0034907
-i=1000 where lastdiff is 0.013101 and lambdait=0.0031416
-i=1100 where lastdiff is 0.02023 and lambdait=0.002856
-i=1200 where lastdiff is 0.024696 and lambdait=0.002618
-i=1300 where lastdiff is 0.012048 and lambdait=0.0024166
-i=1400 where lastdiff is 0.0132 and lambdait=0.002244
-i=1500 where lastdiff is 0.052457 and lambdait=0.0020944
-i=1600 where lastdiff is 0.0057929 and lambdait=0.0019635
-i=1700 where lastdiff is 0.0028759 and lambdait=0.001848
-i=1800 where lastdiff is 0.029805 and lambdait=0.0017453
-i=1900 where lastdiff is 0.010369 and lambdait=0.0016535
-i=2000 where lastdiff is 0.0073355 and lambdait=0.0015708
-i=2100 where lastdiff is 0.0019287 and lambdait=0.001496
-i=2200 where lastdiff is 0.0021243 and lambdait=0.001428
-i=2300 where lastdiff is 0.0011023 and lambdait=0.0013659
-i=2400 where lastdiff is 0.0034764 and lambdait=0.001309
-i=2500 where lastdiff is 0.0059582 and lambdait=0.0012566
-i=2600 where lastdiff is 0.014387 and lambdait=0.0012083
-i=2700 where lastdiff is 0.0036075 and lambdait=0.0011636
-i=2800 where lastdiff is 0.0069314 and lambdait=0.001122
-i=2900 where lastdiff is 0.0059937 and lambdait=0.0010833
-i=3000 where lastdiff is 0.0085666 and lambdait=0.0010472
-i=3100 where lastdiff is 0.0029 and lambdait=0.0010134
-i=3200 where lastdiff is 0.0025427 and lambdait=0.00098175
-i=3300 where lastdiff is 0.0022384 and lambdait=0.000952
-i=3400 where lastdiff is 0.004518 and lambdait=0.000924
-i=3500 where lastdiff is 0.016839 and lambdait=0.0008976
-i=3600 where lastdiff is 0.0062274 and lambdait=0.00087266
-i=3700 where lastdiff is 0.0019053 and lambdait=0.00084908
-i=3800 where lastdiff is 0.0098742 and lambdait=0.00082673
-i=3900 where lastdiff is 0.0061572 and lambdait=0.00080554
-i=4000 where lastdiff is 0.0049174 and lambdait=0.0007854
-Timer stopped for Cyclic proximal point algorithm on manifolds.
-Computation for Cyclic proximal point algorithm on manifolds took 1826.49789187 sec.
-4000 iterations, last difference:0.0049174
-Timer started for Cyclic proximal point algorithm on manifolds
-i=100 where lastdiff is 0.0034674 and lambdait=0.031416
-i=200 where lastdiff is 0.0013467 and lambdait=0.015708
-i=300 where lastdiff is 0.00080801 and lambdait=0.010472
-i=400 where lastdiff is 0.00057842 and lambdait=0.007854
-i=500 where lastdiff is 0.00043827 and lambdait=0.0062832
-i=600 where lastdiff is 0.00033719 and lambdait=0.005236
-i=700 where lastdiff is 0.00027738 and lambdait=0.004488
-i=800 where lastdiff is 0.00024532 and lambdait=0.003927
-i=900 where lastdiff is 0.00021013 and lambdait=0.0034907
-i=1000 where lastdiff is 0.00018598 and lambdait=0.0031416
-i=1100 where lastdiff is 0.00017109 and lambdait=0.002856
-i=1200 where lastdiff is 0.00016005 and lambdait=0.002618
-i=1300 where lastdiff is 0.0001513 and lambdait=0.0024166
-i=1400 where lastdiff is 0.00013889 and lambdait=0.002244
-i=1500 where lastdiff is 0.00012978 and lambdait=0.0020944
-i=1600 where lastdiff is 0.00012255 and lambdait=0.0019635
-i=1700 where lastdiff is 0.00011595 and lambdait=0.001848
-i=1800 where lastdiff is 0.00010942 and lambdait=0.0017453
-i=1900 where lastdiff is 0.0001029 and lambdait=0.0016535
-i=2000 where lastdiff is 9.7284e-05 and lambdait=0.0015708
-i=2100 where lastdiff is 9.192e-05 and lambdait=0.001496
-i=2200 where lastdiff is 8.7174e-05 and lambdait=0.001428
-i=2300 where lastdiff is 8.306e-05 and lambdait=0.0013659
-i=2400 where lastdiff is 7.9545e-05 and lambdait=0.001309
-i=2500 where lastdiff is 7.5863e-05 and lambdait=0.0012566
-i=2600 where lastdiff is 7.24e-05 and lambdait=0.0012083
-i=2700 where lastdiff is 6.9141e-05 and lambdait=0.0011636
-i=2800 where lastdiff is 6.6125e-05 and lambdait=0.001122
-i=2900 where lastdiff is 6.3429e-05 and lambdait=0.0010833
-i=3000 where lastdiff is 6.1011e-05 and lambdait=0.0010472
-i=3100 where lastdiff is 5.8118e-05 and lambdait=0.0010134
-i=3200 where lastdiff is 5.51e-05 and lambdait=0.00098175
-i=3300 where lastdiff is 5.2518e-05 and lambdait=0.000952
-i=3400 where lastdiff is 5.0226e-05 and lambdait=0.000924
-i=3500 where lastdiff is 4.8196e-05 and lambdait=0.0008976
-i=3600 where lastdiff is 4.6288e-05 and lambdait=0.00087266
-i=3700 where lastdiff is 4.4526e-05 and lambdait=0.00084908
-i=3800 where lastdiff is 4.2889e-05 and lambdait=0.00082673
-i=3900 where lastdiff is 4.1438e-05 and lambdait=0.00080554
-i=4000 where lastdiff is 4.0052e-05 and lambdait=0.0007854
-Timer stopped for Cyclic proximal point algorithm on manifolds.
-Computation for Cyclic proximal point algorithm on manifolds took 1449.25184463 sec.
-4000 iterations, last difference:4.0052e-05
- --- Logfile of Experiment sailboat on lake ended 13-Apr-2016 17:29:50 ---
+ --- Logfile of Experiment sailboat on lake started 09-Feb-2018 15:55:51 ---
+100 last change: 0.00056906.
+200 last change: 0.00025228.
+300 last change: 0.0001526.
+400 last change: 0.00010746.
+500 last change: 8.0561e-05.
+600 last change: 6.5253e-05.
+700 last change: 5.45e-05.
+800 last change: 4.5602e-05.
+900 last change: 3.92e-05.
+1000 last change: 3.3717e-05.
+1100 last change: 3.0498e-05.
+1200 last change: 2.6747e-05.
+1300 last change: 2.4027e-05.
+1400 last change: 2.1942e-05.
+1500 last change: 1.9886e-05.
+1600 last change: 1.8044e-05.
+1700 last change: 1.6445e-05.
+1800 last change: 1.5393e-05.
+1900 last change: 1.4326e-05.
+2000 last change: 1.358e-05.
+2100 last change: 1.2656e-05.
+2200 last change: 1.1895e-05.
+2300 last change: 1.1091e-05.
+2400 last change: 1.0461e-05.
+2500 last change: 9.9853e-06.
+2600 last change: 9.5812e-06.
+2700 last change: 8.9821e-06.
+2800 last change: 8.7182e-06.
+2900 last change: 8.2827e-06.
+3000 last change: 8.1518e-06.
+3100 last change: 7.6778e-06.
+3200 last change: 7.2738e-06.
+3300 last change: 6.9583e-06.
+3400 last change: 6.6297e-06.
+3500 last change: 6.5127e-06.
+3600 last change: 6.1915e-06.
+3700 last change: 5.9768e-06.
+3800 last change: 5.6847e-06.
+3900 last change: 5.5645e-06.
+4000 last change: 5.3438e-06.
+100 last change: 0.00043501.
+200 last change: 0.00017361.
+300 last change: 0.0001001.
+400 last change: 6.75e-05.
+500 last change: 4.9625e-05.
+600 last change: 3.8572e-05.
+700 last change: 3.1197e-05.
+800 last change: 2.5984e-05.
+900 last change: 2.2115e-05.
+1000 last change: 1.9152e-05.
+1100 last change: 1.6817e-05.
+1200 last change: 1.4939e-05.
+1300 last change: 1.3405e-05.
+1400 last change: 1.2132e-05.
+1500 last change: 1.1059e-05.
+1600 last change: 1.0142e-05.
+1700 last change: 9.3528e-06.
+1800 last change: 8.6632e-06.
+1900 last change: 8.0618e-06.
+2000 last change: 7.5328e-06.
+2100 last change: 7.0655e-06.
+2200 last change: 6.652e-06.
+2300 last change: 6.2816e-06.
+2400 last change: 5.9494e-06.
+2500 last change: 5.6478e-06.
+2600 last change: 5.372e-06.
+2700 last change: 5.1207e-06.
+2800 last change: 4.8909e-06.
+2900 last change: 4.6797e-06.
+3000 last change: 4.4859e-06.
+3100 last change: 4.3067e-06.
+3200 last change: 4.141e-06.
+3300 last change: 3.9864e-06.
+3400 last change: 3.842e-06.
+3500 last change: 3.7074e-06.
+3600 last change: 3.5815e-06.
+3700 last change: 3.4633e-06.
+3800 last change: 3.3527e-06.
+3900 last change: 3.2488e-06.
+4000 last change: 3.1508e-06.
+ --- Logfile of Experiment sailboat on lake ended 09-Feb-2018 16:18:26 ---

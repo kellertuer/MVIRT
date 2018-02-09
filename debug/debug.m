@@ -42,6 +42,7 @@ function debug(type, level, varargin)
     addParameter(p, 'GetTimer','');
     addParameter(p, 'TimeFormat','%09.8f');
     addParameter(p, 'Text','');
+    addParameter(p, 'Iterate',1);
     parse(p, varargin{:});
     debugparams = p.Results;
     %
@@ -54,7 +55,9 @@ function debug(type, level, varargin)
     % Text outputs
     
     if ( (getDebugLevel('text')>=level) && (strcmp(type,'text')))
-        disp(debugparams.Text);
+        if ~isempty(debugparams.Text) && mod(debugparams.Iterate, getDebugLevel('IterationStep'))==0
+            disp(debugparams.Text);
+        end
     end
     % Timers
     if ( (getDebugLevel('time')>=level) && (strcmp(type,'time')) )

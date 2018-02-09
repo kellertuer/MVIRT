@@ -9,6 +9,7 @@ classdef Hn < manifold & handle
         steps = 50;
         ItemSize;
         Dimension;
+        allDims;
     end
     
     methods
@@ -17,6 +18,7 @@ classdef Hn < manifold & handle
             obj.type = ['hyperbolic manifold of dimension ',num2str(n)];
             obj.ItemSize = n+1;
             obj.Dimension = n;
+            obj.allDims = repelem({':'},length(obj.ItemSize));
         end
         function Y = exp(this,X,V,t)
             % exp(P,V) - Exponential map at the point(s) P with respect to
@@ -195,99 +197,7 @@ classdef Hn < manifold & handle
                 ds = this.localDot(V,W);
             end
         end
-        function x = proxad(this,varargin)
-            % proxad(f, lambda, w) - Compute the proximal mapping of the
-            % data f with respect to lambda an the weight w.
-            % Any unknown point containing a NaN is inpainted if
-            % neighbouring known points or else left unchanged
-            %
-            % INPUT
-            %      f : data on P(m) (i.e. mxm), where [m,m,l,d] = size(f) and d
-            %          is the number of data points per prox and l is the
-            %          number of parallel proxes. A point is unknown if for
-            %          fixed d,l any of the three entries is NaN.
-            % lambda : weight of the proximal map (one value)
-            %      w : finite difference weight vector. For P(m) up to now
-            %          only [-1,1] is supported here
-            % OPTIONAL PARAMETERS
-            %     'UnknownMask'  : ([]) Specify a mask, which values of f are unknown
-            %                      (1) and initialized in the cycles otherwise, when
-            %                         possible (depending on the neighbours).
-            %     'RegMask'      : ([]) Specify a binary mask for values affected by
-            %                     (1) they are regularized, i.e. moved (or active, say)
-            %                     (0) fixed. RegMask is of the same size
-            %                         the data point set, i.e. [n,m].
-            %      If specified all Masks have to be the same size as f.
-            %
-            % OUTPUT
-            %      x : resulting data of all proximal maps (mxmxdxl)
-            % ---
-            % Manifold-Valued Image Restoration Toolbox 1.1, R. Bergmann ~ 2015-10-20
 
-            if (length(varargin)==1 && isstruct(varargin{1})) %struct case
-                vars = varargin{1};
-                assert(all(isfield(vars,{'f','lambda','w'})),...
-                    'Not all required parameters given in the struct');
-                if ~isfield(vars,'RegMask');
-                    vars.RegMask = [];
-                end
-            else
-                ip = inputParser;
-                addRequired(ip,'f');
-                addRequired(ip,'lambda');
-                addRequired(ip,'w');
-                addParameter(ip, 'RegMask', []);
-                parse(ip, varargin{:});
-                vars = ip.Results;
-            end
-            [k,l,d] = size(vars.f);
-            assert(k==this.ItemSize,['The values of f (',num2str(d),' points in ',...
-                num2str(l),' proximal mappings of dimension ',num2str(k),') are not lying in R3']);
-            if (isrow(vars.w))
-                w = vars.w';
-            else
-                w = vars.w;
-            end
-            
-            if (vars.lambda==0)
-                x = vars.f;
-                return
-            end
-            %% TODO RegMask
-            assert(d==length(w),['The length of the weight (',...
-                num2str(length(w)),') does not fit to the data size (',...
-                num2str(d),').']);
-            x = vars.f;
-            x(isnan(vars.f)) = NaN;
-            missingpoints = squeeze(any(isnan(vars.f),1)); %sum along manifold dimensions & squeeze
-            if l==1
-                missingpoints = missingpoints';
-            end
-            % proxes that can be computed
-            proxpts = sum(missingpoints,2)==0; %last dimension d
-            % proxes that can be inpainted
-            inpaintpts = sum(missingpoints,2)==1;
-            if (length(w)==2) && all(w==[-1,1]')
-                t = min(vars.lambda, 0.5*this.dist(vars.f(:,proxpts,1),vars.f(:,proxpts,2)));
-                % Divide only those that are nonzero.
-                dir1 = this.log(vars.f(:,proxpts,1),vars.f(:,proxpts,2));
-                l1 = sqrt(this.dot(dir1,dir1)).';
-                dir1(:,l1>eps) = dir1(:,l1>eps)./repmat(l1(l1>eps),[this.ItemSize,1]);
-                dir2 = this.log(vars.f(:,proxpts,2),vars.f(:,proxpts,1));
-                l2 = sqrt(this.dot(dir2,dir2)).';
-                dir2(:,l2>eps) = dir2(:,l2>eps)./repmat(l2(l2>eps),[this.ItemSize,1]);
-                % permute brings one singleton dimension to the front in t
-                x(:,proxpts,1) = this.exp(vars.f(:,proxpts,1), repmat(permute(t,[3,1,2]),[this.ItemSize,1]).*dir1);
-                x(:,proxpts,2) = this.exp(vars.f(:,proxpts,2), repmat(permute(t,[3,1,2]),[this.ItemSize,1]).*dir2);
-                %
-                % Inpaint all first missing points, the second one is
-                % existing due to limiting the missing number to 1
-                x(:,(missingpoints(:,1)>0)&inpaintpts,1) = x(:,(missingpoints(:,1)>0)&inpaintpts,2);
-                x(:,(missingpoints(:,2)>0)&inpaintpts,2) = x(:,(missingpoints(:,2)>0)&inpaintpts,1);
-            else
-                error('the second order difference proximal map is not yet available on the hyperbolic manifold');
-            end
-        end
         function Y = addNoise(~,X,sigma)
             sizes = size(X);
             error('This method is not yet implemented.');

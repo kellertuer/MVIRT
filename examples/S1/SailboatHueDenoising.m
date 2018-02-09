@@ -34,17 +34,15 @@ setDebugLevel('IterationStep',100); % only every 100th iteration
 setDebugLevel('WriteImages',1);     % 0: no file writing, 1: file writing
 setDebugLevel('time',3);            % verbose time
 setDebugLevel('LoadData',1);        % 0: generate new data 1: load existing data (if it exists), (other wise it is generated)
-setDebugLevel('WriteData',0);       % 0: do not write data to file 1: write data to file (overwrites last experiment data!)
+setDebugLevel('WriteData',1);       % 0: do not write data to file 1: write data to file (overwrites last experiment data!)
 setDebugLevel('Figures',1);         % 0: no figure display, 1: figures are displayed
 setDebugLevel('logfile',1);         % 0: no logfile 1: logfile
 
 dataFolder = ['..',filesep,'..',filesep,'data',filesep];
 folder = ['examples',filesep,'S1',filesep];
-resultsFolder = ['SailboatHueDenoising',filesep];
+resultsFolder = ['sailboatHSV',filesep];
 
 % Algorithm parameters
-iter = 4000;
-epsilon = 0;
 % Details for the data - these are ignored if data is loaded
 sigma = 0.2;
 name = 'sailboat on lake';
@@ -94,17 +92,17 @@ if getDebugLevel('WriteImages')
 end
 % Number 1: H phase valued denoising
 clear problem
-problem.MaxIterations = iter; problem.Epsilon = epsilon;
 problem.f = permute(Zn(:,:,1),[3,1,2]); problem.M = S1;
-problem.alpha = 2*pi*1/4*[1,1,0,0];
-problem.beta = 2*pi*[1,1,0];
-problem.lambda=pi;
+problem.alpha = 2*pi*1/4*eye(2);
+problem.beta = 2*pi*eye(2);
+problem.lambdaIterate = @(iter) pi/2/iter;
+problem.stoppingCriterion = stopCritMaxIterEpsilonCreator(problem.M,4000,0);
 ZnH = Zn;
-ZnH(:,:,1) = mod( permute(cppa_ad_2D(problem),[2,3,1])+pi,2*pi )/(2*pi);
+ZnH(:,:,1) = mod( permute(CPP_AdditiveTV12(problem),[2,3,1])+pi,2*pi )/(2*pi);
 % 2: Same as real valued
-problem.M = S1mRn(0,1);
+problem.M = Rn(1);
 ZnR = Zn;
-ZnR(:,:,1) = mod( permute(cppa_ad_2D(problem),[2,3,1])+pi,2*pi )/(2*pi);
+ZnR(:,:,1) = mod( permute(CPP_AdditiveTV12(problem),[2,3,1])+pi,2*pi )/(2*pi);
 
 if getDebugLevel('Figures')
     figure(3); imagesc(hsv2rgb(ZnH)); title('Denoised Hue with S1-valued CPPA');

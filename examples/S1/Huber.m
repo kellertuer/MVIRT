@@ -1,4 +1,4 @@
-%
+ %
 % Comparing the CPPA-prox of absolute differences with a Huber relaxation
 % =======================================================================
 %
@@ -75,23 +75,43 @@ figure(1); plot(t,fo,'.b',t,fn,'.k');
 ylim([-pi,pi]);
 title(['Original & Noise (\sigma=',num2str(sigma),').']);
 
+% Set up parameters
+clear problem;
+problem.M = S1();
+problem.alpha = 1/2;
+problem.beta = 1;
+problem.f = fn;
+problem.stoppingCriterion = stopCritMaxIterEpsilonCreator(problem.M,4000,0);
+problem.lambdaIterate = @(iter) pi/iter;
+
 % Algorithm parameters
 iter = 4000;
 epsilon = 0;
 
 alpha=1/2; beta=1;
-frTV12 = cppa_ad_1D(M,fn,alpha,beta,pi,'MaxIterations',iter,'Epsilon',epsilon);
+tic
+frTV12 = CPP_AdditiveTV12(problem);
+toc
+
 MSETV = sum(M.dist(fo,frTV12).^2)*1/N;
 if getDebugLevel('Figures')
     figure(2); plot(t,fo,'.b',t,frTV12,'.k');
     ylim([-pi,pi]);
     title(['TV1&2 Minimization by CPPA, alpha=',num2str(alpha),', beta=',num2str(beta),' MSE=',num2str(MSETV)]);
 end
-alpha = 1/4; tau = 4*sqrt(2); omega=pi/16;
-frH = cppa_huber_1DS(fn,0.5,pi,tau,omega,'MaxIterations',iter,'Epsilon',epsilon);
+
+problemH.M = S1();
+problemH.alpha = 1/2;
+problemH.tau = 4*sqrt(2);
+problemH.omega = pi/16;
+problemH.f = fn;
+problemH.stoppingCriterion = stopCritMaxIterEpsilonCreator(problem.M,4000,0);
+problemH.lambdaIterate = @(iter) pi/iter;
+frH = CPP_HuberTV(problemH);
+
 MSEH = sum(M.dist(fo,frH).^2)*1/N;
 if getDebugLevel('Figures')
     figure(3); plot(t,fo,'.b',t,frH,'.k');
     ylim([-pi,pi]);
-    title(['Huber-type TV Minimization by CPPA, alpha=',num2str(alpha),', tau=',num2str(tau),', omega=',num2str(omega),' MSE=',num2str(MSETV)]);
+    title(['Huber-type TV Minimization by CPPA, alpha=',num2str(problemH.alpha),', tau=',num2str(problemH.tau),', omega=',num2str(problemH.omega),' MSE=',num2str(MSETV)]);
 end

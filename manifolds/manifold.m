@@ -14,7 +14,6 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
     %    log(p,q)            : inverse exponential map of q at p
     %    dist(p,q)           : distance of p and q on the manifold
     % _Static
-    %    proxad(f,lambda,w)  : proximal mappinf w.r.t. absolute differences
     %    addNoise(X,sigma)   : add Noise on the manifold to the signal/data
     %                          X with standard deviation sigma
     % _normal functions
@@ -22,8 +21,17 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
     %    mean(f)              : Karcher mean of the values f
     %    meadian(f)           : median of the values of f
     %    midPoint(x,z)        : Compute the mid point between x and z.
+    %    filter(image,filter) : Filters the image using the Karcher mean
+    %    geopoint(x,y,t)      : Compute the geodesic between x and y and
+    %                           evaluate it at t
     %    geodesic(x,y,pts)    : Compute the geodesic between x and y with
     %                           pts points
+    %    schildsladder(x,y,v) : Transports the vector v from x to y with
+    %                           Schild's ladder
+    %
+    %    poleladder(x,y,v) : Transports the vector v from x to y the pole
+    %                        ladder
+    %   
     %
     % ---
     % Manifold-valued Image Restoration Toolbox 1.0
@@ -36,15 +44,9 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
         type; % Type of manifold
         ItemSize; % Data Item dimension, given as size(q), q from M; might differ from manifold dimensions
         Dimension; % Dimension of the manifold
+        allDims;
     end
     methods (Abstract)
-        % proxad(f,lambda,w,<options>)
-        %     perform a proximal mapping with respect to absolute differences
-        %     given by w of data f and parameter lambda on the manifold. Any
-        %     manifold should also provide the function as
-        % proxad(problem), where problem is a struct containing all necessary
-        %     parameters.
-        x = proxad(this,f,lambda,w,varargin);
         % exponential map of v in TpM  at p on the manifold
         q = exp(this,p,v);
         % inverse exponential map of q at p on the manifold
@@ -84,54 +86,6 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
                  t = permute(t,[l+(1:length(size(this.ItemSize))),1:l]);
              end
              x = this.exp(g, t.*v);
-        end
-        function [x1,x2] = proxTVSq(this,f1,f2,lambda)
-            % proxTV(f,lambda)
-            % Proximal steps of the discrete total variation squared of
-            % f1 and f2 with parameter lambda on an arbitrary manifold.
-            % This is the proximal map of
-            % the piointwise distance function squared d^2(f1,f2).
-            % INPUT
-            %  f1,f2    : data columns
-            %  lambda   : proxParameter
-            % OUTPUT
-            %  x1,x2    : resulting columns of the proximal map
-                        % ---
-            % ManImRes 1.0, R. Bergmann ~ 2014-10-19
-            if all(f1(:) == f2(:))
-                x1=f1;
-                x2=f2;
-                return
-            end
-            % Calculate step length in (0,1/2]
-            step = lambda/(1+2*lambda)*this.dist(f1,f2);
-            step = permute(repmat(step(:),[1,this.ItemSize]),[length(this.ItemSize)+1:-1:1]);
-            x1 = this.exp(f1,step.*this.log(f1,f2));
-            x2 = this.exp(f2,step.*this.log(f2,f1));
-        end
-        function [x1,x2] = proxTV(this,f1,f2,lambda)
-            % proxTV(f,lambda)
-            % Proximal steps for the total variation term of f1 and f2 with
-            % parameter lambda on an arbitrary manifold. This is
-            % the proximal map of the piointwise distance function d(f1,f2).
-            % INPUT
-            %  f1,f2    : data columns
-            %  lambda   : proxParameter
-            % OUTPUT
-            %  x1,x2    : resulting columns of the proximal map
-            % ---
-            % Manifold-valued Image Restoration Toolbox 1.0 ~ R. Bergmann, 2014-10-19
-            if all(f1(:) == f2(:))
-                x1=f1;
-                x2=f2;
-                return
-            end
-
-            % Calculate step length in (0,1/2]
-            step = min(1/2,lambda./this.dist(f1,f2));
-            step = permute(repmat(step(:),[1,this.ItemSize]),[length(this.ItemSize)+1:-1:1]);
-            x1 = this.exp(f1,step.*this.log(f1,f2));
-            x2 = this.exp(f2,step.*this.log(f2,f1));
         end
         function x = mean(this,varargin)
             x = this.mean_gd(varargin{:});
@@ -260,6 +214,79 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
             % Manifold-valued Image Restoration Toolbox 1.0 ~ R. Bergmann ~ 2014-10-19 | 2015-01-29
             m = this.exp(x, this.log(x,z)./2);
         end
+        function filteredImage = filter(varargin)
+            % filteredImage = filter(this,image,filter)
+            %    Convoles the this-valued image with the filter using
+            %    Karcher mean
+            %  INPUT
+            %    image   manifold Valued image
+            %    filter  filter matrix of size (2*n+1)x(2*m+1)
+            %
+            %  OPTIONAL(TODO)
+            %    'BoundaryCondition' ['nearest'] specify boundary
+            %                        conditions:
+            %                        (nearest,symmetric,periodic)
+            %
+            %  OUTPUT
+            %    filteredImage   filtered image with Karcher mean
+            %
+            % Manifold-valued Image Restoration Toolbox 1.2 ~ J. Persch ~ 2017-04-06
+            ip = inputParser;
+            addRequired(ip,'this');
+            addRequired(ip,'image');
+            addRequired(ip,'filter');
+            addParameter(ip,'BoundaryCondition','nearest');
+            parse(ip, varargin{:});
+            vars = ip.Results;
+            this = vars.this;
+            image = vars.image;
+            filter = vars.filter;
+            bc = vars.BoundaryCondition;
+            
+            dimen = size(image);
+            imgDim = dimen(length(this.ItemSize)+1:end);
+            assert(length(imgDim)==2,'Works only for manifold valued images.');
+            fSize = size(filter);
+            assert(all(mod(fSize,2)) || fSize(1)==fSize(2),'Filter needs to be of dimension (2*n+1) x (2*n+1).');
+            n = (fSize(1)-1)/2;
+            image = reshape(image,[prod(this.ItemSize),imgDim]);
+            switch bc
+                case 'nearest'
+                    image = image(:,[ones(1,n),1:imgDim(1),ones(1,n)*imgDim(1)],[ones(1,n),1:imgDim(2),ones(1,n)*imgDim(2)]);
+                case 'symmetric'
+                    image = image(:,[n:-1:1,1:imgDim(1),imgDim(1):-1:imgDim(1)-n+1],[n:-1:1,1:imgDim(2),imgDim(2):-1:imgDim(2)-n+1]);
+                case 'periodic'
+                    image = image(:,mod(-n:imgDim(1)+n-1,imgDim(1))+1,mod(-n:imgDim(2)+n-1,imgDim(2))+1);
+            end
+            range = 0:2*n;
+            filteredImage = zeros([prod(this.ItemSize),imgDim]);
+            for i = 1:imgDim(1)
+                for j = 1:imgDim(2)
+                    filteredImage(:,i,j) = reshape(this.mean(reshape(image(:,i+range,j+range),[this.ItemSize,1,prod(fSize)]),...
+                        'Weights',filter(:)),prod(this.ItemSize),1);
+                end
+            end
+            filteredImage = reshape(filteredImage,dimen);
+        end
+        function W = geopoint(this,X,Y,t)
+            % geopoint(X,Y,t) - Gives the point \gamma_{XY}(t)
+            % placeholder, has many manifolds admit a faster way to compute
+            % the combination of exp and log, e.g., SymPosDef
+            %
+            % INPUT
+            %   X,Y : a point or set of points on the manifold
+            %   t : a scalar or set of scalars
+            %
+            %
+            % OUTPUT
+            %   W : resulting point(s)
+            % ---
+            % Manifold-Valued Image Restoration Toolbox 1.0, J. Persch ~ 2017-03-31
+            
+            % Changelog
+            %   2015-04-10 introduced mexfile
+            W = this.exp(X,this.log(X,Y),t);
+        end
         function geo = geodesic(varargin)
             % geo = geodesic(this,x,y,pts)
             % Compute the geodesic between x and y using pts-2 points to
@@ -313,6 +340,21 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
            end
            geo = reshape(geo,[this.ItemSize,pts]);
         end
+        function w = schildsladder(this,x,y,v)
+            % schildsladder(this,x,y,v) transports v from x to y with
+            % Schild's ladder
+            %
+            % Manifold-valued Image Restoration Toolbox 1.2 - J. Persch  2018-01-04         
+            w = this.log(y,this.geopoint(x,this.midPoint(this.exp(x,v),y),2));            
+        end
+        function w = poleladder(this,x,y,v)
+            % poleladder(this,x,y,v) transports v from x to y with
+            % pole ladder
+            %
+            % Manifold-valued Image Restoration Toolbox 1.2 - J. Persch  2018-01-18         
+            w = -this.log(y,this.geopoint(this.exp(x,v),this.midPoint(x,y),2));            
+        end
+            
         function [v, mean_f] = var(this,f)
             % var(f) computes the empirical variance
             %       1/(numel(f)-1) * sum (f-mean(f))^2
@@ -329,6 +371,344 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
             f = reshape(f,[this.ItemSize,1,num_el]);
             mean_f = this.mean(f);
             v = 1/(num_el-1)*sum(this.dist(repmat(mean_f,[ones(1,length(this.ItemSize)),1,num_el]),f).^2)/this.Dimension;
+        end
+        function xi = JacobiField(this,varargin)
+            % JacobiField(x,y,t, eta) - evaluate a Jacobi field along the
+            %    geodesic ge8(x,y) at point t, where the 'weight'-function
+            %     f(k,t,d) determines the boundary conditions of the field,
+            %
+            % INPUT
+            %    x   : a point on the manifold Sn (or a vector of points)
+            %    y   : a point on the manifold Sn (or a vector of points)
+            %    t   : a value from [0,1] indicating the point geo(x,y,t)
+            %           (or a vector of values)
+            %    eta : an initial condition of the Jacobi field, where the
+            %           following weights determine the type of initial
+            %           condition.
+            %
+            % OPTIONAL
+            %    'weights' : [@(k,t,d) = (k==0)*t
+            %       + (k>0)*sin(sqrt(k)*t*d)/sin(sqrt(k)*d)
+            %       + (k<0)*sinh(sqrt(-k)*d*t)/sinh(sqrt(-k)*d)
+            %       provides the weight depending on the eigenvalue (k) of
+            %       the curvature tensor coresponding to the ONB basis
+            %       vector, the position t along the Jacobi field and d the
+            %       length of the geodesic.
+            %       For the standard value, eta is a tangential vector at 0
+            %       and the second boundary condition is J(1)=0, i.e. the
+            %       Jacobifield corresponds to D_x\gamma_{xy}(t)[\eta]
+            %
+            % ---
+            % R. Bergmann | MVIRT | 2017-12-01
+            ip = inputParser;
+            addRequired(ip,'x');
+            addRequired(ip,'y');
+            addRequired(ip,'t');
+            addRequired(ip,'eta');
+            % for the weights we have to include two numerical tricks:
+            %   for both k=0 or d=0 the second and third terms yield nan
+            %   but since the nominator is also zero we have to avoid to
+            %   divide by zero.
+            %   Furthermore for d==0 (hence x=y) the result is just the
+            %   identity, hence the last term, that for d==0 we have just 1
+            addParameter(ip,'weights', @(k,t,d) (k==0).*ones(size(k.*t.*d)).*(1-t) + ...
+                (k>0).*sin(sqrt(k).*(1-t).*d)./(sin(sqrt(k).*d) + (k==0)  + (d==0)) + ... %last term avoids division by zero
+                (k<0).*sinh(sqrt(-k).*d.*(1-t))./(sinh(sqrt(-k).*d) + (k==0) + (d==0)) + ...
+                (d==0).*ones(size(k.*t.*d)) );
+            parse(ip, varargin{:});
+            vars = ip.Results;
+            dDim = (length(this.ItemSize)+1); %dimension where the data lives
+            l = size(vars.x,dDim); % number of vectors
+            if (size(vars.y,dDim) ~= l)
+                error(['The lengths of p (',num2str(l),') and q (',...
+                    num2str(size(vars.y,dDim)),') have to be the same']);
+            else
+                t=vars.t;
+                if sum(size(t))==2 % number ? extend to l
+                    t = vars.t.*ones(l,1);
+                elseif (length(t) ~= l)
+                error(['The lengths of p (',num2str(l),') and t (',...
+                    num2str(length(vars.t)),') have to be the same']);
+                end
+            end
+            myEps = 10^(-8);
+            d = this.dist(vars.x,vars.y);
+            xi = zeros(size(vars.eta));
+            xi(this.allDims{:},d<myEps) = vars.eta(this.allDims{:},d<myEps);
+            if sum(d(:)>myEps)>0
+                % only continue with large enough ones
+                x = vars.x(this.allDims{:},d>=myEps);
+                y = vars.y(this.allDims{:},d>=myEps);
+                eta = vars.eta(this.allDims{:},d>=myEps);
+                t = t(d>myEps);
+                dS = d(d>myEps);
+                p = this.geopoint(x,y,t);
+                [V,k] = this.TpMONB(x,y);
+                W = this.parallelTransport(...%repmat both x and p to num TpONBs
+                    repmat(x,[ones(1,dDim),this.Dimension]),...
+                    repmat(p,[ones(1,dDim),this.Dimension]),...
+                    V);
+                weights = vars.weights(k,t,dS);
+                % decompose eta into basis of v
+                alpha = shiftdim(this.dot(repmat(x,[ones(1,dDim),this.Dimension]),...
+                    repmat(eta,[ones(1,dDim),this.Dimension]),V),-length(this.ItemSize));
+                % shift weights by mandim dims back such that .* work correctly
+                % - sum over all tangential vectors i.e. dataDim+1
+                xi(this.allDims{:},d>myEps) = sum(alpha.*W.*permute(weights,[3:(dDim+1),1,2]),(dDim+1));
+            end
+        end
+        function xi = DxGeo(this,x,y,t,eta)
+            % DxGeo(x,y,t,eta) - Compute the Derivative of
+            %    geodesic(x,y,t) with respect to the start point x.
+            %
+            %    For a function f: M \mapsto R and fixed y,t we have for the
+            %    gradient of g(x) = f(geo(x,y,t)) that
+            %    <grad g, nu>_x = <grad f, DxGeo(.,y,t)(x)[nu]>_g(x,y,t)
+            %    hence with the Adjoint we obtain
+            %    grad g = AdjDxGeo(.,y,t)(x)[grad f].
+            %    This function hence only requires eta=grad f to computed
+            %    the chain rule.
+            %
+            %    INPUT
+            %      x   : start point of a geodesic, g(x,y,0)=x
+            %      y   : end point of a geodesic, geo(x,y,1) = y
+            %      t   : [0,1] a point on the geodesic to be evaluated,
+            %            may exceed [0,1] to leave the segment between x and y
+            %     eta  : (in Tg(t,x,y)) direction to take the Adjoint derivative at.
+            %
+            %    OUTPUT
+            %     xi   : ( in TxM ) - the adjoint of DxGeo with respect to eta
+            % ---
+            % MVIRT R. Bergmann, 2017-12-04
+            xi = this.JacobiField(x,y,t,eta);
+        end        
+        function xi = DyGeo(this,x,y,t,eta)
+            % DxGeo(x,y,t,eta) - Compute the Derivative of
+            %     geodesic(x,y,t) with respect to the end point y.
+            %
+            %
+            %    INPUT
+            %      x   : start point of a geodesic, g(x,y,0)=x
+            %      y   : end point of a geodesic, geo(x,y,1) = y
+            %      t   : [0,1] a point on the geodesic to be evaluated,
+            %            may exceed [0,1] to leave the segment between x and y
+            %     eta  : (in TyM) direction to take the derivative of.
+            %
+            %    OUTPUT
+            %     xi   : ( in Tg(x,y,t)M ) - DyGeo with respect to eta
+            % ---
+            % MVIRT R. Bergmann, 2017-12-04
+            xi = this.JacobiField(y,x,1-t,eta);
+        end
+        function xi = AdjJacobiField(this,varargin)
+            % JacobiField(x,y,t, eta) - evaluate a Jacobi field along the
+            %    geodesic ge8(x,y) at point t, where the 'weight'-function
+            %     f(k,t,d) determines the boundary conditions of the field,
+            %
+            % INPUT
+            %    x   : a point on the manifold Sn (or a vector of points)
+            %    y   : a point on the manifold Sn (or a vector of points)
+            %    t   : a value from [0,1] indicating the point geo(x,y,t)
+            %           (or a vector of values)
+            %    eta : an initial condition of the Jacobi field, where the
+            %           following weights determine the type of initial
+            %           condition.
+            %
+            % OPTIONAL
+            %    'weights' : [@(k,t,d) = (k==0)*t
+            %       + (k>0)*sin(sqrt(k)*t*d)/sin(sqrt(k)*d)
+            %       + (k<0)*sinh(sqrt(-k)*d*t)/sinh(sqrt(-k)*d)
+            %       provides the weight depending on the eigenvalue (k) of
+            %       the curvature tensor coresponding to the ONB basis
+            %       vector, the position t along the Jacobi field and d the
+            %       length of the geodesic.
+            %       For the standard value, eta is the Jacobi field at 0
+            %       and the second boundary condition is J(1)=0, i.e. the
+            %       Jacobifield corresponds to D_x\gamma_{xy}(t)[\eta]
+            %
+            % ---
+            % R. Bergmann | MVIRT | 2017-12-01
+            ip = inputParser;
+            addRequired(ip,'x');
+            addRequired(ip,'y');
+            addRequired(ip,'t');
+            addRequired(ip,'eta');
+            % for the weights we have to include two numerical tricks:
+            %   for both k=0 or d=0 the second and third terms yield nan
+            %   but since the nominator is also zero we have to avoid to
+            %   divide by zero.
+            %   Furthermore for d==0 (hence x=y) the result is just the
+            %   identity, hence the last term, that for d==0 we have just 1
+            addParameter(ip,'weights', @(k,t,d) (k==0).*ones(size(k.*t.*d)).*(1-t) + ...
+                (k>0).*sin(sqrt(k).*(1-t).*d)./(sin(sqrt(k).*d) + (k==0)  + (d==0)) + ... %last term avoids division by zero
+                (k<0).*sinh(sqrt(-k).*d.*(1-t))./(sinh(sqrt(-k).*d) + (k==0) + (d==0)) + ...
+                (d==0).*ones(size(k.*t.*d)) );
+            parse(ip, varargin{:});
+            vars = ip.Results;
+            dDim = (length(this.ItemSize)+1); %dimension where the data lives
+            xS = size(vars.x);
+            %internally reshape to a vector
+            x = reshape(vars.x,this.ItemSize,[]);
+            y = reshape(vars.y,this.ItemSize,[]);
+            eta = reshape(vars.eta,this.ItemSize,[]);
+            l = size(x,dDim); % number of vectors
+            if (size(y,dDim) ~= l)
+                error(['The lengths of p (',num2str(l),') and q (',...
+                    num2str(size(y,dDim)),') have to be the same']);
+            else
+                t=vars.t;
+                if sum(size(t))==2 % number ? extend to l
+                    t = vars.t.*ones(l,1);
+                elseif (length(t) ~= l)
+                error(['The lengths of p (',num2str(l),') and t (',...
+                    num2str(length(vars.t)),') have to be the same']);
+                end
+            end
+            myEps = 10^(-8);
+            d = this.dist(x,y);
+            xi = zeros(size(eta));
+            if sum(d(:)>myEps)>0
+               % only PT large enough ones
+               p = this.geopoint(x,y,t);
+               [V,k] = this.TpMONB(x,y);
+               W=V;
+               W(this.allDims{:},d>=myEps,:) = this.parallelTransport(...%repmat both x and p to num TpONBs
+                    repmat(x(this.allDims{:},d>=myEps),[ones(1,dDim),this.Dimension]),...
+                    repmat(p(this.allDims{:},d>=myEps),[ones(1,dDim),this.Dimension]),...
+                    V(this.allDims{:},d>=myEps,:));
+                weights = vars.weights(k,t,d);
+                % decompose eta into basis of v
+                alpha = shiftdim(this.dot(repmat(p,[ones(1,dDim),this.Dimension]),...
+                    repmat(eta,[ones(1,dDim),this.Dimension]),W),-length(this.ItemSize));
+                % shift weights by mandim dims back such that .* work correctly
+                % - sum over all tangential vectors i.e. dataDim+1
+                xi = sum(alpha.*V.*permute(weights,[3:(dDim+1),1,2]),(dDim+1));
+                xi = reshape(xi,xS);
+            end
+        end
+        function xi = AdjDxGeo(this,x,y,t,eta)
+            % AdjDxGeo(x,y,t,eta) - Compute the Adjoint of the Derivative of
+            %    geodesic(x,y,t) with respect to the start point x.
+            %
+            %    For a function f: M \mapsto R and fixed y,t we have for the
+            %    gradient of g(x) = f(geo(x,y,t)) that
+            %    <grad g, nu>_x = <grad f, DxGeo(.,y,t)(x)[nu]>_g(x,y,t)
+            %    hence with the Adjoint we obtain
+            %    grad g = AdjDxGeo(.,y,t)(x)[grad f].
+            %    This function hence only requires eta=grad f to computed
+            %    the chain rule.
+            %
+            %    INPUT
+            %      x   : start point of a geodesic, g(x,y,0)=x
+            %      y   : end point of a geodesic, geo(x,y,1) = y
+            %      t   : [0,1] a point on the geodesic to be evaluated,
+            %            may exceed [0,1] to leave the segment between x and y
+            %     eta  : (in Tg(t,x,y)) direction to take the Adjoint derivative at.
+            %
+            %    OUTPUT
+            %     xi   : ( in TxM ) - the adjoint of DxGeo with respect to eta
+            % ---
+            % MVIRT R. Bergmann, 2017-12-04
+            xi = this.AdjJacobiField(x,y,t,eta);
+        end
+        function xi = AdjDyGeo(this,x,y,t,eta)
+            % AdjDxGeo(x,y,t,eta) - Compute the Adjoint of the Derivative of
+            %     geodesic(x,y,t) with respect to the end point y.
+            %
+            %    For a function f: M \mapsto R and fixed x,t we have for the
+            %    gradient of g(y) = f(geo(x,y,t)) that
+            %    <grad g, nu>_y = <grad f, DyGeo(x,.,t)(y)[nu]>_g(x,y,t)
+            %    hence with the Adjoint we obtain
+            %    grad g = AdjDxGeo(x,.,t)(y)[grad f].
+            %    This function hence only requires eta=grad f to computed
+            %    the chain rule.
+            %
+            %    INPUT
+            %      x   : start point of a geodesic, g(x,y,0)=x
+            %      y   : end point of a geodesic, geo(x,y,1) = y
+            %      t   : [0,1] a point on the geodesic to be evaluated,
+            %            may exceed [0,1] to leave the segment between x and y
+            %     eta  : (in Tg(x,y,t)) direction to take the Adjoint derivative at.
+            %
+            %    OUTPUT
+            %     xi   : ( in TyM ) - the adjoint of DyGeo with respect to eta
+            % ---
+            % MVIRT R. Bergmann, 2017-12-04
+            xi = this.AdjJacobiField(y,x,1-t,eta);
+        end
+        function nu = AdjDxExp(this,x,xi,eta)
+            %   nu = AdjDxExp(x,xi,eta) - Adjoint of the Derivative of Exp with
+            %   respect to the basis point
+            %    INPUT
+            %      x   : base point of the exponential
+            %      xi  : direction of the exponential
+            %     eta  : (in TExp(x,xi)M) direction to take the Adjoint derivative at.
+            %
+            %    OUTPUT
+            %     nu   : ( in TxM ) - the adjoint of DxExp with respect to eta
+            % ---
+            % MVIRT R. Bergmann, 2017-12-04
+            f = @(k,t,d) (k==0).*ones(size(k.*t.*d)) + ...
+                (k>0).*cos(sqrt(k).*d.*t) + ...
+                (k<0).*cosh(sqrt(-k).*d.*t);
+            nu = this.AdjJacobiField(x,this.exp(x,xi),1,eta,'weights',f);
+        end
+        function nu = AdjDxiExp(this,x,xi,eta)
+            %   nu = AdjDxExp(x,xi,eta) - Adjoint of the Derivative of Exp with
+            %   respect to the tangential vector xi
+            %   INPUT
+            %      x   : base point of the exponential
+            %      xi  : direction of the exponential
+            %     eta  : (in TExp(x,xi)M) direction to take the Adjoint derivative at.
+            %
+            %    OUTPUT
+            %     nu   : ( in TxM, more precisely TTxM ) - the adjoint of DxExp with respect to eta
+            % ---
+            % MVIRT R. Bergmann, 2017-12-04
+            f = @(k,t,d) (k==0).*ones(size(k.*t.*d)) + ...
+                (k>0).*sin(sqrt(k).*d)./(sqrt(k).*d + (d==0) + (k==0) ) + ... % last terms are again for avoiding division by zero
+                (k<0).*sinh(sqrt(-k).*d)./(sqrt(-k).*d + (d==0) + (k==0) );
+            nu = this.AdjJacobiField(x,this.exp(x,xi),1,eta,'weights',f);
+        end
+        function xi = AdjDxLog(this,x,y,eta)
+            %   nu = AdjDxLog(x,y,eta) - Adjoint of the Derivative of Log
+            %       with respect to the basis point x.
+            %   INPUT
+            %      x   : base point of the logarithm
+            %      y   : argument of the logarithm
+            %     eta  : (in TxM) direction to take the Adjoint derivative at.
+            %
+            %    OUTPUT
+            %     nu   : ( in TxM ) - the adjoint of DxLog with respect to eta
+            % ---
+            % MVIRT R. Bergmann, 2017-12-04
+            
+            % the following weights of the Jacobi field are derived in
+            % [Bredies, Holler, Storath, Weinmann, 2017, Lemma 4.5]
+            f = @(k,t,d) -(k==0).*ones(size(k.*t.*d)) + ...
+                (k>0).*sqrt(k).*(-d).*cos(sqrt(k).*d)./(sin(sqrt(k).*d) + (d==0) + (k==0) ) + ... % last terms are again for avoiding division by zero
+                (k<0).*sqrt(-k).*(-d).*cosh(sqrt(-k).*d)./(sinh(sqrt(-k).*d) + (d==0) + (k==0) );
+            xi = this.AdjJacobiField(x,y,0,eta,'weights',f);
+        end
+        function xi = AdjDyLog(this,x,y,eta)
+            %   nu = AdjDyLog(x,y,eta) - Adjoint of the Derivative of Log
+            %       with respect to y.
+            %   INPUT
+            %      x   : base point of the logarithm
+            %      y   : argument of the logarithm
+            %     eta  : (in TyM) direction to take the Adjoint derivative at.
+            %
+            %    OUTPUT
+            %     nu   : ( in TxM ) - the adjoint of DxLog with respect to eta
+            % ---
+            % MVIRT R. Bergmann, 2017-12-04
+            
+            % the following weights of the Jacobi field are derived in
+            % [Bredies, Holler, Storath, Weinmann, 2017, Lemma 4.3]
+            f = @(k,t,d) (k==0).*ones(size(k.*t.*d)) + ...
+                (k>0).*sqrt(k).*d./(sin(sqrt(k).*d) + (d==0) + (k==0) ) + ... % last terms are again for avoiding division by zero
+                (k<0).*sqrt(-k).*d./(sinh(sqrt(-k).*d) + (d==0) + (k==0) );
+            xi = this.JacobiField(y,x,1,eta,'weights',f);
         end
     end
     methods (Access=protected)
@@ -527,7 +907,7 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
                     aj = reshape(f,[prod(manDim),m,n]); %collapse manifold
                     %collect all jth points, expand manifold again
                     aj = reshape(aj(:,:,j),[manDim,m]);
-                    x = this.proxDist(x,aj,lambdait*w(:,j));
+                    x = proxDistanceSquared(this,x,aj,lambdait*w(:,j));
                 end
                 itD = this.dist(x,xold);
                 itD = max(itD(:));

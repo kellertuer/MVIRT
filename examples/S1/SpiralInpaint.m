@@ -76,6 +76,7 @@ M(2:3:size(spiral,1),:) = 0;
 %
 M(:,1:3:size(spiral,2)) = 0;
 M(:,2:3:size(spiral,2)) = 0;
+M = M>0; %binarize
 img = spiral.*M; %Just loose data
 if getDebugLevel('Figures')
     figure(2); imagesc(M,[0,1]); colormap(gray); axis square
@@ -92,22 +93,26 @@ if getDebugLevel('WriteImages')
 end
 %% Parameters for the cyclic proximal point algorithm
 
-problem.alpha = 1*[1,1,0,0];
-problem.beta=[1,1,1];
-problem.lambda = pi/2;
-problem.f = permute(img,[3,1,2]);
-problem.MaxIterations = 700;
-problem.Epsilon = 10^(-9);
 problem.M = S1();
+problem.alpha = eye(2);
+problem.beta = [1,1;0,1];
+problem.lambdaIterate = @(iter) pi/2/iter;
+problem.stoppingCriterion = stopCritMaxIterEpsilonCreator(problem.M,4000,0);
+problem.f = permute(img,[3,1,2]);
 problem.UnknownMask = ~M;
-problem.RegMask = ~M;
-VresTV2 = permute(cppa_ad_2D(problem),[2,3,1]);
+problem.FixedMask = M;
+tic
+VresTV2 = permute(CPP_AdditiveTV12(problem),[2,3,1]);
+toc
+
 if getDebugLevel('Figures')
     figure(4); imagesc(VresTV2,[-pi,pi]); colormap(hsv(1024));axis image; axis off;
     title(['Result of the reconstruction using \alpha=',num2str(problem.alpha(1),4),' and \beta=',num2str(problem.beta(1),4),'.']);
 end
-problem.beta = [0,0,0];
-VresTV = permute(cppa_ad_2D(problem),[2,3,1]);
+problem.beta = zeros(2);
+tic
+VresTV = permute(CPP_AdditiveTV12(problem),[2,3,1]);
+toc
 if getDebugLevel('Figures')
     figure(5); imagesc(VresTV,[-pi,pi]); colormap(hsv(1024));axis image; axis off;
     title(['Result of the reconstruction using \alpha=',num2str(problem.alpha(1),4),' and \beta=0.']);

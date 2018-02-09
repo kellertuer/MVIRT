@@ -17,6 +17,10 @@
 % Manifold-valued Image Restoration Toolbox 1.2
 %  J. Persch  ~ 2016-07-05 | R. Bergmann ~ 2017-01-07
 % see LICENSE.txt
+start = pwd;
+if ~isempty(fileparts(which(mfilename)))
+    cd(fileparts(which(mfilename)));
+end
 run('../../initMVIRT.m')
 resultsFolder = ['syntheticSARImage',filesep];
 %% Debug

@@ -30,7 +30,7 @@ setDebugLevel('LevelMin',0);
 setDebugLevel('LevelMax',1000);
 setDebugLevel('text',3); %verbose, but...
 setDebugLevel('IterationStep',10000); %only every 50th iteration
-setDebugLevel('WriteImages',1); %0: no file writing, 1: file writing
+setDebugLevel('WriteImages',0); %0: no file writing, 1: file writing
 setDebugLevel('time',3); %many time measurements
 setDebugLevel('Figures',1); %0: no figure display, 1: figures are displayed (disable e.g. for cluster/console work)
 setDebugLevel('logfile',1); %0: no logfile 1: logfile
@@ -87,25 +87,31 @@ if getDebugLevel('WriteImages')
 end
 %% Parameters for the cyclic proximal point algorithm
 
-problem.alpha = 1/2*[1,1,1,1];
-problem.beta=1/4*[1,1,1];
-problem.lambda = pi/2;
-problem.f = permute(img,[3,1,2]);
-problem.MaxIterations = 4000;
-problem.Epsilon = 10^(-9);
 problem.M = S1();
+problem.alpha = 1/2*ones(2);
+problem.beta = 1/2*[1,1;0,1];
+problem.lambdaIterate = @(iter) pi/2/iter;
+problem.f = permute(img,[3,1,2]);
+problem.stoppingCriterion = stopCritMaxIterEpsilonCreator(problem.M,4000,0);
 problem.UnknownMask = ~M;
-problem.RegMask = ~M;
-VresTV2 = permute(cppa_ad_2D(problem),[2,3,1]);
+problem.FixedMask = M;
+
+tic
+VresTV2 = permute(CPP_AdditiveTV12(problem),[2,3,1]);
+toc
+
 if getDebugLevel('Figures')
     figure(4); imagesc(VresTV2,[-pi,pi]); colormap(hsv(1024));axis image; axis off;
-    title(['Result of the reconstruction using \alpha=',num2str(problem.alpha(1),4),' and \beta=',num2str(problem.beta(1),4),'.']);
+    title(['Result of the reconstruction using \alpha=',num2str(problem.alpha(1,1),4),' and \beta=',num2str(problem.beta(1,1),4),'.']);
 end
 problem.beta = [0,0,0];
-VresTV = permute(cppa_ad_2D(problem),[2,3,1]);
+problem.beta = zeros(2);
+tic
+VresTV = permute(CPP_AdditiveTV12(problem),[2,3,1]);
+toc
 if getDebugLevel('Figures')
     figure(5); imagesc(VresTV,[-pi,pi]); colormap(hsv(1024));axis image; axis off;
-    title(['Result of the reconstruction using \alpha=',num2str(problem.alpha(1),4),' and \beta=0.']);
+    title(['Result of the reconstruction using \alpha=',num2str(problem.alpha(1,1),4),' and \beta=0.']);
 end
 if getDebugLevel('WriteImages')
     Vresexp = uint8((VresTV2+pi)/(2*pi)*255);

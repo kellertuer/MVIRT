@@ -52,5 +52,8 @@ MatrixXd mSPDParallelTransport(MatrixXd X, MatrixXd Y, MatrixXd V);
 MatrixXd mSPDParallelTransport(MatrixXd X, MatrixXd Y, MatrixXd V, double t);
 
 MatrixXd mSPDMean(MatrixXd *F, double *W, double E, double I,size_t L);
-// Caluculates the mean of the j points in F with weights W stops after I iteration or if change less than E
+// Caluculates the mean of the L points in F with weights W stops after I iteration or if change less than E
+
+MatrixXd mSPDGeo(MatrixXd X, MatrixXd Y,double t);
+// Caluculates the point of at t of the geodesic between X and Y
 #endif /* MANIFOLDSPD_H */

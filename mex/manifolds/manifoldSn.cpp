@@ -28,9 +28,10 @@ VectorXd mSnExp(VectorXd X, VectorXd V,double t) {
 }
 VectorXd mSnLog(VectorXd X, VectorXd Y) {
     double scp = max(min(X.dot(Y),1.0),-1.0);
+    VectorXd T = X-Y;
     VectorXd V = Y - scp*X;
     double nv = V.norm();
-    if (nv>0)
+    if (T.norm() > std::numeric_limits<double>::denorm_min() && nv> std::numeric_limits<double>::denorm_min())
         return V*acos(scp)/nv;
     else
         return VectorXd::Zero(X.size());
