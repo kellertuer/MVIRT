@@ -9,6 +9,7 @@ function xi = gradxDist(M,x,y)
 %   eta : the gradient
 mL = length(M.ItemSize);
 d = M.dist(x,y);
-xi = -M.log(x,y)./shiftdim(d + double(d==0), -mL);
+dZ = d < 10^(-7);
+xi = -M.log(x,y).*shiftdim(~dZ,-mL)./shiftdim(d + double(dZ), -mL);
 end
 

@@ -10,7 +10,7 @@ function V = TV2_Midpoint(varargin)
 %             data, i.e. anisotropic TV for p=1 and isotropic for p=2
 %  epsilon   : compute the gradient of the epsilon-relaxed TV
 %  weights   : (ones(dataDims) exclude certain data points from all gradient terms
-%  Summation : (true) return a value (true) or a matrix of TV terms (false)
+%  Sum : (true) return a value (true) or a matrix of TV terms (false)
 % ---
 % MVIRT, R. Bergmann, 2017-12-08
 ip = inputParser();
