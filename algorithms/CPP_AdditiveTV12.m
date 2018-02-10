@@ -55,7 +55,11 @@ if (length(varargin)==1 && isstruct(varargin{1})) % as struct
         vars.Debug = [];
     end
     if ~isfield(vars,{'lambdaIterate'})
-        vars.lambdaIterate = @(iter) pi/iter;
+       if isfield(vars,{'lambda'})
+            vars.lambdaIterate = @(iter) vars.lambda/iter;
+       else
+            vars.lambdaIterate = @(iter) pi/iter;
+       end
     end
     if ~isfield(vars,{'Record'})
         vars.Record = [];

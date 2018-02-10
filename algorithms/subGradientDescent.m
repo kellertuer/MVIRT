@@ -1,10 +1,12 @@
 function [x,recData] = gradientDescent(varargin)
-% gradientDescent(M,x,gradF,stepSizeRule,stoppingCriterion) - compute a
-% gradient descent based on
+% subGradientDescent(M,x,F,gradF,stepSizeRule,stoppingCriterion) - compute a
+% sub gradient descent based on
 %
 % INPUT
 %    M                : a manifold M
 %    x                : initial data
+%    F                : the function F to optimize split in values per
+%                      pixel
 %    gradF            : a function @(x) returning the gradient of F at x
 %    stepSize         : a function @(x,eta,iter,initial) returning the stepsize at x
 %                           with direction eta corresponding to a certain
@@ -21,6 +23,7 @@ function [x,recData] = gradientDescent(varargin)
 ip = inputParser();
 addRequired(ip,'M', @(x) validateattributes(x,{'manifold'},{}))
 addRequired(ip,'x');
+addRequired(ip,'F');
 addRequired(ip,'gradF');
 addRequired(ip,'stepSize');
 addRequired(ip,'stoppingCriterion');
@@ -47,7 +50,9 @@ while ~vars.stoppingCriterion(x,xold,s,iter)
     xold = x;
     descentDir = vars.gradF(x);
     s = vars.stepSize(x,descentDir,iter,s);
-    x = vars.M.exp(x,-s.*descentDir);
+    xNew = vars.M.exp(x,-s.*descentDir);
+    update = vars.F(xNew)<vars.F(x);
+    x(vars.M.allDims{:},update) = xNew(vars.M.allDims{:},update);
     if record
         recData = cat(2,recData,vars.Record(x,xold,iter));
     end
