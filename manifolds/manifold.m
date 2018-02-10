@@ -548,9 +548,9 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
             dDim = (length(this.ItemSize)+1); %dimension where the data lives
             xS = size(vars.x);
             %internally reshape to a vector
-            x = reshape(vars.x,this.ItemSize,[]);
-            y = reshape(vars.y,this.ItemSize,[]);
-            eta = reshape(vars.eta,this.ItemSize,[]);
+            x = reshape(vars.x,[this.ItemSize, prod(xS(dDim:end))]);
+            y = reshape(vars.y,[this.ItemSize, prod(xS(dDim:end))]);
+            eta = reshape(vars.eta,[this.ItemSize, prod(xS(dDim:end))]);
             l = size(x,dDim); % number of vectors
             if (size(y,dDim) ~= l)
                 error(['The lengths of p (',num2str(l),') and q (',...
