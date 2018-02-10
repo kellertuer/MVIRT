@@ -133,11 +133,8 @@ end
 M = SymPosDef(3);
 problem.M = M;
 problem.f = fn;
-problem.MaxIterations = 800;
-problem.Epsilon = 10^(-5);
+problem.stoppingCriterion = stopCritMaxIterEpsilonCreator(problem.M,800,10^(-5));
 problem.lambda = pi/2;
-problem.M.steps = 5; %just do 10 gradient descent steps
-problem.RegMask = rM; %only regularize nonzero items
 problem.alpha = 0.05;
 problem.beta = 0.1;
 if getDebugLevel('logfile') %display parameters in logfile
@@ -145,7 +142,7 @@ if getDebugLevel('logfile') %display parameters in logfile
     problem.M   
 end
 %% CPPA
-fr = cppa_ad_2D(problem);
+fr = CPP_AdditiveTV12(problem);
 %% Export Results
 if getDebugLevel('WriteImages')>0
     fileStr = [resultsFolder,name,'-p-',num2str(problem.alpha),'-',num2str(problem.beta)];

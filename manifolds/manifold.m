@@ -88,10 +88,33 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
              x = this.exp(g, t.*v);
         end
         function x = mean(this,varargin)
+            % mean(f) calculates the mean of the input data f
+            % with a gradient descent algorithm. This implementation is based on
+            %
+            % B. Afsari, Riemannian Lp center of mass: Existence,
+            %    uniqueness, and convexity,
+            %    Proc. AMS 139(2), pp.655-673, 2011.
+            %
+            % INPUT
+            %    f :  m x n Data points ([this.Itemsize,m,n]) to compute
+            %         m means of n points each, pp.
+            % OUTPUT
+            %    x :  m data points of the means calculated
+            %
+            % OPTIONAL
+            % 'Weights' : (1/n*ones([m,n]) 1xn or mxn weights for the mean
+            %            the first case uses the same weights for all means
+            % 'InitVal' : m Initial Data points for the gradient descent
+            % 'MaxIterations': Maximal Number of Iterations
+            % 'Epsilon'      : Maximal change before stopping
+            %
+            % ---
+            % Manifold-valued Image Restoration Toolbox 1.0,
+            % J. Persch 2015-07-24 | R. Bergmann 2015-07-30
             x = this.mean_gd(varargin{:});
         end
         function x = median(this,varargin)
-            % mean(f) calculates the mean of the input data with a gradient
+            % median(f) calculates the median of the input data with a gradient
             % descent algorithm. This implementation is based on
             %
             % B. Afsari, Riemannian Lp center of mass: Existence,
@@ -733,7 +756,7 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
             % 'MaxIterations': Maximal Number of Iterations
             % 'Epsilon'      : Maximal change before stopping
             %
-            %
+            % ---
             % Manifold-valued Image Restoration Toolbox 1.0, J. Persch 2015-07-24 | R. Bergmann 2015-07-30
             ip = inputParser;
             addRequired(ip,'f');
