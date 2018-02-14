@@ -122,19 +122,6 @@ classdef Sn < manifold & handle
                 d = this.localDist(p,q);
             end
         end
-        function m = midPoint(this,x,z)
-            % m = midPoint(x,z)
-            % Compute the (geodesic) mid point of x and z.
-            %
-            % INPUT
-            %    x,z : two point( sets) as colum(s) in R3
-            %
-            % OUTPUT
-            %      m : resulting mid point( sets)
-            % ---
-            % Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann ~ 2014-10-19
-            m = this.exp(x, this.log(x,z)./2);
-        end
         function G = grad_X_D2(this,X,Y,Z)
             % grad_X_D2_sq(X,Z,Y) Compute the gradient with respect to the first
             % variable of the second order difference term
@@ -271,8 +258,8 @@ classdef Sn < manifold & handle
                 sV = size(V);
                 dir = this.log(X,Y);
                 norms = sqrt(sum(dir.^2,1));
-                norm_dir = repmat(norms,[3,ones(1,length(sV(2:end)))]);
-                normMask = repmat(norms==0,[3,ones(1,length(sV(2:end)))]);
+                norm_dir = repmat(norms,[this.ItemSize,ones(1,length(sV(2:end)))]);
+                normMask = repmat(norms==0,[this.ItemSize,ones(1,length(sV(2:end)))]);
                 dir = dir./norm_dir;
                 scp = sum(dir.*V,1);
                 % substract V-part (scp*dir) and add the negative direction
@@ -281,21 +268,22 @@ classdef Sn < manifold & handle
             end
         end
         function [V,k] = TpMONB(this,p,q)
-            % V = TpMONB(p,q)
-            % Compute an ONB in TpM, where the first vector points to q,
-            % whin given.
-            %
-            % INPUT
-            %     p : base point( sets)
-            % OPTIONAL:
-            %     q : directional indicator( sets) for the first vector(s).
-            %
-            % OUTPUT
-            %    V : basiscolumn matrice(s)
-            %    k : (optional) curvature coefficients, here
-            %           all are 1 except the first which is 0
-            % ---
-            % MVIRT 1.0, R. Bergmann ~ 2014-10-19 | 2014-10-23
+        % V = TpMONB(p,q)
+        % Compute an ONB in TpM, where the first vector points to q,
+        % whin given.
+        %
+        % INPUT
+        %     p : base point( sets)
+        %
+        % OPTIONAL:
+        %     q : directional indicator( sets) for the first vector(s).
+        %
+        % OUTPUT
+        %    V : basiscolumn matrice(s)
+        %    k : (optional) curvature coefficients, here
+        %           all are 1 except the first which is 0
+        % ---
+        % MVIRT 1.0, R. Bergmann ~ 2014-10-19 | 2014-10-23
             if isrow(p)
                 p_=p';
             else
@@ -310,7 +298,7 @@ classdef Sn < manifold & handle
             pS = size(p);
             p_ = reshape(p_,pS(1),[]);
             q_ = reshape(q, pS(1),[]);
-            if nargin == 3 && min(this.dist(q_,p_))>10^-8
+            if q_given && max(this.dist(q_,p_)) > eps
                 V = zeros(this.ItemSize,size(p_,2),this.ItemSize-1);
                 V(:,:,1) = this.log(p_,q_);
                 normsv = sqrt(sum(V(:,:,1).^2,1));
@@ -616,8 +604,6 @@ classdef Sn < manifold & handle
             q_ = reshape(q_,this.ItemSize,[]);
             % Compute all scalar products of points p and q, secure, that
             % they are in -1,1 for numerical reasons
-            % scp = shiftdim(min( max(bsxfun(@dot,p,q),-1), 1));
-            %
             % computes v = y-<y,x>x/norm(y-<y,x>x) * d(x,y)
             scp = min( max(sum(p_.*q_,1), -1), 1);
             w = q_ - p_.*repmat(scp,[this.ItemSize,1]);
