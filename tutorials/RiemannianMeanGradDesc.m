@@ -16,7 +16,7 @@ if ~isempty(fileparts(which(mfilename)))
     cd(fileparts(which(mfilename)));
 end
 %%
-run('../../initMVIRT.m');
+run('../initMVIRT.m');
 results = 'RiemannianMeanGradDesc/';
 mainC = [65, 161, 198]./255;
 secondC = [255, 107, 76]/255;
