@@ -18,7 +18,7 @@ function [dataStr,gD] = exportSPD2Asymptote(varargin)
 %       standard value does not produce that nice results, but scales up to
 %       at least 112^2; for smaller images use a larger value, e.g. 15.
 %   'File'            : (String) Write the generated Code directly into a file
-%   'ExportHeader'    : (false) whether to export the Header of the
+%   'ExportHeader'    : (true) whether to export the Header of the
 %       .asy-File or just the drawing commands.
 %   'GridDistance'    : a value or vector of distances between the center
 %       points of the ellipsoids. Standard Value is 1. If it is set to [],
@@ -43,7 +43,7 @@ addParameter(ip,'Colors',[]);
 addParameter(ip,'GridDistance',[]);
 addParameter(ip,'GridScale',1);
 addParameter(ip,'ColorScheme', 'GA');
-addParameter(ip,'ExportHeader',false);
+addParameter(ip,'ExportHeader',true);
 addParameter(ip,'File', '');
 addParameter(ip,'ColorMap',hsv);
 parse(ip, varargin{:});
@@ -73,14 +73,20 @@ end
 gD = gD.*vars.GridScale;
 numCol = size(vars.ColorMap,1);%256;
 CM = vars.ColorMap;
-pt = zeros(1,3);
+pt = ones(1,3);
 if length(dataDim)>2 %2D or 1D
     pt(3) = dataDim(3);
 end
 if length(dataDim)>1
     pt(2) = dataDim(2);
 end
-pt(1) = dataDim(1);
+if ~isempty(dataDim)
+    pt(1) = dataDim(1);
+    zD = max(dataDim);
+else
+    pt(1) = 1; % single value matrix
+    zD = 1;
+end
 % Header
 if ~isempty(vars.File) %Export given
     exportFile = fopen(vars.File,'w','n','UTF-8');
@@ -99,7 +105,7 @@ if vars.ExportHeader
         '\treal gDx=',num2str(gD(1)),';\n',...
         '\treal gDy=',num2str(gD(2)),';\n',...
         '\treal gDz=',num2str(gD(3)),';\n\n',...
-        '\tcurrentprojection=perspective( camera=(gDx*',num2str((pt(1)-1)/2),',gDy*',num2str((pt(2)-1)/2),',',num2str(max(dataDim)),'),',...
+        '\tcurrentprojection=perspective( camera=(gDx*',num2str((pt(1)-1)/2),',gDy*',num2str((pt(2)-1)/2),',',num2str(zD),'),',...
         'up=Y, target=(gDx*',num2str((pt(1)-1)/2),',gDy*',num2str((pt(2)-1)/2),',gDz*',num2str((pt(3)-1)/2),'));\n']);
     %         '\tcurrentprojection=perspective( camera=(gDx*',num2str(pt(1)/2),',gDy*',num2str(pt(2)/2),',-',num2str(max(dataDim)),'-2*gDx),',...
     %         'up=Z, target=(gDx*',num2str(pt(1)/2),',gDy*',num2str(pt(2)/2),',gDz*',num2str(pt(3)/2),'));']);
