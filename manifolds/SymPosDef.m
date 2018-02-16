@@ -561,8 +561,7 @@ classdef SymPosDef < manifold & handle
                 end
                 B = sX\Y(:,:,i)/sX;
                 [U,S,~]=svd(0.5*(B+B'));
-                S= diag(log(max(diag(S),eps))); %log(X,Y) without outer sqrtm(x)e, they vanish in the following exp
-                [U,S,] = eig((0.5*0.5*( (U*S*U') + (U*S*U')')));%first 0.5 from formula second for numerical stability
+                S= 0.5*diag(log(max(diag(S),eps))); %log(X,Y) without outer sqrtm(x)e, they vanish in the following exp
                 S = diag(exp(diag(S))); % i.e. Z = U*S*U'
                 
                 W(:,:,i) = sX*(U*S*U')*(0.5*(A+A'))*(U*S*U')*sX;

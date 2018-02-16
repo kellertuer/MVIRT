@@ -137,12 +137,8 @@ MatrixXd mSPDParallelTransport(MatrixXd X, MatrixXd Y, MatrixXd V, double t) {
     for (i=0; i<ItemSize; i++)
         S(i,i) = log(S(i,i));
     U = svd2.matrixU();
-    lY = U*S*U.transpose(); //temp for 3rd svd
-    EigenSolver<MatrixXd> eig(0.5*0.5*(lY+lY.transpose()), true);// 0.5 from formula and 0.5 for stability
-    S = eig.pseudoEigenvalueMatrix();
-    U = eig.pseudoEigenvectors();
     for (i=0; i<ItemSize; i++)
-        S(i,i) = exp(S(i,i));
+        S(i,i) = exp(0.5*S(i,i));
     lW = Xsqrt*(U*S*U.transpose())*0.5*(lV+lV.transpose())*(U*S*U.transpose())*Xsqrt;
     return lW;
 }
