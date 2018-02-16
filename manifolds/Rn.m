@@ -121,24 +121,6 @@ classdef Rn < manifold & handle
                 k = zeros([dimen(2:end),this.Dimension]);
             end 
         end
-        function G = grad_X_D2_Sq(~,X,Y,Z)
-            % grad_X_D2_sq(X,Z,Y) Compute the gradient with respect to the first
-            % variable of the squared second order difference term
-            % d^2(c(X,Z),Y). This can also
-            % be used for the third, Z, exchanging X and Z
-            %
-            % INPUT
-            %   X : A point( set)
-            %   Y : A point( set)
-            %   Z : A point( set)
-            %
-            % OUTPUT
-            %   G : A (set of) tangent vector(s, one) at (each) X.
-            %
-            % ---
-            % Manifold-Valued Image Restoration Toolbox 1.0, J. Persch, 2016-10-21
-            G = -1/2*(X+Z-2*Y);
-        end
         function ds = dot(~,P,V,W)
             % Sn.dot(P,V,W)
             %     Compute the inner product of two tangent vectors in T_P M
