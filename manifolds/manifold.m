@@ -363,19 +363,39 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
            end
            geo = reshape(geo,[this.ItemSize,pts]);
         end
-        function w = schildsladder(this,x,y,v)
-            % schildsladder(this,x,y,v) transports v from x to y with
-            % Schild's ladder
+        function nu = schildsladder(this,x,y,xi)
+            % schildsladder(this,x,y,xi) approximates parallel Transport
+            % by mappting xi from TxM to TyM using Schild's ladder
             %
-            % Manifold-valued Image Restoration Toolbox 1.2 - J. Persch  2018-01-04         
-            w = this.log(y,this.geopoint(x,this.midPoint(this.exp(x,v),y),2));            
+            % INPUT
+            % x,y : two point(set)s on the manifold
+            % v   : a tangent vector(Set) on TxM
+            %
+            % OUTPUT
+            %   nu : the resulting vectors in TyM that are approximately
+            %        parallelTransport(x,y,xi)
+            %
+            % ---
+            % Manifold-valued Image Restoration Toolbox 1.2
+            % J. Persch, R. Bergmann | 2018-01-04 | 2018-02-19
+            nu = this.log(y,this.geopoint(x,this.midPoint(this.exp(x,xi),y),2));            
         end
-        function w = poleladder(this,x,y,v)
-            % poleladder(this,x,y,v) transports v from x to y with
-            % pole ladder
+        function nu = poleladder(this,x,y,xi)
+            % poleladder(this,x,y,xi) approximates parallel Transport
+            % by mappting xi from TxM to TyM using the pole ladder
             %
-            % Manifold-valued Image Restoration Toolbox 1.2 - J. Persch  2018-01-18         
-            w = -this.log(y,this.geopoint(this.exp(x,v),this.midPoint(x,y),2));            
+            % INPUT
+            % x,y : two point(set)s on the manifold
+            % xi   : a tangent vector(Set) on TxM
+            %
+            % OUTPUT
+            %   nu : the resulting vectors in TyM that are approximately
+            %        parallelTransport(x,y,xi)
+            %
+            % ---
+            % Manifold-valued Image Restoration Toolbox 1.2
+            % J. Persch, R. Bergmann | 2018-01-04 | 2018-02-19
+            nu = -this.log(y,this.geopoint(this.exp(x,xi),this.midPoint(x,y),2));            
         end
             
         function [v, mean_f] = var(this,f)
