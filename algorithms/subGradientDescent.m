@@ -1,12 +1,21 @@
-function [x,recData] = gradientDescent(varargin)
-% subGradientDescent(M,x,F,gradF,stepSizeRule,stoppingCriterion) - compute a
-% sub gradient descent based on
+function [x,recData] = subGradientDescent(varargin)
+% subGradientDescent(M,x,F,gradF,stepSizeRule,stoppingCriterion)
+% compute a sub gradient descent on F using x as inital data and gradF
+% as the (sub)gradient. If F returns a number, the classical gradient descent
+% is performed; if it returs a vector or matrix; a parallel gradient descent
+% is computed, where the (last) data dimensions of x are handled in
+% parallel.
+%
+%   Ferreira, O.P.; Oliverira, P.R. ? Subgradient Algorithm on Riemannian
+%       manifolds
+%       Journal of Optimization Theory and Applications 97.1, 93?104, 1998.
 %
 % INPUT
 %    M                : a manifold M
 %    x                : initial data
-%    F                : the function F to optimize split in values per
-%                      pixel
+%    F                : the function F for the different gradients in
+%                       parallel or just a value for standard gradient
+%                       descent
 %    gradF            : a function @(x) returning the gradient of F at x
 %    stepSize         : a function @(x,eta,iter,initial) returning the stepsize at x
 %                           with direction eta corresponding to a certain
@@ -41,8 +50,33 @@ record = ~isempty(vars.Record) && nargout > 1;
 if record
     recData = [];
 end
+sX = size(vars.x);
+mD = length(vars.M.ItemSize); %manifold item size
+if length(sX)>mD
+    dD = sX(mD+1:end); %data dimensions
+else
+    dD=1;
+end
+dL = length(dD); %numer of data dimensions
+InitValue = vars.F(vars.x);
+parallel = ~isscalar(InitValue);
+if parallel
+    pD = size(InitValue);
+    pD = pD(pD>1); % omit last dimension if we are parallel on a vector
+    pL = length(pD); %number of parallel dimensions
+    % check that these are the last dimensions of dD; init corresponding
+    % adressers
+    if any(pD ~= dD( (dL-pL+1):end) )
+        error(['The dimensions F provides (',num2str(pD),...
+            ') does not fit the last data dimensions (',...
+            num2str(dD( (dL-pL):end)),')']);
+    end
+    % remaining data adressor
+    dataF = repelem({':'},dL-pL);
+end
 x = vars.x;
 xold=x;
+xOpt = x;
 iter = 0;
 s = 1;
 while ~vars.stoppingCriterion(x,xold,s,iter)
@@ -50,14 +84,18 @@ while ~vars.stoppingCriterion(x,xold,s,iter)
     xold = x;
     descentDir = vars.gradF(x);
     s = vars.stepSize(x,descentDir,iter,s);
-    xNew = vars.M.exp(x,-s.*descentDir);
-    update = vars.F(xNew)<vars.F(x);
-    x(vars.M.allDims{:},update) = xNew(vars.M.allDims{:},update);
+    x = vars.M.exp(x,-s.*descentDir);
+    if parallel
+        update = vars.F(x)<vars.F(xOpt);
+        xOpt(vars.M.allDims{:},dataF{:},update) = x(vars.M.allDims{:},dataF{:},update);
+    elseif vars.F(x)<vars.F(xOpt)
+        xOpt = x;
+    end
     if record
         recData = cat(2,recData,vars.Record(x,xold,iter));
     end
     if ~isempty(vars.Debug)
-        debug('text',3,'Text',debugF(x,xold,iter));
+        debugF(x,xold,iter);
     end
 end
 end

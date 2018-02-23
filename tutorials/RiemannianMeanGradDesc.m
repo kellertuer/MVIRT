@@ -16,7 +16,7 @@ if ~isempty(fileparts(which(mfilename)))
     cd(fileparts(which(mfilename)));
 end
 %%
-run('../../initMVIRT.m');
+run('../initMVIRT.m');
 results = 'RiemannianMeanGradDesc/';
 mainC = [65, 161, 198]./255;
 secondC = [255, 107, 76]/255;
@@ -52,7 +52,7 @@ stepSizeRuleA = @(x,eta,iter,initial) ...
 %% Compare
 M.dist(p1,p2)
 
-%% TEIL II: Symmetric positive definite matricesPD
+%% PART II: Symmetric positive definite matricesPD
 
 M = SymPosDef(3);
 

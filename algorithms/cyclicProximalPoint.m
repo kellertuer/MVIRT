@@ -14,6 +14,12 @@ function [y,recData] = cyclicProximalPoint(varargin)
 %
 % OPTIONAL
 %   lambdaIterate     : (@ (iter)) a functional @(lambda,iter) computing the iterates value of lambda
+%   Order       : ('') while the standard order is ascending in proximalMaps,
+%                'random' takes a random proximal map in each iteration
+%                   (note that then one iteration is only _one_ proximal map
+%                   evaluated)
+%                 'permute' : keeps a cyclic manner but permutes the order
+%                             for each cycle anew.
 %   Debug             : ([]) a function @ (x,xold,iter) producing debug
 %                          output
 %   Record            : (@(x,iter)) a function returning a column vector,
@@ -37,6 +43,9 @@ if (length(varargin)==1 && isstruct(varargin{1})) % as struct
     if ~isfield(vars,{'Debug'})
         vars.Debug = [];
     end
+    if ~isfield(vars,{'Order'})
+        vars.RandomOrder = '';
+    end
     if ~isfield(vars,{'lambdaIterate'})
         if isfield(vars,{'lambda'}) % fallback for old cases
             vars.lambdaIterate = @(iter) vars.lambda/iter;
@@ -53,15 +62,23 @@ else % parse Input
     addRequired(ip,'x');
     addRequired(ip,'proximalMaps');
     addRequired(ip,'stoppingCriterion');
+    addOptional(ip,'Order','acsending');
     addOptional(ip,'Debug',[]);
     addOptional(ip,'Record',[]);
-    addOptional(ip,'lambdaIterate',@(lambda,iter) lambda/iter);
+    addOptional(ip,'lambda',[]);
+    addOptional(ip,'lambdaIterate',[]);
     parse(ip, varargin{:});
     vars = ip.Results;
 end
-record = ~isempty(vars.Record) && nargout > 2;
+record = ~isempty(vars.Record) && nargout > 1;
 if record
     recData = [];
+end
+if ~isempty(vars.lambda) % priority over functional
+    vars.lambdaIterate = @(iter) vars.lambda/iter;
+end
+if isempty(vars.lambdaIterate)
+            error('Please specify either a lambdaIterate function or an initial (vars.)lambda');
 end
 if isempty(vars.Debug)
     vars.Debug = @(x,xold,iter,lambda) debug('text',3,...
@@ -72,18 +89,31 @@ x = vars.x;
 xold=x;
 iter = 0;
 lambdak = vars.lambdaIterate(1);
-while ~vars.stoppingCriterion(x,xold,lambdak,iter)
+numProx = length(vars.proximalMaps);
+if strcmp(vars.Order,'random')
+    numProx = 1; %choose randomly every prox call
+elseif strcmp(vars.Order,'permute')
+    order = randperm(numProx);
+else
+    order = 1:numProx;
+end
+ while ~vars.stoppingCriterion(x,xold,lambdak,iter)
+    if strcmp(vars.Order,'random')
+        order = randi(length(vars.proximalMaps)); %choose randomly
+    elseif strcmp(vars.Order,'permute')
+        order = randperm(numProx);
+    end
     iter=iter+1;
     xold = x;
     lambdak = vars.lambdaIterate(iter);
-    for i=1:length(vars.proximalMaps)
-        x = vars.proximalMaps{i}(x,lambdak);
+    for i=1:numProx
+        x = vars.proximalMaps{order(i)}(x,lambdak);
     end
     if ~isempty(vars.Debug)
         vars.Debug(x,xold,iter);
     end
     if record
-        recData = cat(2,recData,vars.Record(x,iter));
+        recData = cat(2,recData,vars.Record(x,xold,iter));
     end
 end
 y = x;
