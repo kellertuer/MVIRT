@@ -59,34 +59,6 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
         Y = addNoise(this,X,sigma,varargin)
     end
     methods
-        function x = proxDist(this,g,f,lambda)
-            % proxDist(g,f,lambda)
-            % Proximal step towards f from given data g with parameter
-            % lambda on an arbitrary manifold. This is the proximal map of
-            % the distance function squared with fixed g.
-            % INPUT
-            %  f,g    : data point( sets/columns )
-            %  lambda : stepsize towards f
-            % OUTPUT
-            %       x : result point( sets) of the proximal map
-            % ---
-            % Manifold-valued Image Restoration Toolbox 1.0 ~ R. Bergmann, 2014-10-19
-            if all(g(:) == f(:))
-                x=f;
-                return
-            end
-             v = this.log(g,f);
-             if sum(size(lambda))==2 % a numner
-                 t = lambda/(1+lambda);
-             else
-%                t = repmat(lambda./(1+lambda),[ones(1,length(size(lambda))),this.ItemSize]);
-                 t = lambda./(1+lambda); %avoid repmat
-                 % manifolds first with one-dim stuff to avoid repmat
-                 l = length(size(lambda));
-                 t = permute(t,[l+(1:length(size(this.ItemSize))),1:l]);
-             end
-             x = this.exp(g, t.*v);
-        end
         function x = mean(this,varargin)
             % mean(f) calculates the mean of the input data f
             % with a gradient descent algorithm. This implementation is based on
@@ -132,37 +104,43 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
             %    x :  m data points of the medians calculated
             %
             % OPTIONAL
-            % 'Weights' : (1/n*ones([m,n]) 1xn or mxn weights for the mean
-            %            the first case uses the same weights for all means
-            % 'InitVal' : m Initial Data points for the gradient descent
+            % 'Weights'      : (1/n*ones([m,n]) 1xn or mxn weights for the mean
+            %                  the first case uses the same weights for all means
+            % 'InitVal'      : m Initial Data points for the gradient descent
+            % 'StepSize'     : (@(x,descentDir,iter,s) 1/iter) a step size
+            %                   function for the subgradient descent
             % 'MaxIterations': Maximal Number of Iterations
             % 'Epsilon'      : Maximal change before stopping
-            % 'Alpha'        : Step Size in (0,2)
             %
-            % Manifold-valued Image Restoration Toolbox 1.0, J. Persch 2015-07-24 | R. Bergmann 2015-07-30
+            % Manifold-valued Image Restoration Toolbox 1.0,
+            % J. Persch 2015-07-24 | R. Bergmann 2018-02-23
+            
+            % Changelog
+            % 2018-02-23 switched to the functional (parallel) subgradient
+            %       descent
             ip = inputParser;
             addRequired(ip,'f');
             addParameter(ip,'Weights',NaN);
             addParameter(ip,'InitVal',NaN);
-            addParameter(ip,'Alpha',1);
             addParameter(ip,'MaxIterations',100);
             addParameter(ip,'Epsilon',10^-5);
+            addParameter(ip,'StepSize',@(x,descentDir,iter,s) 1/iter);
             parse(ip, varargin{:});
             vars = ip.Results;
             f = vars.f;
             dims = size(f);
-            if length(dims) ~= length(this.ItemSize)+2
-                if all(dims(1:length(this.ItemSize)) == this.ItemSize) && length(dims)<length(this.ItemSize)+2
+            mD = length(this.ItemSize);
+            dD = dims((mD+1):end);
+            if length(dD) ~= 2
+                if size(f,mD+2)==1 %only one median to compute
                     x = f;
                     return
                 end
                 error('f wrong size');
             end
             % shift manDim in first dimension
-            f = reshape(f,[prod(this.ItemSize),dims(1+length(this.ItemSize):end)]);
-            con_dim = size(f);
-            m = con_dim(end-1);
-            n = con_dim(end);
+            m = dD(1);
+            n = dD(2);
             if isnan(vars.Weights)
                 w = 1/n*ones(m,n);
             elseif isvector(vars.Weights)
@@ -176,21 +154,18 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
                 if any(size(w) ~= [m,n])
                     error('dim w do not match data points');
                 end
+                %normalize
                 w = w./repmat(sum(w,2),1,n);
             end
-            % Resize w to fit to the Manifold
-            w = repmat(permute(w,[2+(1:length(this.ItemSize)),1,2]),[this.ItemSize,1,1]);
             if isnan(vars.InitVal)
-                x = reshape(f,[prod(this.ItemSize),m,n]);
-                x = reshape(x(:,:,1),[this.ItemSize,m]);
+                x = f(this.allDims{:},:,1);
             else
                 x = vars.InitVal;
-                if (length(size(x))== length(this.ItemSize)) ...
-                        && (all(size(x) == this.ItemSize))
-                    x = repmat(x,[ones(1,length(this.ItemSize)),m]);
-                elseif any(size(x) ~= [this.ItemSize,m])
-                    error(['InitVal has to be of size [',num2str(this.ItemSize),'] or [',...
-                        num2str([this.ItemSize,m]),'].']);
+                if size(x,mD+1) == 1 || size(x,mD+2) == 1
+                    x = repmat(x,[ones(mD,1),m,1]);
+                elseif size(x,mD+1) ~= m || size(x,mD+2) ~= 1
+                    error(['too many initial points (expected ', ... 
+                        num2str([M.ItemSize,m,1]),' but x is of size ',num2str(size(x)),'.']);
                 end
             end
             if vars.Epsilon > 0
@@ -203,25 +178,19 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
                 iter = vars.MaxIterations;
             else
                 warning('Iterations should be larger than zero, set Iterations to 100')
-                iter = 100;
+                iter = 1000;
             end
-            f  = reshape(f, [this.ItemSize,m,n]);
-            x_old = x;
-            i = 0;
-            while (max(this.dist(x,x_old)) > epsilon && i < iter) || i == 0
-                x_old = x;
-                V = this.log(repmat(x,[ones(1,length(this.ItemSize)+1),n]),f);
-                % Divide by the distance
-                d = this.dist(repmat(x,[ones(1,length(this.ItemSize)+1),n]),f);
-                l = length(this.ItemSize);
-                d = repmat(permute(d,[2+(1:l),1,2]),[this.ItemSize,1,1]);
-                V(d>0) = V(d>0)./d(d>0);
-                V = V.*w;
-                weight = sum(d.*w,length(this.ItemSize)+2);
-                V = sum(V,length(this.ItemSize)+2);
-                x = this.exp(x,vars.Alpha*weight.*V);
-                i= i+1;
-            end
+            stoppingCriterion = stopCritMaxIterEpsilonCreator(this,iter,epsilon);
+            F = @(p) sum( w.*this.dist(repmat(p,[ones(1,mD+1),n]),f),2);
+            gradF = @(p) ...
+                sum(...
+                    -shiftdim(w./(... %the following line avoids division by zero
+                        this.dist(repmat(p,[ones(1,mD+1),n]),f) ...
+                        + double(this.dist(repmat(p,[ones(1,mD+1),n]),f)==0)),-mD)...
+                          .*this.log(repmat(p,[ones(1,mD+1),n]),f),...
+                    mD+2);
+            x = subGradientDescent(this,x,F,gradF, ...
+                vars.StepSize,stoppingCriterion);
         end
         function m = midPoint(this,x,z)
             % m = midPoint(x,z)
@@ -396,28 +365,29 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
             % Manifold-valued Image Restoration Toolbox 1.2
             % J. Persch, R. Bergmann | 2018-01-04 | 2018-02-19
             nu = -this.log(y,this.geopoint(this.exp(x,xi),this.midPoint(x,y),2));            
-        end
-            
+        end        
         function [v, mean_f] = var(this,f)
             % var(f) computes the empirical variance
             %       1/(numel(f)-1) * sum (f-mean(f))^2
             % of f
-            % INPUT:
-            % f      Manifold valued Set
-            % OUTPUT:
-            % v      variance of the set (scalar)
-            % mean_f mean value of the set
+            % INPUT
+            % f      : manifold valued Set
+            % OUTPUT
+            % v      : variance of the set (scalar)
+            % mean_f : mean value of the set
             %
-            % Manifold-valued Image Restoration Toolbox 1.2 - J. Persch, R. bergmann, 2017-01-06
-            dimen = size(f);
-            num_el = prod(dimen(length(this.ItemSize)+1:end));
-            f = reshape(f,[this.ItemSize,1,num_el]);
-            mean_f = this.mean(f);
-            v = 1/(num_el-1)*sum(this.dist(repmat(mean_f,[ones(1,length(this.ItemSize)),1,num_el]),f).^2)/this.Dimension;
+            % ---
+            % Manifold-valued Image Restoration Toolbox 1.2
+            % J. Persch, R. bergmann, 2017-01-06
+            mD = length(this.ItemSize);
+            f = f(this.allDims{:},:);
+            num_el = size(f,mD+1);
+            mean_f = this.mean(reshape(f,[this.ItemSize,1,num_el]));
+            v = 1/(num_el-1)*sum(this.dist(repmat(mean_f,[ones(1,mD),num_el]),f).^2)/this.Dimension;
         end
         function xi = JacobiField(this,varargin)
             % JacobiField(x,y,t, eta) - evaluate a Jacobi field along the
-            %    geodesic ge8(x,y) at point t, where the 'weight'-function
+            %    geodesic g(x,y) at point t, where the 'weight'-function
             %     f(k,t,d) determines the boundary conditions of the field,
             %
             % INPUT
@@ -442,6 +412,7 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
             %       Jacobifield corresponds to D_x\gamma_{xy}(t)[\eta]
             %
             % ---
+            % Manifold-valued Image Restoration Toolbox 1.3
             % R. Bergmann | MVIRT | 2017-12-01
             ip = inputParser;
             addRequired(ip,'x');

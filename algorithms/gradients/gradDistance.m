@@ -1,9 +1,11 @@
-function eta = gradData(M,f,x,p)
+function eta = gradData(M,f,x,p,epsilon)
 % gradData(M,f,x)
 % gradient for 1/p d^p(x,f)
 if nargin < 4
     p=2;
 end
+if nargin < 5
+    epsilon=0;
 dataDim = size(f);
 dataDim = dataDim(  (length(M.ItemSize)+1) : end  );
 if p ~= 2
