@@ -1,4 +1,4 @@
-function folder = getManImResPath()
+function folder = getMVIRTPath()
 % getManImResPath()
 %    returns the base path of the MVIRT Toolbox and returns an error
 %    message, if the Toolbox is not initialized yet.

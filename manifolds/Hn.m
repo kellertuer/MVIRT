@@ -149,7 +149,7 @@ classdef Hn < manifold & handle
                 warning('Iterations should be larger than zero, set Iterations to 100')
                 iter = 100;
             end
-            if ~this.useMex || getDebugLevel('MatlabMean')==1
+            if ~this.useMex
                 x=this.mean@manifold(f,'Weights',w,'Epsilon',epsilon,'MaxIterations',iter);
             else            
             x = HnMean(f,w,epsilon,iter);

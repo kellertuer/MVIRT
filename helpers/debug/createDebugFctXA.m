@@ -1,0 +1,33 @@
+function f = createDebugFctXA(M,F,modIter)
+% createDebufFct(M,F,modIter) ? creates a debug functional for alternating/manifold-tangent bundle algorithms
+% using x,xold,iter as inputs, evaluating the function F to minimize,
+% displaying iteration, the value of F at the current iterate and last
+% change (w.r.t. distance on M). If modIter is given, only every modIters
+% iteration
+%
+% INPUT
+% M       : a manifold
+% F       : the function to minimize
+% modIter : (optional, 1) only display the debug every modIters iteration
+%
+% OUTPUT
+% f       : a function handle @ (x,xold,a,aolditer) that can be used in
+%           algorithms Debug Option
+% ---
+% Manifold-valued Image Restoration Toolbox 1.2
+% R. Bergmann | 2018-02-12
+if nargin < 1
+    modIter=1;
+end
+f = @(x,xold,a,aold,iter) ...
+        dispIf(mod(iter,modIter)==0,...
+            [num2str(iter),' F:',num2str(F(x,a)), ...
+            ' last change: ',num2str(sum(M.dist(x(M.allDims{:},:),xold(M.allDims{:},:)))*prod(M.ItemSize)/numel(x)), ...
+            '  |  ',num2str(sqrt(sum(...
+                        reshape((a-M.parallelTransport(...
+                            repmat(xold,[ones(1,length(size(xold))),size(a,length(size(xold))+1)]),...
+                            repmat(x,[ones(1,length(size(xold))),size(a,length(size(xold))+1)]),...
+                        aold)).^2,1,[]) ...
+                    ))),'.'] ...
+        );
+end

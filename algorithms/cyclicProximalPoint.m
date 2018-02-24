@@ -81,9 +81,7 @@ if isempty(vars.lambdaIterate)
             error('Please specify either a lambdaIterate function or an initial (vars.)lambda');
 end
 if isempty(vars.Debug)
-    vars.Debug = @(x,xold,iter,lambda) debug('text',3,...
-        'Text',[num2str(iter),' last change: ',num2str(sum(vars.M.dist(x(vars.M.allDims{:},:),xold(vars.M.allDims{:},:)))/numel(x)*prod(vars.M.ItemSize)),'.'],...
-        'Iterate',iter);
+    vars.Debug = createDebugFct(vars.M,[],1000);
 end
 x = vars.x;
 xold=x;

@@ -60,7 +60,7 @@ classdef SymPosDef < manifold & handle
             %
             %
             % Manifold-Valued Image Restoration Toolbox 1.0, J. Persch 2015-11-05
-            if ~this.useMex || getDebugLevel('MatlabMean')==1 % fallback nonMex
+            if ~this.useMex
                 x=this.mean@manifold(varargin{:});
             else
                 ip = inputParser;
@@ -199,7 +199,6 @@ classdef SymPosDef < manifold & handle
             
             % Changelog
             %   2015-04-11 Added mex-file version
-            % TODO: DEbug dist
             if this.useMex
                 d = SPDDist(X,Y);
             else

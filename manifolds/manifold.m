@@ -13,11 +13,11 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
     %    exp(p,v)            : exponential map at p w.r.t v.
     %    log(p,q)            : inverse exponential map of q at p
     %    dist(p,q)           : distance of p and q on the manifold
+    %    dot(p,v,w)          : inner product of v,w in TpM
     % _Static
     %    addNoise(X,sigma)   : add Noise on the manifold to the signal/data
     %                          X with standard deviation sigma
     % _normal functions
-    %    proxDist(g,f,lambda) : proximal mapping of distance terms
     %    mean(f)              : Karcher mean of the values f
     %    meadian(f)           : median of the values of f
     %    midPoint(x,z)        : Compute the mid point between x and z.
@@ -53,6 +53,8 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
         v = log(this,p,q);
         % distance between p and q on the manifold
         d = dist(this,p,q);
+        % inner product of v,w in TpM
+        d = dot(this,p,v,w);
         % addNoise(X,sigma) add noise w.r.t. the manifold itself and a
         % standard deviation sigma to a (multidimensional) signal X of
         % manifold valued pixels.
