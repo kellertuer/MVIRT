@@ -267,9 +267,9 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
             %    Karcher mean
             %  INPUT
             %    image   manifold Valued image
-            %    filter  filter matrix of size (2*n+1)x(2*m+1)
+            %    filter  filter matrix of size (2*n+1)x(2*n+1)
             %
-            %  OPTIONAL(TODO)
+            %  OPTIONAL
             %    'BoundaryCondition' ['nearest'] specify boundary
             %                        conditions:
             %                        (nearest,symmetric,periodic)
@@ -278,7 +278,8 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
             %    filteredImage   filtered image with Karcher mean
             %
             % ---
-            % Manifold-valued Image Restoration Toolbox 1.2 ~ J. Persch ~ 2017-04-06
+            % Manifold-valued Image Restoration Toolbox 1.2
+            % J. Persch, R. Bergmann ~ 2017-04-06 | 2018-02-17
             
             % Changelog
             % 2018-02-17 RB; rephrase to avoid reshapes and use allDims.
@@ -318,17 +319,17 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
             end
         end
         function W = geopoint(this,x,y,t)
-            % geopoint(X,Y,t) - Gives the point \gamma_{XY}(t)
+            % geopoint(x,y,t) - Gives the point \gamma_{x,y}(t)
             % placeholder, has many manifolds admit a faster way to compute
             % the combination of exp and log, e.g., SymPosDef
             %
             % INPUT
-            %   X,Y : a point or set of points on the manifold
-            %   t : a scalar or set of scalars
+            %   x,y : a point or set of points on the manifold
+            %   t   : a scalar or set of scalars
             %
             %
             % OUTPUT
-            %   W : resulting point(s)
+            %   w : resulting point(s)
             % ---
             % Manifold-Valued Image Restoration Toolbox 1.0
             % J. Persch, R. Bergmann | 2017-03-31 | 2018-02-16
@@ -339,7 +340,7 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
             W = this.exp(x,this.log(x,y),t);
         end
         function geo = geodesic(varargin)
-            % geo = geodesic(this,x,y,pts)
+            % geo = geodesic(this,x,y)
             % Compute the geodesic between x and y using pts-2 points to
             % interpolate
             %
@@ -351,7 +352,7 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
             %     t : vector of points lead to geo = \gamma_{x,y}(t)
             %
             % OUTPUT
-            %   geo : the geodesic between x,y with geo(1) = x, geo(pts)=y
+            %   geo : the geodesic between x,y evaluated at several points.
             %
             % ---
             % Manifold-valued Image Restoration Toolbox 1.0 ~ J. Persch ~2015-10-29
