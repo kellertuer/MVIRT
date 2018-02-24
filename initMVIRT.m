@@ -6,15 +6,13 @@ function initMVIRT(varargin)
 %
 % OPTIONAL PARAMETERS
 %   'Make'   : (false) Set this flag to compile all mex-files
-%   'UseMex' : (true) Set this flag to false to disable the usage of
-%   C++Algorithms and use the (fallback) Matlab implementations
+%
 % ---
 % Manifold-valued Image Restoration Toolbox 1.0
 % R. Bergmann ~ 2014-11-29 | 2015-04-12
 
 ip = inputParser;
 addParameter(ip,'Make',false);
-addParameter(ip,'UseMex',true);
 parse(ip, varargin{:});
 vars = ip.Results;
 
@@ -64,11 +62,6 @@ if vars.Make
     mex -I../include/eigen -Imanifolds SPDGeo.cpp manifolds/manifoldSPD.cpp
     cd ..
 end
-%% Disable Mex usage?
-if ~vars.UseMex
-    % where to save this?
-end
-%% Init Debug
 disp(' --- Initializing the Manifold-valued Image Restoration Toolbox --- ');
 cd(getMVIRTPath());
 %
