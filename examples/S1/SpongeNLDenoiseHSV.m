@@ -15,15 +15,15 @@
 % Manifold-valued Image Restoration Toolbox 1.0
 %  J. Persch  ~ 2017-01-06 | R. Bergmann 2016-01-07
 % see LICENSE.txt
+start = pwd;
+if ~isempty(fileparts(which(mfilename)))
+    cd(fileparts(which(mfilename)));
+end
 run('../../initMVIRT.m')
 %% Debug
-setDebugLevel('LevelMin',0);
-setDebugLevel('LevelMax',100);
-setDebugLevel('text',3);
-setDebugLevel('time',3);
-setDebugLevel('LoadData',1);
-setDebugLevel('WriteImages',1);
-setDebugLevel('Figures',1);
+loadData = true;
+writeImages = true;
+showFigures = true;
 %
 resultsFolder = ['Sponge',filesep];
 % Parameter for noise
@@ -37,10 +37,10 @@ u_noisy_Sn1 = zeros(2,size(h,1),size(h,2));
 u_orig = zeros(2,size(h,1),size(h,2));
 u_orig(1,:,:) = cos(h);
 u_orig(2,:,:) = sin(h);
-if ~(getDebugLevel('LoadData')==1)
-noise = sigma*randn(size(h));
-u_noisy_Sn1(1,:,:) = cos(h+noise);
-u_noisy_Sn1(2,:,:) = sin(h+noise);
+if ~loadData
+    noise = sigma*randn(size(h));
+    u_noisy_Sn1(1,:,:) = cos(h+noise);
+    u_noisy_Sn1(2,:,:) = sin(h+noise);
 else
     load([resultsFolder,'NoisySponge.mat'],'u_noisy_Sn1');
 end
@@ -85,26 +85,26 @@ tv_denoised(:,:,1) = mod(squeeze(atan2(u_tv(2,:,:),u_tv(1,:,:)))/2/pi+0.5,1);
 sponge_s1psnr_tv = psnr(hsv2rgb(tv_denoised),sponges);
 sponge_s1mse_tv = sum(sum(M.dist(u_tv,u_orig).^2))/(numel(sponges)/3);
 %% Show Images
-if getDebugLevel('Figures')
-figure(1);
-imagesc(sponges)
-figure
-imagesc(hsv2rgb(noisy));
-figure
-imagesc(hsv2rgb(denoised))
-title('Final HSV')
-figure
-imagesc(hsv2rgb(tv_denoised))
-title('TV HSV')
+if showFigures
+    figure(1);
+    imagesc(sponges)
+    figure
+    imagesc(hsv2rgb(noisy));
+    figure
+    imagesc(hsv2rgb(denoised))
+    title('Final HSV')
+    figure
+    imagesc(hsv2rgb(tv_denoised))
+    title('TV HSV')
 end
 %% Export Images
-if getDebugLevel('WriteImages')
-   imwrite(sponges,[resultsFolder,'orig_corals.png']);
-   imwrite(hsv2rgb(noisy),[resultsFolder,'noisy_corals.png']);
-   imwrite(hsv2rgb(denoised),[resultsFolder,'denoised_corals.png']);
-   imwrite(hsv2rgb(tv_denoised),[resultsFolder,'tv_denoised_corals.png']);
-   imwrite(uint8(transformed_corals(:,:,1)*255),hsv(256),[resultsFolder,'hue.png']);
-   imwrite(uint8(noisy(:,:,1)*255),hsv(256),[resultsFolder,'hue_noisy.png']);
-   imwrite(uint8(denoised(:,:,1)*255),hsv(256),[resultsFolder,'hue_denoised_corals.png']);
-   imwrite(uint8(tv_denoised(:,:,1)*255),hsv(256),[resultsFolder,'hue_tv_denoised_corals.png']);
+if writeImages
+    imwrite(sponges,[resultsFolder,'orig_corals.png']);
+    imwrite(hsv2rgb(noisy),[resultsFolder,'noisy_corals.png']);
+    imwrite(hsv2rgb(denoised),[resultsFolder,'denoised_corals.png']);
+    imwrite(hsv2rgb(tv_denoised),[resultsFolder,'tv_denoised_corals.png']);
+    imwrite(uint8(transformed_corals(:,:,1)*255),hsv(256),[resultsFolder,'hue.png']);
+    imwrite(uint8(noisy(:,:,1)*255),hsv(256),[resultsFolder,'hue_noisy.png']);
+    imwrite(uint8(denoised(:,:,1)*255),hsv(256),[resultsFolder,'hue_denoised_corals.png']);
+    imwrite(uint8(tv_denoised(:,:,1)*255),hsv(256),[resultsFolder,'hue_tv_denoised_corals.png']);
 end
