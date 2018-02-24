@@ -545,7 +545,7 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
             end
         end
         function xi = DxGeo(this,x,y,t,eta)
-            % DxGeo(x,y,t,eta) - Derivative of geodesic(x,y,t) wrt x.
+            % DxGeo(x,y,t,eta) Derivative of the geodesic(x,y,t) wrt x.
             %
             %    For a function f: M \mapsto R and fixed y,t we have for the
             %    gradient of g(x) = f(geo(x,y,t)) that
@@ -569,7 +569,7 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
             xi = this.JacobiField(x,y,t,eta);
         end
         function xi = DyGeo(this,x,y,t,eta)
-            % DxGeo(x,y,t,eta) - Derivative of the geodesic(x,y,t) wrt y.
+            % DxGeo(x,y,t,eta) Derivative of the geodesic(x,y,t) wrt y.
             %
             %
             %    INPUT
@@ -674,7 +674,7 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
             end
         end
         function xi = AdjDxGeo(this,x,y,t,eta)
-            % AdjDxGeo(x,y,t,eta) - Adjoint of the Derivative of the geodesic(x,y,t) wrt x.
+            % AdjDxGeo(x,y,t,eta) Adjoint of the Derivative of geo(x,y,t) wrt x.
             %
             %    For a function f: M \mapsto R and fixed y,t we have for the
             %    gradient of g(x) = f(geo(x,y,t)) that
@@ -698,7 +698,7 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
             xi = this.AdjJacobiField(x,y,t,eta);
         end
         function xi = AdjDyGeo(this,x,y,t,eta)
-            % AdjDyGeo(x,y,t,eta) - Adjoint of the Derivative of geodesic(x,y,t) wrt y.
+            % AdjDyGeo(x,y,t,eta) - Adjoint of the Derivative of geo(x,y,t) wrt y.
             %
             %    For a function f: M \mapsto R and fixed x,t we have for the
             %    gradient of g(y) = f(geo(x,y,t)) that

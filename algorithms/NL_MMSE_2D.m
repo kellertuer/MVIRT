@@ -160,7 +160,7 @@ processed2 = zeros(m,n);
 runs = 0;
 number_mean = 0;
 step = 1;
-debug('time',3,'StartTimer','NL_MMSE');
+tic
 for pos_x = ( kappa_1+1) : m-(kappa_1)
     for pos_y = (kappa_1+1) : n-(kappa_1)
         if processed(pos_x,pos_y)==0
@@ -201,11 +201,10 @@ else
     u_oracle = reshape(permute(reshape(permute(reshape(u_oracle,manDim(1)*m,manDim(2),[]),[2,1,3]),manDim(2),manDim(1),[]),[2,1,3]),manDim(1),manDim(2),m,n);
 end
 u_final = u_oracle;
-debug('time',3,'GetTimer','NL_MMSE');
+toc
 % eventually, perform a second step using the first step denoise image
 if oracle
-    debug('text',3,'text',...
-            'Oracle image is calculated starting final step.');
+    disp('Oracle image is calculated starting final step.');
     step = 2;
     u_final = cell(m,n);   
     
@@ -249,7 +248,7 @@ end
 if number_mean/runs  > 0.5
     warning('More than 50% positive homogeneous area tests in the first step eventually choose smaller gamma');
 end
-debug('time',3,'StopTimer','NL_MMSE');
+toc
 end
 
 

@@ -261,6 +261,53 @@ classdef Sn < manifold & handle
             if ~this.useMex
                 x=this.mean@manifold(varargin{:});
             else
+            ip = inputParser;
+            addRequired(ip,'f');
+            addParameter(ip,'Weights',[]);
+            addParameter(ip,'InitVal',[]);
+            addParameter(ip,'MaxIterations',50);
+            addParameter(ip,'Epsilon',10^-6);
+            parse(ip, varargin{:});
+            vars = ip.Results;
+            f = vars.f;
+            dims = size(f);
+            if length(dims) ~= length(this.ItemSize)+2
+                if all(dims(1:length(this.ItemSize)) == this.ItemSize) && length(dims)<length(this.ItemSize)+2
+                    x = f;
+                    return
+                end
+                error('f wrong size');
+            end
+            % shift manDim in first dimension
+            dim = size(f);
+            m = dim(end-1);
+            n = dim(end);
+            if isempty(vars.Weights)
+                w = 1/n*ones(m,n);
+            elseif isvector(vars.Weights)
+                w = vars.Weights(:)';
+                if length(w) ~=n
+                    error('length(w) does not match data points');
+                end
+                w = repmat(w,m,1);
+            else
+                w = vars.Weights;
+                if any(size(w) ~= [m,n])
+                    error('dim w do not match data points');
+                end
+            end
+            if vars.Epsilon > 0
+                epsilon = vars.Epsilon;
+            else
+                warning('Epsilon should be larger than zero, set Epsilon to 10^-6')
+                epsilon = 10^-6;
+            end
+            if vars.MaxIterations > 0
+                iter = vars.MaxIterations;
+            else
+                warning('Iterations should be larger than zero, set Iterations to 100')
+                iter = 100;
+            end
                 x = SnMean(f,w,epsilon,iter);
             end
         end
