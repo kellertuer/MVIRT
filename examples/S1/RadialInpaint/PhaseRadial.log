@@ -1,12 +1,12 @@
- --- Logfile of Experiment PhaseRadial started 09-Feb-2018 15:32:42 ---
-1000 last change: 2.1532e-06.
-2000 last change: 8.37e-07.
-3000 last change: 4.7887e-07.
-4000 last change: 3.3247e-07.
-Elapsed time is 99.164948 seconds.
-1000 last change: 4.976e-07.
-2000 last change: 8.6854e-08.
-3000 last change: 9.6819e-09.
-4000 last change: 6.6838e-10.
-Elapsed time is 51.950309 seconds.
- --- Logfile of Experiment PhaseRadial ended 09-Feb-2018 15:35:14 ---
+ --- Logfile of Experiment PhaseRadial started 24-Feb-2018 12:33:42 ---
+1000 | last change: 0.00027561.
+2000 | last change: 0.00010714.
+3000 | last change: 6.1295e-05.
+4000 | last change: 4.2556e-05.
+Elapsed time is 124.306690 seconds.
+1000 | last change: 6.3693e-05.
+2000 | last change: 1.1117e-05.
+3000 | last change: 1.2393e-06.
+4000 | last change: 8.5553e-08.
+Elapsed time is 46.231191 seconds.
+ --- Logfile of Experiment PhaseRadial ended 24-Feb-2018 12:36:33 ---

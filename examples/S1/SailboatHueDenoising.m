@@ -27,31 +27,26 @@ if ~isempty(fileparts(which(mfilename)))
 end
 run('../../initMVIRT.m')
 % Global settings
-setDebugLevel('LevelMin',0);        % Minimal Value of all global Values
-setDebugLevel('LevelMax',100);      % Maximal Value ...
-setDebugLevel('text',3);            % quite verbose text, but...
-setDebugLevel('IterationStep',100); % only every 100th iteration
-setDebugLevel('WriteImages',1);     % 0: no file writing, 1: file writing
-setDebugLevel('time',3);            % verbose time
-setDebugLevel('LoadData',1);        % 0: generate new data 1: load existing data (if it exists), (other wise it is generated)
-setDebugLevel('WriteData',1);       % 0: do not write data to file 1: write data to file (overwrites last experiment data!)
-setDebugLevel('Figures',1);         % 0: no figure display, 1: figures are displayed
-setDebugLevel('logfile',1);         % 0: no logfile 1: logfile
+useLogfile  = true;
+loadData    = true;
+writeData   = false;
+writeImages = true;
+showFigures = true;
 
 dataFolder = ['..',filesep,'..',filesep,'data',filesep];
 folder = ['examples',filesep,'S1',filesep];
-resultsFolder = ['sailboatHSV',filesep];
+resultsFolder = ['sailboatHueDenoising',filesep];
 
 % Algorithm parameters
 % Details for the data - these are ignored if data is loaded
 sigma = 0.2;
-name = 'sailboat on lake';
+name = 'sailboatOnLake';
 dataName = 'S1-sailboatHueDenoising';
 %% Create Image
 %
 %
 % use a Logfile?
-if getDebugLevel('logfile')
+if useLogfile
     clc
     if exist([resultsFolder,name,'.log'],'file')
         delete([resultsFolder,name,'.log'])
@@ -59,23 +54,23 @@ if getDebugLevel('logfile')
     diary([resultsFolder,name,'.log']);
     disp([' --- Logfile of Experiment ',name,' started ',datestr(datetime),' ---']);
 end
-if getDebugLevel('WriteData') % Create new data
+if writeData
     img = double(imread([dataFolder,name,'.tiff']))/255;
     Z = rgb2hsv(img);
     Zn = Z;
     Zn(:,:,1) = symMod(2*pi*Z(:,:,1) - pi + 2*pi*sigma*randn(size(Z(:,:,1))),2*pi); %noisy signal
     save([resultsFolder,dataName,'.mat'],'img','Zn','Z','sigma');
-elseif getDebugLevel('LoadData')
+elseif loadData
     load([resultsFolder,dataName,'.mat'],'img','Zn','Z','sigma');
     metaData = dir([resultsFolder,dataName,'.mat']);
-    debug('text',3,'Text',['Using File Data generated ',datestr(metaData.date),'.']);
+    disp(['Using File Data generated ',datestr(metaData.date),'.']);
 else
     error('Either Loading or Creating (Writing) Data must be set');
 end
 numel = size(Zn,1)*size(Zn,2);
 %
 % image output
-if getDebugLevel('Figures')
+if showFigures
     figure(1); imagesc(img); title('Original image ''sailboat on lake''');
     axis image; axis off;
     imgn = Zn;
@@ -84,7 +79,7 @@ if getDebugLevel('Figures')
     axis image; axis off;
     pause(0.01);
 end
-if getDebugLevel('WriteImages')
+if writeImages
     imgn = Zn;
     imgn(:,:,1) = mod(imgn(:,:,1)+pi,2*pi)/(2*pi);
     imwrite(img,[resultsFolder,name,'-orig.png'],'png');
@@ -104,20 +99,20 @@ problem.M = Rn(1);
 ZnR = Zn;
 ZnR(:,:,1) = mod( permute(CPP_AdditiveTV12(problem),[2,3,1])+pi,2*pi )/(2*pi);
 
-if getDebugLevel('Figures')
+if showFigures
     figure(3); imagesc(hsv2rgb(ZnH)); title('Denoised Hue with S1-valued CPPA');
     axis image; axis off;
     figure(4); imagesc(hsv2rgb(ZnR)); title('Denoised Hue with R-valued CPPA');
     axis image; axis off;
     pause(0.01)
 end
-if getDebugLevel('WriteImages')
+if writeImages
     imwrite(hsv2rgb(ZnH),[resultsFolder,name,'-S1_Denoised.png'],'png');
     imwrite(hsv2rgb(ZnR),[resultsFolder,name,'-R-Denoised.png'],'png');
 end
 
 %% End logfile
-if getDebugLevel('logfile')
+if useLogfile
     disp([' --- Logfile of Experiment ',name,' ended ',datestr(datetime),' ---']);
     diary off;
 end

@@ -1,0 +1,13 @@
+ --- Logfile of Experiment S1-HuberN500 started 24-Feb-2018 12:26:16 ---
+Using File Data generated 06-Dec-2015 11:00:22.
+1000 | last change: 9.5207e-06.
+2000 | last change: 3.5772e-06.
+3000 | last change: 1.7057e-06.
+4000 | last change: 9.8554e-07.
+Elapsed time is 27.680597 seconds.
+1000 | last change: 1.9825e-06.
+2000 | last change: 5.0425e-07.
+3000 | last change: 2.2477e-07.
+4000 | last change: 1.2691e-07.
+RadialInpaint
+ --- Initializing the Manifold-valued Image Restoration Toolbox --- 
