@@ -1,84 +1,12 @@
- --- Logfile of Experiment PhaseSpiral started 09-Feb-2018 16:29:38 ---
-100 last change: 4.5159e-05.
-200 last change: 1.2569e-05.
-300 last change: 6.2918e-06.
-400 last change: 3.2593e-06.
-500 last change: 2.1099e-06.
-600 last change: 1.4798e-06.
-700 last change: 1.0959e-06.
-800 last change: 8.4105e-07.
-900 last change: 6.7077e-07.
-1000 last change: 6.1394e-07.
-1100 last change: 5.5079e-07.
-1200 last change: 4.8625e-07.
-1300 last change: 4.2219e-07.
-1400 last change: 3.7138e-07.
-1500 last change: 3.4508e-07.
-1600 last change: 3.0636e-07.
-1700 last change: 2.7296e-07.
-1800 last change: 2.4415e-07.
-1900 last change: 2.1993e-07.
-2000 last change: 1.9863e-07.
-2100 last change: 1.8028e-07.
-2200 last change: 1.6445e-07.
-2300 last change: 1.5061e-07.
-2400 last change: 1.3841e-07.
-2500 last change: 1.2788e-07.
-2600 last change: 1.1838e-07.
-2700 last change: 1.0986e-07.
-2800 last change: 1.0218e-07.
-2900 last change: 9.5392e-08.
-3000 last change: 8.92e-08.
-3100 last change: 8.3745e-08.
-3200 last change: 7.8706e-08.
-3300 last change: 7.4068e-08.
-3400 last change: 6.9778e-08.
-3500 last change: 6.5846e-08.
-3600 last change: 6.2212e-08.
-3700 last change: 5.8917e-08.
-3800 last change: 5.5881e-08.
-3900 last change: 5.3141e-08.
-4000 last change: 5.0515e-08.
-Elapsed time is 331.101348 seconds.
-100 last change: 0.00021976.
-200 last change: 0.00010429.
-300 last change: 5.9376e-05.
-400 last change: 3.8351e-05.
-500 last change: 2.7501e-05.
-600 last change: 2.1288e-05.
-700 last change: 1.7289e-05.
-800 last change: 1.4545e-05.
-900 last change: 1.2489e-05.
-1000 last change: 1.0876e-05.
-1100 last change: 9.6345e-06.
-1200 last change: 8.6308e-06.
-1300 last change: 7.771e-06.
-1400 last change: 7.0808e-06.
-1500 last change: 6.4501e-06.
-1600 last change: 5.9159e-06.
-1700 last change: 5.4757e-06.
-1800 last change: 5.0949e-06.
-1900 last change: 4.7648e-06.
-2000 last change: 4.4679e-06.
-2100 last change: 4.2039e-06.
-2200 last change: 3.965e-06.
-2300 last change: 3.7327e-06.
-2400 last change: 3.5099e-06.
-2500 last change: 3.3063e-06.
-2600 last change: 3.1105e-06.
-2700 last change: 2.9297e-06.
-2800 last change: 2.7738e-06.
-2900 last change: 2.6363e-06.
-3000 last change: 2.5139e-06.
-3100 last change: 2.4045e-06.
-3200 last change: 2.3007e-06.
-3300 last change: 2.2074e-06.
-3400 last change: 2.1192e-06.
-3500 last change: 2.0368e-06.
-3600 last change: 1.9635e-06.
-3700 last change: 1.8905e-06.
-3800 last change: 1.8213e-06.
-3900 last change: 1.7598e-06.
-4000 last change: 1.7e-06.
-Elapsed time is 113.158437 seconds.
- --- Logfile of Experiment PhaseSpiral ended 09-Feb-2018 16:37:04 ---
+ --- Logfile of Experiment PhaseSpiral started 24-Feb-2018 13:35:32 ---
+1000 | last change: 0.00015778.
+2000 | last change: 5.1048e-05.
+3000 | last change: 2.2924e-05.
+4000 | last change: 1.2982e-05.
+Elapsed time is 198.894238 seconds.
+1000 | last change: 0.0027951.
+2000 | last change: 0.0011482.
+3000 | last change: 0.00064608.
+4000 | last change: 0.00043691.
+Elapsed time is 65.939717 seconds.
+ --- Logfile of Experiment PhaseSpiral ended 24-Feb-2018 13:39:59 ---
