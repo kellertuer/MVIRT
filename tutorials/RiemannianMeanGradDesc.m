@@ -52,7 +52,7 @@ stepSizeRuleA = @(x,eta,iter,initial) ...
 %% Compare
 M.dist(p1,p2)
 
-%% TEIL II: Symmetric positive definite matricesPD
+%% PART II: Symmetric positive definite matricesPD
 
 M = SymPosDef(3);
 
