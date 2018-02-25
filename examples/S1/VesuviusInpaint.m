@@ -28,16 +28,11 @@ end
 run('../../initMVIRT.m')
 
 %% Settings
-setDebugLevel('LevelMin',0);        % Minimal Value of all global Values
-setDebugLevel('LevelMax',1000);     % Maximal Value ...
-setDebugLevel('text',3);            % quite verbose text, but...
-setDebugLevel('IterationStep',1000);% only every 100th iteration
-setDebugLevel('WriteImages',1);     % 0: no file writing, 1: file writing
-setDebugLevel('time',3);            % verbose time
-setDebugLevel('LoadData',1);        % 0: generate new data 1: load existing data (if it exists), (other wise it is generated)
-setDebugLevel('WriteData',0);       % 0: do not write data to file 1: write data to file (overwrites last experiment data!)
-setDebugLevel('Figures',1);         % 0: no figure display, 1: figures are displayed
-setDebugLevel('logfile',1);         % 0: no logfile 1: logfile
+writeImages = true
+loadData = true;
+writeData = false;
+showFigures = true;
+useLogfile = true;
 
 %
 % ------
@@ -53,7 +48,7 @@ lossy = .2; %loose 1/5th of data.
 %
 %
 % Logfile?
-if getDebugLevel('logfile')
+if useLogfile
     clc
     if exist([resultsFolder,name,'.log'],'file')
         delete([resultsFolder,name,'.log'])
@@ -67,21 +62,21 @@ end
 % Segments, similar to Strekalovskyi et al., but rotated here and with variable
 % number of segments
 %% Data generation (Just run this one once to be comparable
-if getDebugLevel('WriteData') % Create new data
+if writeData % Create new data
     imgl = imread([dataFolder,dataName,'.png']);
     V = (double(rgb2gray(imgl))/256)*(2*pi)-pi;
     Mask = (randi(ceil(1/lossy),size(V))~=1);
     Vl = V.*Mask; %Just loose data
     save([resultsFolder,dataName,'.mat'],'V','lossy','Vl','Mask');
-elseif getDebugLevel('LoadData')
+elseif loadData
     load([resultsFolder,dataName,'.mat'],'V','lossy','Vl','Mask');
     metaData = dir([resultsFolder,dataName,'.mat']);
-    debug('text',3,'Text',['Using File Data generated ',datestr(metaData.date),'.']);
+    disp(['Using File Data generated ',datestr(metaData.date),'.']);
 else
     error('Either Loading or Creating (Writing) Data must be set');
 end
 % ------
-if getDebugLevel('WriteImages')
+if writeImages
     Vexp = uint8((Vl+pi)/(2*pi)*255);
     % white mask of cut out (rest transparent
     imwrite(uint8(255*(1-Mask)),[resultsFolder,name,'-mask-w.png'],'Alpha',255*(1-Mask));
@@ -90,7 +85,7 @@ if getDebugLevel('WriteImages')
     % Display mask
     pr = 100 * sum(sum(Mask==0))/length(Mask(:));
 end
-if getDebugLevel('Figures')
+if showFigures
     figure(1); imagesc(V,[-pi,pi]); colormap(hsv(1024));
     title('Original Data V');
     axis image; axis off
@@ -116,12 +111,12 @@ tic
 Vres = permute(CPP_AdditiveTV12(problem),[2,3,1]);
 toc
 
-if getDebugLevel('Figures')
+if showFigures
     figure(4); imagesc(Vres,[-pi,pi]); colormap(hsv(1024));
     axis image; axis off
     title(['Result of the reconstruction using \alpha=',num2str(problem.alpha(1),4),' and \beta=',num2str(problem.beta(1),4),' on R.']);
 end
-if getDebugLevel('WriteImages')
+if writeImages
     Vresexp = uint8((Vres+pi)/(2*pi)*255);
     % Export result
     imwrite(Vresexp,colormap(hsv(255)),[resultsFolder,name,'-impainted-',num2str(problem.alpha(1),4),'-',num2str(problem.beta(1),4),'.png'],'png');
@@ -137,28 +132,28 @@ Vcomp = permute(CPP_AdditiveTV12(problem),[2,3,1]);
 toc
 VDist = problem.M.dist(Vcomp,Vres);
 %
-if getDebugLevel('Figures')
+if showFigures
     figure(5); imagesc(VDist); colormap(flipud(gray(1024)));
     axis image; axis off
     ME = sum(sum(VDist.^2))/length(V(:));
     title(['Reconstruction Error. MSE = ',num2str(ME),'.']);
 end
-if getDebugLevel('WriteImages')
+if writeImages
     VDistexp = uint8((VDist-min(min(VDist)))/(max(max(VDist))-min(min(VDist)))*255);
     imwrite(VDistexp,colormap(flipud(gray(255))),[resultsFolder,name,'-impainting-error-',num2str(problem.alpha(1),4),'-',num2str(problem.beta(1),4),'.png'],'png');
 end
-if getDebugLevel('Figures')
+if showFigures
     figure(6); imagesc(Vcomp); colormap hsv;
     axis image; axis off
     title('Denoised without missing data');
 end
-if getDebugLevel('WriteImages')
+if writeImages
     Vcompexp = uint8((Vcomp+pi)/(2*pi)*255);
     imwrite(Vcompexp,colormap(hsv(255)),[resultsFolder,name,'-denoised-',num2str(problem.alpha(1),4),'-',num2str(problem.beta(1),4),'.png'],'png');
 end
 %
 %% End logfile
-if getDebugLevel('logfile')
+if useLogfile
     disp([' --- Logfile of Experiment ',name,' ended ',datestr(datetime),' ---']);
     diary off;
 end

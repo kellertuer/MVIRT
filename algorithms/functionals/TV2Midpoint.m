@@ -1,54 +1,88 @@
-function V = TV2_Midpoint(varargin)
-% TV(M,x) - compute all TV2 terms (and sum them
+function d = proxTV2midpoint(varargin)
+% proxTV(M,x,lambda) : compute the second order TV term value
 %
 % INPUT
-%   M      :  a manifold
-%   x      : data (size [manDims,dataDims])
-%   
+%     M       : a manifold
+%     x       : data (manifold-valued)
+%
 % OPTIONAL
-%   'p       : (p=1) compute TV with p-norm coupling in the dimensions of the
-%             data, i.e. anisotropic TV for p=1 and isotropic for p=2
-%  epsilon   : compute the gradient of the epsilon-relaxed TV
-%  weights   : (ones(dataDims) exclude certain data points from all gradient terms
-%  Sum : (true) return a value (true) or a matrix of TV terms (false)
+% 'Weights'   : weights of the summands
+%
+% OUTPUT
+%   d          : TV_2(x)
 % ---
-% MVIRT, R. Bergmann, 2017-12-08
+% MVIRT | R. Bergmann | 2017-12-11
 ip = inputParser();
 addRequired(ip,'M', @(x) validateattributes(x,{'manifold'},{}))
 addRequired(ip,'x');
-addOptional(ip,'p',1);
-addOptional(ip,'Epsilon',0);
-addOptional(ip,'Weights',[]);
-addOptional(ip,'Sum',true);
+addParameter(ip,'Weights',[]);
+addParameter(ip,'Epsilon',0);
+
 parse(ip, varargin{:});
 vars = ip.Results;
 sX = size(vars.x);
 dataDims = sX( (length(vars.M.ItemSize)+1):end );
 n = length(dataDims);
 if isempty(vars.Weights)
-    weights = ones([dataDims,1]);
-else
-    weights = vars.Weights;
+    vars.Weights = eye(n);
 end
-tv2 = zeros([dataDims,1]);
+if isscalar(vars.Weights) %lambda is a number
+    vars.Weights = diag(ones(1,n).*vars.Weights);
+elseif isvector(vars.Weights) %array
+    vars.Weights = diag(vars.Weights); %diagonal matrix -> no mixed
+end
+d = zeros([dataDims,1]);
+
 for i=1:n
     preFill = repelem({':'},i-1);
     postFill = repelem({':'},n-i);
-    center = vars.x;
-    forward = vars.x(vars.M.allDims{:},preFill{:},[1 3:(dataDims(i)) (dataDims(i))],postFill{:});
-    backward = vars.x(vars.M.allDims{:},preFill{:},[1 1:(dataDims(i)-2) (dataDims(i))],postFill{:});
-    d = vars.M.dist(center,vars.M.geopoint(forward,backward,0.5));
-    if vars.Epsilon>0 && vars.p==1
-        d = sqrt(d.^2+vars.Epsilon^2);
+    for j=0:2
+        % all starting with mod j+1 indices
+        Nt = floor(abs(dataDims(i)-j)/3);
+        if dataDims(i) >= 3+j && vars.Weights(i,i) > 0
+            subX1 = vars.x(vars.M.allDims{:},preFill{:}, 1+j:3:3*Nt+j, postFill{:}); % 1
+            subX2 = vars.x(vars.M.allDims{:},preFill{:}, 2+j:3:3*Nt+j, postFill{:}); % 2
+            subX3 = vars.x(vars.M.allDims{:},preFill{:}, 3+j:3:3*Nt+j, postFill{:}); % 3
+            s = vars.Weights(i,i)*vars.M.dist(vars.M.midPoint(subX1,subX3),subX2);
+            if vars.Epsilon > 0
+                s = s.^2;
+            end
+            d(preFill{:}, 2+j:3:3*Nt+j, postFill{:}) = ...
+                d(preFill{:}, 2+j:3:3*Nt+j, postFill{:}) + ...
+                s;
+        end
     end
-    tv2 = tv2 + d.^vars.p;
+    % Mixed Differences
+    for i2=i+1:n
+        interfill = repelem({':'},i2-i-1);
+        post2Fill = repelem({':'},n-i2);
+        for j=0:1 % even and odd
+            for j2=0:1
+                % all starting with odd (even) indices in i and i2
+                Nt = floor((dataDims(i)-j)/2);
+                Nt2 = floor((dataDims(i2)-j2)/2);
+                if dataDims(i) >= 2+j && dataDims(i2) >= 2+j2 && vars.Weights(i,i2) > 0
+                    % extract all 4 elements of each 2x2 matrix
+                    subX1 = vars.x(vars.M.allDims{:},preFill{:}, 1+j:2:2*Nt+j, interfill{:}, 1+j2:2:2*Nt2+j2,post2Fill{:});
+                    subX2 = vars.x(vars.M.allDims{:},preFill{:}, 2+j:2:2*Nt+j, interfill{:}, 1+j2:2:2*Nt2+j2,post2Fill{:});
+                    subX3 = vars.x(vars.M.allDims{:},preFill{:}, 1+j:2:2*Nt+j, interfill{:}, 2+j2:2:2*Nt2+j2,post2Fill{:});
+                    subX4 = vars.x(vars.M.allDims{:},preFill{:}, 2+j:2:2*Nt+j, interfill{:}, 2+j2:2:2*Nt2+j2,post2Fill{:});
+                    s = vars.Weights(i,i2)*vars.M.dist(...
+                        vars.M.midPoint(subX1,subX3),...
+                        vars.M.midPoint(subX2,subX4));
+                    if vars.Epsilon > 0
+                        s = s.^2;
+                    end
+                    d(preFill{:}, 1+j:2:2*Nt+j, interfill{:}, 1+j2:2:2*Nt2+j2,post2Fill{:}) = ...
+                        d(preFill{:}, 1+j:2:2*Nt+j, interfill{:}, 1+j2:2:2*Nt2+j2,post2Fill{:})...
+                        + s;
+                end
+            end
+        end
+    end
 end
-if vars.Epsilon>0 && vars.p>1
-    tv2 = tv2+epsilon^2;
-end
-    tv2 = weights.*(tv2.^(1/vars.p));
-if vars.Sum
-    V = sum(tv2(:));
-else
-    V = tv2;
+    if vars.Epsilon > 0
+        d = sqrt(d+vars.Epsilon^2);
+    end
+    d = sum(d(:));
 end

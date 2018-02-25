@@ -1,10 +1,7 @@
- --- Logfile of Experiment S1-Vesuvius started 13-Apr-2016 17:40:26 ---
-Timer started for Cyclic proximal point algorithm on manifolds
-i=1000 where lastdiff is 0.0038314 and lambdait=0.0031416
-i=2000 where lastdiff is 0.0003173 and lambdait=0.0015708
-i=3000 where lastdiff is 0.00056247 and lambdait=0.0010472
-i=4000 where lastdiff is 0.00026668 and lambdait=0.0007854
-Timer stopped for Cyclic proximal point algorithm on manifolds.
-Computation for Cyclic proximal point algorithm on manifolds took 1120.17152461 sec.
-4000 iterations, last difference:0.00026668
- --- Logfile of Experiment S1-Vesuvius ended 13-Apr-2016 17:59:07 ---
+ --- Logfile of Experiment S1-Vesuvius started 25-Feb-2018 07:32:11 ---
+1000 F: 124395.6414 last change: 0.0047333.
+2000 F: 124267.0461 last change: 0.0012959.
+3000 F: 124214.0471 last change: 0.00067718.
+4000 F: 124186.8013 last change: 0.00039053.
+Elapsed time is 475.521952 seconds.
+ --- Logfile of Experiment S1-Vesuvius ended 25-Feb-2018 07:40:06 ---

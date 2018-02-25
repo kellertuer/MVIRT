@@ -103,7 +103,7 @@ for i=1:length(alpha1s)
     problem.beta = [beta1s(i),gammas(i);0,beta2s(i)];
     problem.Debug = 1000;
     tic
-    ZrT = permute(CPP_AdditiveTV12(problem),[2,3,1]); %permute back for imaging
+    Zr = permute(CPP_AdditiveTV12(problem),[2,3,1]); %permute back for imaging
     toc
     ME = sum(sum(problem.M.dist(Zr,Z).^2))/length(Z(:));
     disp(['For ',num2str([problem.alpha(:).' problem.beta(:).']),...

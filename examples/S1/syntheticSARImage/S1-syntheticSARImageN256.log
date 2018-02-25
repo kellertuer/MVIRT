@@ -1,14 +1,27 @@
- --- Logfile of Experiment S1-syntheticSARImageN256 started 25-Feb-2018 05:58:57 ---
+ --- Logfile of Experiment S1-syntheticSARImageN256 started 25-Feb-2018 07:05:20 ---
 Using File Data generated 31-Jan-2017 21:58:36.
-<a href="matlab: opentoline('/Users/ronny/Repositories/MVIRT/debug/createDebugFct.m',22,1)">22  </a>f = @(x,xold,iter) ...
-open CPP_AdditiveTV12.m
-open cyclicProximalPoint.m
-if system_dependent('IsDebugMode')==1, dbquit; end
-syntheticSARImage
-{Error: <a href="matlab: opentoline('/Users/ronny/Repositories/MVIRT/examples/S1/syntheticSARImage.m',103,54)">File: syntheticSARImage.m Line: 103 Column: 54
-</a>The input character is not valid in MATLAB statements or expressions.
-} 
-opentoline('/Users/ronny/Repositories/MVIRT/examples/S1/syntheticSARImage.m',103,54)
-open CPP_AdditiveTV12.m
-BlocksInpaint
- --- Initializing the Manifold-valued Image Restoration Toolbox --- 
+1000 F: 4873.6331 last change: 0.00038983.
+2000 F: 4869.9844 last change: 0.00011119.
+3000 F: 4868.7371 last change: 5.1879e-05.
+4000 F: 4868.1078 last change: 3.02e-05.
+Elapsed time is 66.024803 seconds.
+For 0.375           0           0        0.25           0           0           0           0 the error is ME:0.007361802
+<a href="matlab: opentoline('/Users/ronny/Repositories/MVIRT/algorithms/functionals/TV2Midpoint.m',50,1)">50  </a>            d(preFill{:}, 2+j:3:3*Nt+j, postFill{:}) = ...
+if system_dependent('IsDebugMode')==1, dbcont; end
+if system_dependent('IsDebugMode')==1, dbcont; end
+if system_dependent('IsDebugMode')==1, dbcont; end
+if system_dependent('IsDebugMode')==1, dbcont; end
+if system_dependent('IsDebugMode')==1, dbcont; end
+1000 F: 3542.634 last change: 0.00042402.
+2000 F: 3540.0297 last change: 0.00012697.
+3000 F: 3539.0943 last change: 6.2044e-05.
+4000 F: 3538.6119 last change: 3.7265e-05.
+Elapsed time is 201.927412 seconds.
+For 0           0           0           0       0.125           0       0.125       0.125 the error is ME:0.00657739
+1000 F: 4477.1264 last change: 0.00061602.
+2000 F: 4473.5645 last change: 0.00019657.
+3000 F: 4472.3419 last change: 9.8025e-05.
+4000 F: 4471.7163 last change: 5.9132e-05.
+Elapsed time is 134.878004 seconds.
+For 0.25           0           0       0.125       0.125           0           0       0.125 the error is ME:0.005304747
+ --- Logfile of Experiment S1-syntheticSARImageN256 ended 25-Feb-2018 07:12:03 ---
