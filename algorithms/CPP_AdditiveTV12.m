@@ -86,6 +86,11 @@ else % parse Input
     parse(ip, varargin{:});
     vars = ip.Results;
 end
+% shoft debug
+if isscalar(vars.Debug)
+    F = @(x) SecondOrderMidpointModel(vars.M,vars.f,x,vars.alpha,vars.beta,1,0);
+    vars.Debug = createDebugFct(vars.M,F,vars.Debug);
+end
 f = vars.f;
 f(vars.M.allDims{:},vars.UnknownMask) = NaN;
 proximalMaps = {...
