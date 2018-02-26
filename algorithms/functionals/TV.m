@@ -25,7 +25,7 @@ vars = ip.Results;
 sX = size(vars.x);
 dataDims = sX( (length(vars.M.ItemSize)+1):end );
 n = length(dataDims);
-weights = vars.weights;
+weights = vars.Weights;
 if isscalar(weights)
     weights = ones(1,n).*weights; %to vector
 end
@@ -44,6 +44,7 @@ for i=1:n
     end
     tv = tv + weights(i,i)*d.^vars.p;
     for j=0:1 %even odd for easier access
+        Nt = floor((dataDims(i)-j)/2);
         for i2=i+1:n % diagonals
             interfill = repelem({':'},i2-i-1);
             post2Fill = repelem({':'},n-i2);
@@ -51,24 +52,26 @@ for i=1:n
             if dataDims(i) >= 2+j && dataDims(i2) >= 2+j
                 if weights(i,i2) > 0
                     % extract even/odd
-                    subXo = y(vars.M.allDims{:},preFill{:}, 1+j:2:2*Nt+j, interfill{:}, 1+j:2:2*Nt2+j,post2Fill{:});
+                    subXo = vars.x(vars.M.allDims{:},preFill{:}, 1+j:2:2*Nt+j, interfill{:}, 1+j:2:2*Nt2+j,post2Fill{:});
                     % +1,+1 diagonal
-                    subXd1 = y(vars.M.allDims{:},preFill{:}, 2+j:2:2*Nt+j, interfill{:}, 2+j:2:2*Nt2+j,post2Fill{:});
+                    subXd1 = vars.x(vars.M.allDims{:},preFill{:}, 2+j:2:2*Nt+j, interfill{:}, 2+j:2:2*Nt2+j,post2Fill{:});
                     d = vars.M.dist(subXo,subXd1);
                     if vars.Epsilon>0 && vars.p==1 %for anisotropic relax each summand
                         d = sqrt(d.^2+vars.Epsilon^2);
                     end
-                    tv = tv + weights(i,i2)*d.^vars.p;
+                    tv(preFill{:}, 1+j:2:2*Nt+j, interfill{:}, 1+j:2:2*Nt2+j,post2Fill{:}) = ...
+                        tv(preFill{:}, 1+j:2:2*Nt+j, interfill{:}, 1+j:2:2*Nt2+j,post2Fill{:}) + weights(i,i2)*d.^vars.p;
                 end
             end
             if weights(i2,i) > 0
-                subXo = y(vars.M.allDims{:},preFill{:}, 1+j:2:2*Nt+j, interfill{:}, 2+j:2:2*Nt2+j,post2Fill{:});
-                subXd1 = y(vars.M.allDims{:},preFill{:}, 2+j:2:2*Nt+j, interfill{:}, 1+j:2:2*Nt2+j,post2Fill{:});
+                subXo = vars.x(vars.M.allDims{:},preFill{:}, 1+j:2:2*Nt+j, interfill{:}, 2+j:2:2*Nt2+j,post2Fill{:});
+                subXd1 = vars.x(vars.M.allDims{:},preFill{:}, 2+j:2:2*Nt+j, interfill{:}, 1+j:2:2*Nt2+j,post2Fill{:});
                 d = vars.M.dist(subXo,subXd1);
                 if vars.Epsilon>0 && vars.p==1 %for anisotropic relax each summand
                     d = sqrt(d.^2+vars.Epsilon^2);
                 end
-                tv = tv + weights(i,i2)*d.^vars.p;
+                tv(preFill{:}, 1+j:2:2*Nt+j, interfill{:}, 2+j:2:2*Nt2+j,post2Fill{:}) = ...
+                    tv(preFill{:}, 1+j:2:2*Nt+j, interfill{:}, 2+j:2:2*Nt2+j,post2Fill{:}) + weights(i,i2)*d.^vars.p;
             end
         end
     end

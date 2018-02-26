@@ -26,6 +26,8 @@ parse(ip, varargin{:});
 vars = ip.Results;
 
 data = 1/2*vars.M.dist(vars.f,vars.x).^2;
-t = sum(data(:)) + TV(vars.M,vars.x,'Epsilon',vars.Epsilon,'Weights',vars.alpha) + vars.beta*TV2Midpoint(vars.M,vars.x,'Epsilon',vars.Epsilon);
+t = sum(data(:)) ...
+    + TV(vars.M,vars.x,'Epsilon',vars.Epsilon,'Weights',vars.alpha) ...
+    + TV2Midpoint(vars.M,vars.x,'Epsilon',vars.Epsilon,'Weights',vars.beta);
 end
 

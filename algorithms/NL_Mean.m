@@ -9,7 +9,7 @@ function Res = NL_Mean(M, F, patch_size, window_size, K, sigma_patch, sigma_weig
 % patch_size    size of patches we compare, must be odd
 % window_size   size of box around each pixel in which we search similar
 %               patches, must be odd
-% K             number of neighbors for each pixels. 
+% K             number of neighbors for each pixels.
 % sigma_patch   standard deviation of guassian for patch comparison (center more important than outer pixels)
 % sigma_weights standard deviation of guassian for computation of actual
 %               weights
@@ -20,7 +20,7 @@ function Res = NL_Mean(M, F, patch_size, window_size, K, sigma_patch, sigma_weig
 % OUTPUT:
 % Res           Restored manifold valued image
 %
-% See also 
+% See also
 % non_local_weights_fast
 %
 % MVRIT 1.2 J. Persch 05.07.2016
@@ -33,6 +33,7 @@ dimen = size(F);
 imgDim = dimen(length(M.ItemSize)+1:end);
 N = prod(imgDim);
 W = non_local_weights(M, F, patch_size, window_size, K, sigma_patch, sigma_weights,center_element);
+disp('Weights have been calculated.');
 F = reshape(F,prod(M.ItemSize),[]);
 weights = zeros(N,max(sum(W~=0)));
 FF = zeros([size(F),size(weights,2)]);
@@ -43,10 +44,11 @@ FF = zeros([size(F),size(weights,2)]);
 % add the last element for the loop
 ind_i = [ind_i;length(w)];
 % Capture the weights and neighbors of each pixel
-for i = 1:N    
+for i = 1:N
     weights(i,1:(ind_i(i+1)-ind_i(i))) = w(ind_i(i):(ind_i(i+1)-1));
     FF(:,i,1:(ind_i(i+1)-ind_i(i))) = F(:,neighbors(ind_i(i):(ind_i(i+1)-1)));
 end
 % Calculate the mean
 Res = reshape(M.mean(reshape(FF,[M.ItemSize,N,size(weights,2)]),'Weights',weights),dimen);
+toc
 end

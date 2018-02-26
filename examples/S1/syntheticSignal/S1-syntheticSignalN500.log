@@ -1,30 +1,26 @@
- --- Logfile of Experiment S1-syntheticSignalN500 started 13-Apr-2016 17:40:12 ---
-Using File Data generated 06-Dec-2015 11:00:22.
+ --- Logfile of Experiment S1-syntheticSignalN500 started 25-Feb-2018 07:18:39 ---
 - TV1&2 Minimization by CPPA, alpha=0.75, beta=0 -
-Timer started for Cyclic proximal point algorithm on manifolds
-i=1000 where lastdiff is 1.3513e-05 and lambdait=0.0031416
-i=2000 where lastdiff is 3.8817e-06 and lambdait=0.0015708
-i=3000 where lastdiff is 1.8112e-06 and lambdait=0.0010472
-i=4000 where lastdiff is 1.0443e-06 and lambdait=0.0007854
-Timer stopped for Cyclic proximal point algorithm on manifolds.
-Computation for Cyclic proximal point algorithm on manifolds took 2.95873322 sec.
-4000 iterations, last difference:1.0443e-06
+1000 F: 17.303 last change: 2.6149e-06.
+2000 F: 17.2362 last change: 6.8596e-07.
+3000 F: 17.2138 last change: 3.0693e-07.
+4000 F: 17.2025 last change: 1.7381e-07.
+Elapsed time is 15.923819 seconds.
 - TV1&2 Minimization by CPPA, alpha=0, beta=1.5 -
-Timer started for Cyclic proximal point algorithm on manifolds
-i=1000 where lastdiff is 5.6086e-05 and lambdait=0.0031416
-i=2000 where lastdiff is 2.4914e-05 and lambdait=0.0015708
-i=3000 where lastdiff is 1.3725e-05 and lambdait=0.0010472
-i=4000 where lastdiff is 6.1746e-06 and lambdait=0.0007854
-Timer stopped for Cyclic proximal point algorithm on manifolds.
-Computation for Cyclic proximal point algorithm on manifolds took 3.55327532 sec.
-4000 iterations, last difference:6.1746e-06
-- TV1&2 Minimization by CPPA, alpha=0.25, beta=0.5 -
-Timer started for Cyclic proximal point algorithm on manifolds
-i=1000 where lastdiff is 2.2509e-05 and lambdait=0.0031416
-i=2000 where lastdiff is 7.8133e-06 and lambdait=0.0015708
-i=3000 where lastdiff is 4.3931e-06 and lambdait=0.0010472
-i=4000 where lastdiff is 2.5779e-06 and lambdait=0.0007854
-Timer stopped for Cyclic proximal point algorithm on manifolds.
-Computation for Cyclic proximal point algorithm on manifolds took 5.46294130 sec.
-4000 iterations, last difference:2.5779e-06
- --- Logfile of Experiment S1-syntheticSignalN500 ended 13-Apr-2016 17:40:25 ---
+1000 F: 10.8645 last change: 1.4936e-05.
+2000 F: 10.7028 last change: 6.3222e-06.
+3000 F: 10.6449 last change: 3.3327e-06.
+4000 F: 10.6192 last change: 2.2163e-06.
+Elapsed time is 17.388630 seconds.
+- TV1&2 Minimization by CPPA, alpha=0.25, beta=0.75 -
+1000 F: 13.3251 last change: 7.8954e-06.
+2000 F: 13.2765 last change: 2.9911e-06.
+3000 F: 13.2557 last change: 1.5291e-06.
+4000 F: 13.2436 last change: 9.1144e-07.
+Elapsed time is 18.387324 seconds.
+- TV1 Minimization by CPPA on R, alpha=0.75, beta=0 -
+1000 F: 140.36 last change: 2.7498e-06.
+2000 F: 140.2987 last change: 7.2511e-07.
+3000 F: 140.278 last change: 3.2478e-07.
+4000 F: 140.2677 last change: 1.8384e-07.
+Elapsed time is 15.085108 seconds.
+ --- Logfile of Experiment S1-syntheticSignalN500 ended 25-Feb-2018 07:19:47 ---

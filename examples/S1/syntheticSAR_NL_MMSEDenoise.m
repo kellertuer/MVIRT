@@ -22,23 +22,21 @@ if ~isempty(fileparts(which(mfilename)))
     cd(fileparts(which(mfilename)));
 end
 run('../../initMVIRT.m')
+
+showFigures = true;
+writeImages = true;
+loadData = true;
 resultsFolder = ['syntheticSARImage',filesep];
-%% Debug
-setDebugLevel('LevelMin',0);
-setDebugLevel('LevelMax',100);
-setDebugLevel('text',3);
-setDebugLevel('time',3);
-setDebugLevel('LoadData',1);
-setDebugLevel('WriteImages',1);
-setDebugLevel('Figures',1);
+
 % Parameters for image and noise
 sigma = 0.3;
 pts = 256;
 [u_noisy_SAR,u_0_SAR] = ArtificalSARImage(pts,sigma);
-if getDebugLevel('LoadData')
+if loadData
     load([resultsFolder,'S1-syntheticSARImageN256.mat'],'Zn');
     u_noisy_SAR = Zn;
 end
+
 u_noisy_Sn1 = zeros(2,size(u_noisy_SAR,1),size(u_noisy_SAR,2));
 u_orig = zeros(2,size(u_noisy_SAR,1),size(u_noisy_SAR,2));
 u_noisy_Sn1(1,:,:) = cos(u_noisy_SAR);
@@ -48,7 +46,7 @@ u_orig(2,:,:) = sin(u_0_SAR);
 
 M = Sn(1);
 % Initialize problem
-clear problemImage
+clear problem
 problem.M = M;
 problem.f = u_noisy_Sn1;
 problem.sigma =sigma;
@@ -67,7 +65,7 @@ arts1_mean_err_oracle = sum(sum(M.dist(u_orig,u_oracle).^2))/pts^2;
 arts1_mean_err_final = sum(sum(M.dist(u_orig,u_final).^2))/pts^2;
 arts1_mean_err_nl = sum(sum(M.dist(u_orig,u_nl).^2))/pts^2;
 %% Show Figures
-if getDebugLevel('Figures') == 1
+if showFigures
     figure;
     subplot(2,2,1)
     imagesc(u_0_SAR),colormap hsv, title('original');axis equal, axis tight;axis off
@@ -82,7 +80,7 @@ if getDebugLevel('Figures') == 1
     title('NL Mean');colormap hsv;axis equal, axis tight;axis off
 end
 %% Write results
-if getDebugLevel('WriteImages') == 1    
+if writeImages
     map = colormap(hsv(256));
     imwrite(255*(squeeze(atan2(u_final(2,:,:),u_final(1,:,:)))+pi)/2/pi,map,[resultsFolder,'artInSAR_MMSE.png']);
     imwrite(255*(squeeze(atan2(u_oracle(2,:,:),u_oracle(1,:,:)))+pi)/2/pi,map,[resultsFolder,'artInSAR_MMSE_Oracle.png']);

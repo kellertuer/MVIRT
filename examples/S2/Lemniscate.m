@@ -29,15 +29,12 @@ run('../../initMVIRT.m')
 %
 %
 %% Settings & Variables
-setDebugLevel('LevelMin',0);     % Lower bound
-setDebugLevel('LevelMax',3);     % Upper bound
-setDebugLevel('text',2);    % Not so much text debug
-setDebugLevel('time',3);    % Times
-setDebugLevel('WriteImages',1); %0: no file writing, 1: file writing
-setDebugLevel('LoadData',1); %0: generate new data 1: load existing data (if it exists), (other wise it is generated)
-setDebugLevel('WriteData',0); %0: do not write data to file 1: write data to file (overwrites last experiment data!)
-setDebugLevel('figures',1); %0: no figure display, 1: figures are displayed (disable e.g. for cluster/console work)
-setDebugLevel('logfile',1); %0: no logfile 1: logfile
+writeImages = true;
+loadData = true;
+writeData = false;
+showFigures = true;
+useLogfile = true;
+
 folder = ['examples',filesep,'S2',filesep]; %this files folder
 results = ['Lemniscate',filesep]; % subfolder for reulsts
 name = 'Lemniscate'; %fildename
@@ -50,7 +47,7 @@ pts = 512; %image size in x and y
 %
 %
 %% Initialization
-if getDebugLevel('logfile')
+if useLogfile
     if exist([results,name,'.log'],'file')
         delete([results,name,'.log'])
     end
@@ -61,7 +58,7 @@ M = Sn(2);
 %
 %
 % Loading or creating and saving data
-if getDebugLevel('LoadData') && exist([results,dataName,'-data.mat'],'file')
+if loadData && exist([results,dataName,'-data.mat'],'file')
     load([results,dataName,'-data.mat']); %loads f and fn
     metaData = dir([results,dataName,'-data.mat']);
     disp(['Using File Data generated ',datestr(metaData.date),'.']);
@@ -76,10 +73,10 @@ else
     %f = [xc;yc;zc]./repmat(sqrt(sum([xc;yc;zc].^2,1)),[3,1]); %old
     f = M.exp(repmat([0;0;1],[1,pts]),[xc;yc;zeros(size(xc))]); %length-keeping 
     fn = M.addNoise(f,sigma);
-    debug('text',2,'Text',['Using Data generated ',datestr(datetime),'.']);
-    if getDebugLevel('WriteData') %Write this version to file
+    disp(['Using Data generated ',datestr(datetime),'.']);
+    if writeData %Write this version to file
         save([results,dataName,'-data.mat'],'f','fn','sigma','pts');
-        debug('text',2,'Text',['New Data saved to ',results,dataName,'-data.mat'.']);
+        disp(['New Data saved to ',results,dataName,'-data.mat'.']);
     end
 end
 %
@@ -88,7 +85,7 @@ end
 X = cell(1,3);
 [X{:}] = sphere(40);
 lightGrey = 0.8*[1 1  1]; % It looks better if the lines are lighter
-if getDebugLevel('figures') % init meshgrids
+if showFigures % init meshgrids
     % Show in quiver (no color coding)
     surface(X{:},'FaceColor', 'none','EdgeColor',lightGrey,'LineWidth',.1)
     hold on
@@ -99,7 +96,7 @@ if getDebugLevel('figures') % init meshgrids
     axis off;
     pause(0.02);
 end
-if getDebugLevel('WriteImages')>0
+if writeImages
      fileStr = [results,name,'-noisy'];
      fileStr(fileStr=='.') = [];
      exportSphereSignals2Asymptote(cat(3,f,fn),colors,'File',[fileStr,'.asy'],'ExportHeader',true);
@@ -111,64 +108,76 @@ end
 % Generate general problem statement and settings mentioned in the paper
 problem.M = M;
 problem.f = fn;
-problem.MaxIterations = 1000;
-problem.Epsilon = 0;
 problem.lambda = pi/2;
-problem.M.steps = 10; %just do 10 gradient descent steps
-problem.M.tau = 1;
-if getDebugLevel('logfile') % for the logfile print manifold and problem.
+problem.stoppingCriterion = stopCritMaxIterEpsilonCreator(problem.M,4000,0);
+problem.Debug = 1000;
+
+if useLogfile % for the logfile print manifold and problem.
     M        %#ok<NOPTS>
     problem  %#ok<NOPTS>
 end
-alpha = [0 0.55 0.7];
-beta =  [0 21 29];
-debug('text',2,'Text',['Parameter range alpha (',num2str(length(alpha)),' values): ',regexprep(num2str(alpha,5), '\s*', ','),'.']);
-debug('text',2,'Text',['Parameter range beta  (',num2str(length(beta)),' values): ',regexprep(num2str(beta,5), '\s*', ','),'.']);
+alpha = [10^-6,0.25,0.45,0.65,0.85];%[0 0.55 0.7];
+beta =  [0,9,18];
+disp(['Parameter range alpha (',num2str(length(alpha)),' values): ',regexprep(num2str(alpha,5), '\s*', ','),'.']);
+disp(['Parameter range beta  (',num2str(length(beta)),' values): ',regexprep(num2str(beta,5), '\s*', ','),'.']);
 
 %% Iterate parameters
 mDist = zeros(length(alpha)*length(beta),1);
 mResults = zeros([length(alpha)*length(beta), size(f)]);
+minTV = Inf;
+minTV12 = Inf;
+minpTV = [];
+minpTV12 = [];
+minFTV=[];
+minFTV12 = [];
 for i=1:length(alpha)*length(beta)
     % the global structure is not passed to the workers, hence we have
     % to distribute the needed DebugValues ourselves 
     [j1,j2] = ind2sub([length(alpha),length(beta)],i);    
     problem.alpha = alpha(j1);
     problem.beta = beta(j2);
-    Lfr = cppa_ad_1D(problem);
+    tic
+    Lfr = CPP_AdditiveTV12(problem);
+    toc
     mResults(i,:,:,:) = Lfr;
     mDist(i) = 1/pts*sum(sum( problem.M.dist(f,Lfr))); %SD
-    if getDebugLevel('WriteImages')>0 
+    if mDist(i) < minTV && problem.beta==0
+        minTV = mDist(i);
+        minFTV = Lfr;
+        minpTV = problem.alpha;
+        disp(['New minimal TV:',num2str(minpTV),' with value ',num2str(minTV)]);
+    end
+    if mDist(i) < minTV12
+        minTV12 = mDist(i);
+        minFTV12 = Lfr;
+        minpTV12 = [problem.alpha,problem.beta];
+        disp(['New minimal TV12:',num2str(minpTV12),' with value ',num2str(minTV12)]);
+    end
+    if writeImages 
         fileStr = [results,name,'-p-',num2str(alpha(j1)),'-',num2str(beta(j2))];
         fileStr(fileStr=='.') = [];
         exportSphereSignals2Asymptote(cat(3,f,Lfr),colors,'File',[fileStr,'.asy'],'ExportHeader',true);
+        minFTV12 = Lfr;
     end
-    debug('text',1,'Text',...
+    disp(...
         ['Parameters: \alpha=',num2str(alpha(j1)),' \beta=',num2str(beta(j2)),' yield ',num2str(mDist(i)),'.']);
 end
 
 %% Evaluate results
-[b,a] = (meshgrid(alpha,beta)); a = a(:); b = b(:);
-% general minimum
-[minValue,minIndex] = min(mDist);
-[minJ1,minJ2] = ind2sub([length(alpha),length(beta)],minIndex);
-    debug('text',1,'Text',['Minimum: Parameters: \alpha=',num2str(alpha(minJ1)),' \beta=',num2str(beta(minJ2)),' yields minimal value ',num2str(mDist(minIndex)),'.']);
-minF = squeeze(mResults(minIndex,:,:));
-% TV1 minimum
-[minValueTV,minIndexTV] = min(mDist(b==0));
-[minJ1TV,minJ2TV] = ind2sub([length(alpha),length(beta)],minIndexTV);
-    debug('text',1,'Text',['Minimum: Parameter: \alpha=',num2str(alpha(minJ1TV)),' yields minimal value ',num2str(minValueTV),'.']);
-minFTV = squeeze(mResults(minIndex,:,:));
+    disp(['Minimum: Parameter: \alpha=',num2str(minpTV),' yields minimal value ',num2str(minTV),'.']);
+    disp(['Minimum: Parameters: \alpha=',num2str(minpTV12(1)),' \beta=',num2str(minpTV12(2)),...
+        ' yields minimal value ',num2str(minTV12),'.']);
 
 %% Plot result
-if getDebugLevel('figures')
+if showFigures
     % Show in quiver (no color coding)
     figure;
     surface(X{:},'FaceColor', 'none','EdgeColor',lightGrey,'LineWidth',.1)
     hold on
     plot3(f(1,:),f(2,:),f(3,:),'o','Markersize',3) 
-    plot3(minF(1,:),minF(2,:),minF(3,:),'o','Markersize',3) 
+    plot3(minFTV12(1,:),minFTV12(2,:),minFTV12(3,:),'o','Markersize',3) 
     hold off
-    title(['Reconstruction \alpha=',num2str(alpha(minJ1)),' \beta=',num2str(beta(minJ2)),' yields ',num2str(mDist(minIndex)),'.']);
+    title(['Reconstruction \alpha=',num2str(minpTV12(1)),' \beta=',num2str(minpTV12(2)),' yields ',num2str(minTV12),'.']);
     axis off;
 
     figure;
@@ -177,11 +186,11 @@ if getDebugLevel('figures')
     plot3(f(1,:),f(2,:),f(3,:),'o','Markersize',3) 
     plot3(minFTV(1,:),minFTV(2,:),minFTV(3,:),'o','Markersize',3) 
     hold off
-    title([' Reconstruction TV: \alpha=',num2str(alpha(minJ1)),' yields ',num2str(mDist(minIndexTV)),'.']);
+    title([' Reconstruction TV: \alpha=',num2str(minpTV),' yields ',num2str(minTV),'.']);
     axis off;
 end
 %% End logfile
-if getDebugLevel('logfile')
+if useLogfile
     disp([' --- Logfile of Experiment >',name,'< ended ',datestr(datetime),' ---']);
     diary off;
 end

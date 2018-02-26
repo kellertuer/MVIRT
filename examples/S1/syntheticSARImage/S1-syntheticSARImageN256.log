@@ -1,30 +1,27 @@
- --- Logfile of Experiment S1-syntheticSARImageN256 started 13-Apr-2016 17:31:16 ---
-Using File Data generated 06-Dec-2015 11:00:22.
-Timer started for Cyclic proximal point algorithm on manifolds
-i=1000 where lastdiff is 1.0216e-05 and lambdait=0.0031416
-i=2000 where lastdiff is 3.2148e-06 and lambdait=0.0015708
-i=3000 where lastdiff is 1.5672e-06 and lambdait=0.0010472
-i=4000 where lastdiff is 9.975e-07 and lambdait=0.0007854
-Timer stopped for Cyclic proximal point algorithm on manifolds.
-Computation for Cyclic proximal point algorithm on manifolds took 98.76860107 sec.
-4000 iterations, last difference:9.975e-07
-On 0.375        0.25           0           0           0           0           0 the error is ME:0.007235467
-Timer started for Cyclic proximal point algorithm on manifolds
-i=1000 where lastdiff is 1.2277e-05 and lambdait=0.0031416
-i=2000 where lastdiff is 4.1613e-06 and lambdait=0.0015708
-i=3000 where lastdiff is 2.292e-06 and lambdait=0.0010472
-i=4000 where lastdiff is 1.5108e-06 and lambdait=0.0007854
-Timer stopped for Cyclic proximal point algorithm on manifolds.
-Computation for Cyclic proximal point algorithm on manifolds took 222.34028303 sec.
-4000 iterations, last difference:1.5108e-06
-On 0           0           0           0       0.125       0.125       0.125 the error is ME:0.006479875
-Timer started for Cyclic proximal point algorithm on manifolds
-i=1000 where lastdiff is 1.7708e-05 and lambdait=0.0031416
-i=2000 where lastdiff is 5.4672e-06 and lambdait=0.0015708
-i=3000 where lastdiff is 2.7793e-06 and lambdait=0.0010472
-i=4000 where lastdiff is 1.638e-06 and lambdait=0.0007854
-Timer stopped for Cyclic proximal point algorithm on manifolds.
-Computation for Cyclic proximal point algorithm on manifolds took 212.47223203 sec.
-4000 iterations, last difference:1.638e-06
-On 0.25       0.125           0           0       0.125       0.125           0 the error is ME:0.005212811
- --- Logfile of Experiment S1-syntheticSARImageN256 ended 13-Apr-2016 17:40:11 ---
+ --- Logfile of Experiment S1-syntheticSARImageN256 started 25-Feb-2018 07:05:20 ---
+Using File Data generated 31-Jan-2017 21:58:36.
+1000 F: 4873.6331 last change: 0.00038983.
+2000 F: 4869.9844 last change: 0.00011119.
+3000 F: 4868.7371 last change: 5.1879e-05.
+4000 F: 4868.1078 last change: 3.02e-05.
+Elapsed time is 66.024803 seconds.
+For 0.375           0           0        0.25           0           0           0           0 the error is ME:0.007361802
+<a href="matlab: opentoline('/Users/ronny/Repositories/MVIRT/algorithms/functionals/TV2Midpoint.m',50,1)">50  </a>            d(preFill{:}, 2+j:3:3*Nt+j, postFill{:}) = ...
+if system_dependent('IsDebugMode')==1, dbcont; end
+if system_dependent('IsDebugMode')==1, dbcont; end
+if system_dependent('IsDebugMode')==1, dbcont; end
+if system_dependent('IsDebugMode')==1, dbcont; end
+if system_dependent('IsDebugMode')==1, dbcont; end
+1000 F: 3542.634 last change: 0.00042402.
+2000 F: 3540.0297 last change: 0.00012697.
+3000 F: 3539.0943 last change: 6.2044e-05.
+4000 F: 3538.6119 last change: 3.7265e-05.
+Elapsed time is 201.927412 seconds.
+For 0           0           0           0       0.125           0       0.125       0.125 the error is ME:0.00657739
+1000 F: 4477.1264 last change: 0.00061602.
+2000 F: 4473.5645 last change: 0.00019657.
+3000 F: 4472.3419 last change: 9.8025e-05.
+4000 F: 4471.7163 last change: 5.9132e-05.
+Elapsed time is 134.878004 seconds.
+For 0.25           0           0       0.125       0.125           0           0       0.125 the error is ME:0.005304747
+ --- Logfile of Experiment S1-syntheticSARImageN256 ended 25-Feb-2018 07:12:03 ---

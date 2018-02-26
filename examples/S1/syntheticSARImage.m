@@ -9,8 +9,8 @@
 % a task performed on S1 valued data and demonstrated in this example
 %
 % This example is published in
-%    R. Bergmann, F. Laus, G. Steidl, A. Weinmann (2014). 
-%       Second order differences of cyclic data and applications in variational denoising. 
+%    R. Bergmann, F. Laus, G. Steidl, A. Weinmann (2014).
+%       Second order differences of cyclic data and applications in variational denoising.
 %       SIAM Journal on Imaging Sciences. 7, (4), 2916?2953.
 %
 % This file can be started without any changes; it initialized the Toolbox
@@ -27,17 +27,11 @@ if ~isempty(fileparts(which(mfilename)))
 end
 run('../../initMVIRT.m')
 % Global settings
-setDebugLevel('LevelMin',0);        % Minimal Value of all global Values
-setDebugLevel('LevelMax',1000);     % Maximal Value ...
-setDebugLevel('text',3);            % quite verbose text, but...
-setDebugLevel('IterationStep',1000);% only every 100th iteration
-setDebugLevel('WriteImages',1);     % 0: no file writing, 1: file writing
-setDebugLevel('time',3);            % verbose time
-setDebugLevel('LoadData',1);        % 0: generate new data 1: load existing data (if it exists), (other wise it is generated)
-setDebugLevel('WriteData',0);       % 0: do not write data to file 1: write data to file (overwrites last experiment data!)
-setDebugLevel('Figures',1);         % 0: no figure display, 1: figures are displayed
-setDebugLevel('logfile',1);         % 0: no logfile 1: logfile
-
+useLogfile= true;
+writeData = false;
+loadData = true;
+showFigures = true;
+writeImages = true;
 
 dataFolder = ['syntheticSARImage',filesep];
 folder = ['examples',filesep,'S1',filesep];
@@ -57,7 +51,7 @@ dataName = ['S1-syntheticSARImageN',num2str(N)];
 %
 %
 % Logfile?
-if getDebugLevel('logfile')
+if useLogfile
     clc
     if exist([resultsFolder,name,'.log'],'file')
         delete([resultsFolder,name,'.log'])
@@ -65,10 +59,10 @@ if getDebugLevel('logfile')
     diary([resultsFolder,name,'.log']);
     disp([' --- Logfile of Experiment ',name,' started ',datestr(datetime),' ---']);
 end
-if getDebugLevel('WriteData') % Create new data
+if writeData % Create new data
     [Zn,Z] = ArtificalSARImage(N,sigma);
     save([resultsFolder,dataName,'.mat'],'Zn','Z','sigma');
-elseif getDebugLevel('LoadData')
+elseif loadData
     load([resultsFolder,dataName,'.mat'],'Zn','Z','sigma');
     metaData = dir([resultsFolder,dataName,'.mat']);
     disp(['Using File Data generated ',datestr(metaData.date),'.']);
@@ -78,12 +72,12 @@ else
 end
 
 %% Initial Export of Starting Values
-if getDebugLevel('Figures')
+if showFigures
     figure(1); imagesc(Z+pi); title('Original Data'); colormap hsv;
     figure(2); imagesc(Zn+pi); title('noisy measurements'); colormap hsv;
     pause(0.05); %show all 3
 end
-if getDebugLevel('WriteImages')
+if writeImages
     map = colormap(hsv(256));
     frs = 255*(Z+pi)/(2*pi);
     imwrite(frs,map,[resultsFolder,name,'wrapped.png'],'png');
@@ -100,31 +94,32 @@ gammas = [0,1/8,0];
 
 clear problem
 problem.M = S1;
-problem.lambdaIterate = @(iter) pi/iter;
+problem.lambda = pi;
 problem.stoppingCriterion = stopCritMaxIterEpsilonCreator(problem.M,iter,epsilon);
 problem.f = permute(Zn,[3,1,2]); %the (unseen, third) manifold dimension has to be the first one
 
 for i=1:length(alpha1s)
     problem.alpha = diag([alpha1s(i),alpha2s(i)]);
     problem.beta = [beta1s(i),gammas(i);0,beta2s(i)];
+    problem.Debug = 1000;
     tic
-    ZrT = permute(CPP_AdditiveTV12(problem),[2,3,1]); %permute back for imaging
+    Zr = permute(CPP_AdditiveTV12(problem),[2,3,1]); %permute back for imaging
     toc
     ME = sum(sum(problem.M.dist(Zr,Z).^2))/length(Z(:));
-    disp(...
-    ['On ',num2str([problem.alpha(:).' problem.beta(:).']),' the error is ME:',sprintf('%3.7G',ME)]);
-    if getDebugLevel('WriteImages')
+    disp(['For ',num2str([problem.alpha(:).' problem.beta(:).']),...
+        ' the error is ME:',sprintf('%3.7G',ME)]);
+    if writeImages
         map = colormap(hsv(256));
         frs = 255*(Zr+pi)/(2*pi);
         imwrite(frs,map,[resultsFolder,name,'-P',num2str(i),'-denoised.png'],'png');
     end
-    if getDebugLevel('Figures')
+    if showFigures
         figure(i+2); imagesc(Zr+pi); title(['Parameters ',...
         num2str([problem.alpha(:).' problem.beta(:).']),' ME:',sprintf('%3.7G',ME)]); colormap hsv;
     end
 end
 % End logfile
-if getDebugLevel('logfile')
+if useLogfile
     disp([' --- Logfile of Experiment ',name,' ended ',datestr(datetime),' ---']);
     diary off;
 end

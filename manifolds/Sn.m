@@ -23,7 +23,7 @@ classdef Sn < manifold & handle
         Dimension;
         allDims;
     end
-    
+
     methods
         function obj = Sn(n)
             obj.ItemSize = n+1;
@@ -112,7 +112,7 @@ classdef Sn < manifold & handle
             %     v : resulting distances of each column pair of p,q.
             % ---
             % Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann ~ 2014-10-19 | 2015-03-30
-            
+
             % Lofgile
             %   2015-03-30 Changed dist to work to collapse first dim
             %   2015-04-11 Extracted to Mex
@@ -264,7 +264,7 @@ classdef Sn < manifold & handle
             ip = inputParser;
             addRequired(ip,'f');
             addParameter(ip,'Weights',[]);
-            addParameter(ip,'InitVal',NaN);
+            addParameter(ip,'InitVal',[]);
             addParameter(ip,'MaxIterations',50);
             addParameter(ip,'Epsilon',10^-6);
             parse(ip, varargin{:});
@@ -308,11 +308,15 @@ classdef Sn < manifold & handle
                 warning('Iterations should be larger than zero, set Iterations to 100')
                 iter = 100;
             end
+<<<<<<< HEAD
             x = SnMean(f,w,epsilon,iter);
+=======
+                x = SnMean(f,w,epsilon,iter);
+>>>>>>> ac2095f31c47e9b7b2680e5c1a57b165c7691b3f
             end
         end
     end
-    
+
     methods (Access = protected)
         function d = localDist(~,p,q)
             if ( size(p,2) > 1) && (size(q,2) > 1) %both nonsingleton

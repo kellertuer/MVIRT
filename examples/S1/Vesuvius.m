@@ -27,14 +27,10 @@ if ~isempty(fileparts(which(mfilename)))
 end
 run('../../initMVIRT.m')
 % Global settings
-setDebugLevel('LevelMin',0);        % Minimal Value of all global Values
-setDebugLevel('LevelMax',1000);     % Maximal Value ...
-setDebugLevel('text',3);            % quite verbose text, but...
-setDebugLevel('IterationStep',1000);% only every 100th iteration
-setDebugLevel('WriteImages',1);     % 0: no file writing, 1: file writing
-setDebugLevel('time',3);            % verbose time
-setDebugLevel('Figures',1);         % 0: no figure display, 1: figures are displayed
-setDebugLevel('logfile',1);         % 0: no logfile 1: logfile
+
+writeImages = true;
+showFigures = true;
+useLogfile  = true;
 
 dataFolder = ['..',filesep,'..',filesep,'data',filesep];
 folder = ['examples',filesep,'S1',filesep];
@@ -52,7 +48,7 @@ dataName = 'Vesuvius';
 %
 %
 % Logfile?
-if getDebugLevel('logfile')
+if useLogfile
     clc
     if exist([resultsFolder,name,'.log'],'file')
         delete([resultsFolder,name,'.log'])
@@ -65,12 +61,12 @@ img = imread([dataFolder,dataName,'.png']);
 imgg = (double(rgb2gray(img))/256)*(2*pi)-pi;
 
 %% Initial Export of Starting Values
-if getDebugLevel('Figures')
+if showFigures
     figure(1); imagesc(imgg+pi); title('Original Data'); colormap hsv;
     axis image; axis off
     pause(0.05); %show all 3
 end
-if getDebugLevel('WriteImages')
+if writeImages
     map = colormap(hsv(256));
     frs = 255*(imgg+pi)/(2*pi);
     imwrite(frs,map,[resultsFolder,name,'-orig.png'],'png');
@@ -83,31 +79,32 @@ beta1s = 3/4;
 beta2s = 3/4;
 gammas = 3/4;
 
-problem2.M = S1();
-problem2.lambdaIterate = @(iter) pi/iter;
-problem2.stoppingCriterion = stopCritMaxIterEpsilonCreator(problem.M,iter,epsilon);
-problem2.f = permute(imgg,[3,1,2]);
+problem.M = S1();
+problem.lambda = pi;
+problem.stoppingCriterion = stopCritMaxIterEpsilonCreator(problem.M,iter,epsilon);
+problem.f = permute(imgg,[3,1,2]);
+problem.Debug = 1000;
 
 for i=1:length(alpha1s)
-    problem2.alpha = diag( [alpha1s(i),alpha2s(i)] );
-    problem2.beta = [beta1s(i),gammas(i);0,beta2s(i)];
+    problem.alpha = diag( [alpha1s(i),alpha2s(i)] );
+    problem.beta = [beta1s(i),gammas(i);0,beta2s(i)];
     tic
-        imgr = permute(CPP_AdditiveTV12(problem2),[2,3,1]); %permute back for imaging
+        imgr = permute(CPP_AdditiveTV12(problem),[2,3,1]); %permute back for imaging
     toc
         
-    if getDebugLevel('WriteImages')
+    if writeImages
         map = colormap(hsv(256));
         frs = 255*(imgr+pi)/(2*pi);
         imwrite(frs,map,[resultsFolder,name,'-P',num2str(i),'-denoised.png'],'png');
     end
-    if getDebugLevel('Figures')
+    if showFigures
         figure(i+1); imagesc(imgr+pi); title(['Reconstruction',...
         num2str([problem.alpha(:).', problem.beta(:).']),' .']); colormap hsv;
         axis image; axis off
     end
 end
 % End logfile
-if getDebugLevel('logfile')
+if useLogfile
     disp([' --- Logfile of Experiment ',name,' ended ',datestr(datetime),' ---']);
     diary off;
 end

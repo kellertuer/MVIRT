@@ -25,9 +25,9 @@ vars = ip.Results;
 sX = size(vars.x);
 dataDims = sX( (length(vars.M.ItemSize)+1):end );
 n = length(dataDims);
-if sum(size(vars.lambda))==2 %lambda is a number
+if isscalar(vars.lambda) %lambda is a number
     vars.lambda = diag(ones(1,n).*vars.lambda);
-elseif size(vars.lambda,2)==1 %array
+elseif isvector(vars.lambda) %array
     vars.lambda = diag(vars.lambda); %diagonal matrix -> no mixed
 end
 y = vars.x;

@@ -75,7 +75,7 @@ if any(mask(:)) % we have equal nonequal values -> compute proxes
             M.dist(x(M.allDims{:},3,:),t3).^2 + ...
             lambda*M.dist(x(M.allDims{:},2,:),M.midPoint(x(M.allDims{:},1,:),x(M.allDims{:},3,:)));
         stepSize = @(x,eta,iter,old_step) 1/iter;
-        stopCrit = stopCritMaxIterEpsilonCreator(M,10,10^(-9)); %
+        stopCrit = stopCritMaxIterEpsilonCreator(M,3,10^(-9)); %
         xt = subGradientDescent(M,xInit,F,gradF,stepSize,stopCrit);
     end
     x1(M.allDims{:},mask) = xt(M.allDims{:},1,:);

@@ -80,9 +80,6 @@ end
 if isempty(vars.lambdaIterate)
             error('Please specify either a lambdaIterate function or an initial (vars.)lambda');
 end
-if isempty(vars.Debug)
-    vars.Debug = createDebugFct(vars.M,[],1000);
-end
 x = vars.x;
 xold=x;
 iter = 0;
