@@ -52,7 +52,7 @@ while ~vars.stoppingCriterion(x,xold,s,iter)
         recData = cat(2,recData,vars.Record(x,xold,iter));
     end
     if ~isempty(vars.Debug)
-        debug('text',3,'Text',debugF(x,xold,iter));
+        debugF(x,xold,iter);
     end
 end
 end

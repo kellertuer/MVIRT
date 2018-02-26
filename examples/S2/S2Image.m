@@ -62,12 +62,12 @@ M = Sn(2);
 if getDebugLevel('LoadData') && exist([results,dataName,'-data.mat'],'file')
     load([results,dataName,'-data.mat']); %loads f and fn
     metaData = dir([results,dataName,'-data.mat']);
-    debug('text',2,'Text',['Using loaded Data generated ',datestr(metaData.date),'.']);
+    disp(['Using loaded Data generated ',datestr(metaData.date),'.']);
     imgSize = [size(f,2),size(f,3)];
 else
     f = ArtificialS2Data(pts,surroundings,steps,stepSize);
     fn = M.addNoise(f,sigma);
-    debug('text',2,'Text',['Using _new_ Data generated ',datestr(datetime),'.']);
+    disp(['Using _new_ Data generated ',datestr(datetime),'.']);
     if getDebugLevel('WriteData') %Write this version to file
         save([results,dataName,'-data.mat'],'f','fn','sigma','pts');
     end
@@ -112,8 +112,8 @@ problem.M.steps = 10; %10 gradient descent steps
 
 alpha = [0 0.22];
 beta = [0 29.5];
-debug('text',2,'Text',['Parameter range alpha (',num2str(length(alpha)),' values): ',regexprep(num2str(alpha,5), '\s*', ','),'.']);
-debug('text',2,'Text',['Parameter range beta  (',num2str(length(beta)),' values): ',regexprep(num2str(beta,5), '\s*', ','),'.']);
+disp(['Parameter range alpha (',num2str(length(alpha)),' values): ',regexprep(num2str(alpha,5), '\s*', ','),'.']);
+disp(['Parameter range beta  (',num2str(length(beta)),' values): ',regexprep(num2str(beta,5), '\s*', ','),'.']);
 
 mDist = zeros(length(alpha)*length(beta),1);
 mResults = zeros([size(f), length(alpha)*length(beta)]);
@@ -129,24 +129,23 @@ for i=1:length(alpha)*length(beta)
         fileStr(fileStr=='.') = [];
         exportSphere2Asymptote(Lfr,'File',[fileStr,'.asy'],'ExportHeader',true);
     end
-    debug('text',1,'Text',...
-        ['Parameters: \alpha=',num2str(alpha(j1)),' \beta=',num2str(beta(j2)),' yield ',num2str(mDist(i)),'.']);
+    disp(['Parameters: \alpha=',num2str(alpha(j1)),' \beta=',num2str(beta(j2)),' yield ',num2str(mDist(i)),'.']);
 end
 %% Evaluate Results
 [b,a] = (meshgrid(beta,alpha)); a = a(:); b = b(:);
 % general minimum
 [minValue,minIndex] = min(mDist);
 [minJ1,minJ2] = ind2sub([length(alpha),length(beta)],minIndex);
-    debug('text',1,'Text',['Minimum: Parameters: \alpha=',num2str(alpha(minJ1)),' \beta=',num2str(beta(minJ2)),' yields minimal value ',num2str(mDist(minIndex)),'.']);
+    disp(['Minimum: Parameters: \alpha=',num2str(alpha(minJ1)),' \beta=',num2str(beta(minJ2)),' yields minimal value ',num2str(mDist(minIndex)),'.']);
 minF = squeeze(mResults(:,:,:,minIndex));
 % TV1 minimum
 [minValueTV,minIndexTV] = min(mDist(b==0));
-    debug('text',1,'Text',['Minimum TV: Parameter: \alpha=',num2str(alpha(minIndexTV)),' yields minimal value ',num2str(minValueTV),'.']);
+    disp(['Minimum TV: Parameter: \alpha=',num2str(alpha(minIndexTV)),' yields minimal value ',num2str(minValueTV),'.']);
 minFTV = squeeze(mResults(:,:,:,minIndexTV));
 
 % just TV2 minimum
 [minValueTV2,minIndexTV2] = min(mDist(a==0));
-    debug('text',1,'Text',['Minimum TV2: Parameter: \beta=',num2str(beta(minIndexTV2)),' yields minimal value ',num2str(minValueTV2),'.']);
+    disp(['Minimum TV2: Parameter: \beta=',num2str(beta(minIndexTV2)),' yields minimal value ',num2str(minValueTV2),'.']);
 minFTV2 = squeeze(mResults(:,:,:,minIndexTV2));
 
 %%

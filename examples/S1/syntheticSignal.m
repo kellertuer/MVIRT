@@ -72,7 +72,7 @@ if getDebugLevel('WriteData') % Create new data
 elseif getDebugLevel('LoadData')
     load([resultsFolder,dataName,'.mat'],'fn','fo','t','sigma');
     metaData = dir([resultsFolder,dataName,'.mat']);
-    debug('text',3,'Text',['Using File Data generated ',datestr(metaData.date),'.']);
+    disp(['Using File Data generated ',datestr(metaData.date),'.']);
     N = length(fn);
 else
     error('Either Loading or Creating(Wirting) Data must be set');
@@ -92,14 +92,14 @@ problem.stoppingCriterion = stopCritMaxIterEpsilonCreator(problem.M,iter,epsilon
 problem.f = fn;
 
 for i=1:length(alphas)
-    debug('text',2,'Text',['- TV1&2 Minimization by CPPA, alpha=',num2str(alphas(i)),', beta=',num2str(betas(i)),' -']);    
+    disp(['- TV1&2 Minimization by CPPA, alpha=',num2str(alphas(i)),', beta=',num2str(betas(i)),' -']);    
     problem.alpha = alphas(i);
     problem.beta = betas(i);
     tic
     fresults(i,:) = CPP_AdditiveTV12(problem);
     toc
 end
-debug('text',2,'Text',['- TV1 Minimization by CPPA on R, alpha=',num2str(alphas(1)),', beta=0 -']);
+disp(['- TV1 Minimization by CPPA on R, alpha=',num2str(alphas(1)),', beta=0 -']);
     M2 = Rn(1);    
     problem.M = M2;
     problem.alpha=alphas(1);

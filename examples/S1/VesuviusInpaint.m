@@ -76,7 +76,7 @@ if getDebugLevel('WriteData') % Create new data
 elseif getDebugLevel('LoadData')
     load([resultsFolder,dataName,'.mat'],'V','lossy','Vl','Mask');
     metaData = dir([resultsFolder,dataName,'.mat']);
-    debug('text',3,'Text',['Using File Data generated ',datestr(metaData.date),'.']);
+    disp(['Using File Data generated ',datestr(metaData.date),'.']);
 else
     error('Either Loading or Creating (Writing) Data must be set');
 end

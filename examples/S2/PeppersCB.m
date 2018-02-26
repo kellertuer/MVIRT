@@ -53,12 +53,12 @@ Vrgb = double(imread([dataFolder,dataName,'.jpg']))/255;
 if getDebugLevel('LoadData') && exist([results,dataName,'-data.mat'],'file')
     load([results,dataName,'-data.mat']);
     metaData = dir([results,dataName,'-data.mat']);
-    debug('text',2,'Text',['Using File Data generated ',datestr(metaData.date),'.']);
+    disp(['Using File Data generated ',datestr(metaData.date),'.']);
 else
     %Create Data
     sigma = 0.1; %Paper Grohs
     Vrgbn = max(min(Vrgb + sigma*randn(size(Vrgb)),1),0); %How does Grohs handle this?
-    debug('text',2,'Text',['Using new Data generated ',datestr(datetime),'.']);
+    disp(['Using new Data generated ',datestr(datetime),'.']);
     if getDebugLevel('WriteData')>0 %Write this version to file
         save([results,dataName,'-data.mat'],'Vrgbn','sigma')
     end
@@ -151,7 +151,7 @@ for beta = betas
 end
 disp(['Best PSNR',num2str(bestPSNR),' obtained for ',num2str(bestParams),'.']); 
 disp(['Best PSNR for TV1 ',num2str(bestPSNRTV1),' obtained for ',num2str(bestParamTV1),'.']); 
-if getDebugLevel('logfile');
+if getDebugLevel('logfile')
     diary off;
 end
 cd(start)

@@ -58,11 +58,11 @@ Vrgb = double(imread([dataFolder,dataName,'.jpg']))/255;
 if getDebugLevel('LoadData') && exist([results,dataName,'-data.mat'],'file')
     load([results,dataName,'-data.mat']);
     metaData = dir([results,dataName,'-data.mat']);
-    debug('text',2,'Text',['Using File Data generated ',datestr(metaData.date),'.']);
+    disp(['Using File Data generated ',datestr(metaData.date),'.']);
 else
     sigma = 0.1;
     Vrgbn = max(min(Vrgb + sigma*randn(size(Vrgb)),1),0); %How does Grohs handle this?
-    debug('text',2,'Text',['Using _new_ Data generated ',datestr(datetime),'.']);
+    disp(['Using _new_ Data generated ',datestr(datetime),'.']);
 end
     
 if getDebugLevel('Figures')

@@ -68,7 +68,7 @@ else
     f = ArtificialSPDImage(pts,jumpSize);
     fn = M.addNoise(f,sigma);
     %%
-    debug('text',2,'Text',['Using Data generated ',datestr(datetime),'.']);
+    disp(['Using Data generated ',datestr(datetime),'.']);
     if getDebugLevel('WriteData') %Write this version to file
         save([results,dataName,'-data.mat'],'f','fn','sigma','pts');
     end
@@ -92,38 +92,54 @@ M = SymPosDef(3);
 
 problem.M = M;
 problem.f = fn;
-problem.MaxIterations = 400;
-problem.Epsilon = 0;
 problem.lambda = .1;
-problem.M.tau = 1;
-problem.M.steps = 2; %just do 5 gradient descent steps
-if getDebugLevel('logfile');
+problem.stoppingCriterion = stopCritMaxIterEpsilonCreator(problem.M,400,0);
+if getDebugLevel('logfile')
     problem
     M
 end
-alpha = [0 5/16 3/8];
-beta = [0 1/8 5/8];
-debug('text',2,'Text',['Parameter range alpha (',num2str(length(alpha)),' values): ',regexprep(num2str(alpha,5), '\s*', ','),'.']);
-debug('text',2,'Text',['Parameter range beta  (',num2str(length(beta)),' values): ',regexprep(num2str(beta,5), '\s*', ','),'.']);
+alpha = 0:1/10:1;
+beta = 0:1/10:1;
+disp(['Parameter range alpha (',num2str(length(alpha)),' values): ',regexprep(num2str(alpha,5), '\s*', ','),'.']);
+disp(['Parameter range beta  (',num2str(length(beta)),' values): ',regexprep(num2str(beta,5), '\s*', ','),'.']);
 
 mResults = zeros(3,3,pts,pts,length(alpha)*length(beta));
 mDists = zeros(1,length(alpha)*length(beta));
 
 %% Run Tests
 % extract debug parameters for parallel kernels
+minTV = Inf;
+minTVa = Inf;
+minTV12 = Inf;
+minTV12a = Inf;
+minTV12b = Inf;
 for i=1:length(alpha)*length(beta)
     [j1,j2] = ind2sub([length(alpha),length(beta)],i);    
     problem.alpha = alpha(j1)*[1,1,0,0];
     problem.beta = beta(j2);
-    fr = cppa_ad_2D(problem);
+    fr = CPP_AdditiveTV12(problem);
     mResults(:,:,:,:,i) = fr;
     mDists(i) = 1/(pts*pts)*sum(sum(problem.M.dist(f,fr)));
-    if getDebugLevel('WriteImages') 
+    t = mDists(i);
+    if problem.beta==0 && t < minTV
+        minTV = t;
+        minTVa = problem.alpha;
+        disp('Min TV!')
+        TVsig = fr;
+    end
+    if t < minTV12
+        minTV12 = t;
+        minTV12a = problem.alpha;
+        minTV121b = problem.beta;
+        disp('Min TV12!');
+        TV12sig = fr;
+    end
+    if getDebugLevel('WriteImages')
         fileStr = [results,name,'-p-',num2str(alpha(j1)),'-',num2str(beta(j2))];
         fileStr(fileStr=='.') = [];
         exportSPD2Asymptote(fr,'GridDistance',gS,'ExportHeader',true,'File',[fileStr,'.asy']);
     end
-    debug('text',2,'Text',['Parameters: \alpha=',num2str(alpha(j1)),' \beta=',num2str(beta(j2)),' yield ',num2str(mDists(i)),'.']);
+    disp(['Parameters: \alpha=',num2str(alpha(j1)),' \beta=',num2str(beta(j2)),' yield ',num2str(mDists(i)),'.']);
 end
 
 if getDebugLevel('WriteImages') %Write this version to file
@@ -131,28 +147,15 @@ if getDebugLevel('WriteImages') %Write this version to file
 end
     
 %% Evaluate results
-[b,a] = (meshgrid(beta,alpha)); a = a(:); b = b(:);
-% general minimum
-[minValue,minIndex] = min(mDists);
-[minJ1,minJ2] = ind2sub([length(alpha),length(beta)],minIndex);
-    debug('text',1,'Text',['Minimum: Parameters: \alpha=',num2str(alpha(minJ1)),' \beta=',num2str(beta(minJ2)),' yields minimal value ',num2str(mDists(minIndex)),'.']);
-minF = squeeze(mResults(:,:,:,:,minIndex));
-% TV1 minimum
-[minValueTV,minIndexTV] = min(mDists(b==0));
-[minJ1TV,~] = ind2sub([length(alpha),length(beta)],minIndexTV);
-    debug('text',1,'Text',['Minimum: Parameter: \alpha=',num2str(alpha(minJ1TV)),' yields minimal value ',num2str(minValueTV),'.']);
-minFTV = squeeze(mResults(:,:,:,:,minIndex));
-% just TV2 minimum
-[minValueTV2,minIndexTV2] = min(mDists(a==0));
-    debug('text',1,'Text',['Minimum TV2: Parameter: \beta=',num2str(beta(minIndexTV2)),' yields minimal value ',num2str(minValueTV2),'.']);
-minFTV2 = squeeze(mResults(:,:,:,minIndexTV2));
+disp(['Minimum: Parameters: \alpha=',num2str(minTV12a),' \beta=',num2str(minTV12b),' yields minimal value ',num2str(minTV12),'.']);
+disp(['Minimum: Parameter: \alpha=',num2str(minTVa),' yields minimal value ',num2str(minTV),'.']);
 %% Plot Results
 if getDebugLevel('Figures')
     figure(3);
-    plotSPD(minF,'GridDistance',gS,'EllipsoidPoints',12);
+    plotSPD(TVsig,'GridDistance',gS,'EllipsoidPoints',12);
     title(['Best TV1&2 Result having E=',num2str(minValue)]);
     figure(4);
-    plotSPD(minFTV,'GridDistance',gS,'EllipsoidPoints',12)
+    plotSPD(TV12sig,'GridDistance',gS,'EllipsoidPoints',12)
     title(['Best TV Result having E=',num2str(minValueTV)]);
 end
 %% End logfile

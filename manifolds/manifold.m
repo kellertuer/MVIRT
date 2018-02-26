@@ -459,9 +459,10 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
             v = 1/(num_el-1)*sum(this.dist(repmat(mean_f,[ones(1,mD),num_el]),f).^2)/this.Dimension;
         end
         function xi = JacobiField(this,varargin)
-            % JacobiField(x,y,t, eta) - evaluate a Jacobi field along the
-            %    geodesic g(x,y) at point t, where the 'weight'-function
-            %     f(k,t,d) determines the boundary conditions of the field,
+            % JacobiField(x,y,t,eta) - evaluate a Jacobi field
+            %    along the geodesic geo(x,y) at point t, where the
+            %    'weight'-function f(k,t,d) determines the boundary
+            %    conditions of the field and hence the meaning of eta,
             %
             % INPUT
             %    x   : a point on the manifold Sn (or a vector of points)
@@ -545,8 +546,8 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
             end
         end
         function xi = DxGeo(this,x,y,t,eta)
-            % DxGeo(x,y,t,eta) - Compute the Derivative of
-            %    geodesic(x,y,t) with respect to the start point x.
+            % DxGeo(x,y,t,eta) - Compute the Derivative D_xGeo(t; x,y)[eta]
+            %    i.e. of geo(x,y,t) with respect to the start point x.
             %
             %    For a function f: M \mapsto R and fixed y,t we have for the
             %    gradient of g(x) = f(geo(x,y,t)) that
@@ -561,7 +562,7 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
             %      y   : end point of a geodesic, geo(x,y,1) = y
             %      t   : [0,1] a point on the geodesic to be evaluated,
             %            may exceed [0,1] to leave the segment between x and y
-            %     eta  : (in Tg(t,x,y)) direction to take the Adjoint derivative at.
+            %     eta  : (in Tg(t;x,y)M) direction to take the Adjoint derivative at.
             %
             %    OUTPUT
             %     xi   : ( in TxM ) - the adjoint of DxGeo with respect to eta
@@ -588,9 +589,10 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
             xi = this.JacobiField(y,x,1-t,eta);
         end
         function xi = AdjJacobiField(this,varargin)
-            % JacobiField(x,y,t, eta) - evaluate a Jacobi field along the
-            %    geodesic ge8(x,y) at point t, where the 'weight'-function
-            %     f(k,t,d) determines the boundary conditions of the field,
+            % AdjJacobiField(x,y,t,eta) - evaluate a adjoint of a Jacobi field
+            %    along the geodesic geo(x,y) at point t, where the
+            %    'weight'-function f(k,t,d) determines the boundary
+            %    conditions of the field and hence the meaning of eta,
             %
             % INPUT
             %    x   : a point on the manifold Sn (or a vector of points)

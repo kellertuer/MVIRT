@@ -58,9 +58,10 @@ problem.K_2 = 193;
 [u_final_sw, u_oracle_sw] = NL_MMSE_2D(problem);
 % TV alpha in 1/100N
 problem.lambda = 1;
+problem.stoppingCriterion = stopCritMaxIterEpsilonCreator(problem.M,800,10^(-5));
 problem.alpha = 0.25;
 problem.beta = 0;
-u_tv = cppa_ad_2D(problem);
+u_tv = CPP_AdditiveTV12(problem);
 % NL Mean
 tic
 u_nl = NL_Mean(M,T,33,9,81,2,.2);
@@ -77,6 +78,7 @@ SPD2_mean_err_final_sw = sum(sum(M.dist(T_orig,u_final_sw).^2))/pts^2;
 if getDebugLevel('Figures') == 1
     figure(1)
     plotSPD2(T,'GridDistance',4);
+    title('Orinial/noisy data');
     figure(3)
     plotSPD2(u_final_sw,'GridDistance',4);
     title('Different Parameters');
@@ -86,6 +88,9 @@ if getDebugLevel('Figures') == 1
     figure(5)
     plotSPD2(u_nl,'GridDistance',4);
     title('NL Means');
+    figure(6)
+    plotSPD2(u_tv,'GridDistance',4);
+    title('TV regularization');
 end
 %% Export Results
 if getDebugLevel('WriteImages') ==1

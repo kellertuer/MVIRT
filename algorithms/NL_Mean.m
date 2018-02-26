@@ -32,10 +32,7 @@ assert(mod(window_size,2) == 1,'Window_size must be odd!');
 dimen = size(F);
 imgDim = dimen(length(M.ItemSize)+1:end);
 N = prod(imgDim);
-debug('time',3,'StartTimer','NL_Mean');
 W = non_local_weights(M, F, patch_size, window_size, K, sigma_patch, sigma_weights,center_element);
-debug('text',3,'text',...
-            'Weights have been calculated.');
 F = reshape(F,prod(M.ItemSize),[]);
 weights = zeros(N,max(sum(W~=0)));
 FF = zeros([size(F),size(weights,2)]);
@@ -52,5 +49,4 @@ for i = 1:N
 end
 % Calculate the mean
 Res = reshape(M.mean(reshape(FF,[M.ItemSize,N,size(weights,2)]),'Weights',weights),dimen);
-debug('time',3,'StopTimer','NL_Mean');
 end

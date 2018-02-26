@@ -71,7 +71,7 @@ if getDebugLevel('WriteData') % Create new data
 elseif getDebugLevel('LoadData')
     load([resultsFolder,dataName,'.mat'],'Zn','Z','sigma');
     metaData = dir([resultsFolder,dataName,'.mat']);
-    debug('text',3,'Text',['Using File Data generated ',datestr(metaData.date),'.']);
+    disp(['Using File Data generated ',datestr(metaData.date),'.']);
     N = size(Zn,1);
 else
     error('Either Loading or Creating(Wirting) Data must be set');
@@ -111,7 +111,7 @@ for i=1:length(alpha1s)
     ZrT = permute(CPP_AdditiveTV12(problem),[2,3,1]); %permute back for imaging
     toc
     ME = sum(sum(problem.M.dist(Zr,Z).^2))/length(Z(:));
-debug('text',2,'Text',...
+    disp(...
     ['On ',num2str([problem.alpha(:).' problem.beta(:).']),' the error is ME:',sprintf('%3.7G',ME)]);
     if getDebugLevel('WriteImages')
         map = colormap(hsv(256));
