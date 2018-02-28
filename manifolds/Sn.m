@@ -308,11 +308,7 @@ classdef Sn < manifold & handle
                 warning('Iterations should be larger than zero, set Iterations to 100')
                 iter = 100;
             end
-<<<<<<< HEAD
-            x = SnMean(f,w,epsilon,iter);
-=======
                 x = SnMean(f,w,epsilon,iter);
->>>>>>> ac2095f31c47e9b7b2680e5c1a57b165c7691b3f
             end
         end
     end
