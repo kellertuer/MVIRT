@@ -1,0 +1,127 @@
+ --- Logfile of Experiment Lemniscate started 26-Feb-2018 06:53:26 ---
+Using File Data generated 31-Jan-2017 21:58:36.
+M = 
+  <a href="matlab:helpPopup Sn" style="font-weight:bold">Sn</a> with properties:
+
+         type: 'The 2-sphere in R3'
+          tau: 0.0100
+        steps: 10
+          one: NaN
+     ItemSize: 3
+    Dimension: 2
+      allDims: {':'}
+       useMex: 1
+problem = 
+  <a href="matlab:helpPopup struct" style="font-weight:bold">struct</a> with fields:
+
+                    M: [1×1 Sn]
+                    f: [3×512 double]
+               lambda: 1.5708
+    stoppingCriterion: [function_handle]
+                Debug: 1000
+Parameter range alpha (5 values): 1e-06,0.25,0.45,0.65,0.85.
+Parameter range beta  (3 values): 0,9,18.
+1000 F: 9.5354e-05 last change: 1.2585e-09.
+2000 F: 9.5354e-05 last change: 1.942e-09.
+3000 F: 9.5354e-05 last change: 1.6439e-09.
+4000 F: 9.5354e-05 last change: 1.957e-09.
+Elapsed time is 22.063667 seconds.
+New minimal TV:1e-06 with value 0.13212
+New minimal TV12:1e-06           0 with value 0.13212
+Parameters: \alpha=1e-06 \beta=0 yield 0.13212.
+1000 F: 6.1243 last change: 1.1501e-06.
+2000 F: 6.1203 last change: 2.8081e-07.
+3000 F: 6.119 last change: 1.1199e-07.
+4000 F: 6.1183 last change: 5.1599e-08.
+Elapsed time is 24.185478 seconds.
+New minimal TV:0.25 with value 0.048476
+New minimal TV12:0.25           0 with value 0.048476
+Parameters: \alpha=0.25 \beta=0 yield 0.048476.
+1000 F: 7.705 last change: 2.4029e-06.
+2000 F: 7.6952 last change: 5.854e-07.
+3000 F: 7.6919 last change: 2.5084e-07.
+4000 F: 7.6903 last change: 1.318e-07.
+Elapsed time is 24.021771 seconds.
+New minimal TV:0.45 with value 0.045479
+New minimal TV12:0.45           0 with value 0.045479
+Parameters: \alpha=0.45 \beta=0 yield 0.045479.
+1000 F: 9.1941 last change: 3.863e-06.
+2000 F: 9.1779 last change: 9.3191e-07.
+3000 F: 9.1725 last change: 4.0487e-07.
+4000 F: 9.1699 last change: 2.1811e-07.
+Elapsed time is 22.402070 seconds.
+New minimal TV:0.65 with value 0.044977
+New minimal TV12:0.65           0 with value 0.044977
+Parameters: \alpha=0.65 \beta=0 yield 0.044977.
+1000 F: 10.6522 last change: 5.479e-06.
+2000 F: 10.629 last change: 1.3041e-06.
+3000 F: 10.6214 last change: 5.6634e-07.
+4000 F: 10.6176 last change: 3.0973e-07.
+Elapsed time is 21.474044 seconds.
+Parameters: \alpha=0.85 \beta=0 yield 0.045306.
+1000 F: 22.5847 last change: 0.010228.
+2000 F: 13.59 last change: 0.0044796.
+3000 F: 10.8186 last change: 0.0028955.
+4000 F: 9.5782 last change: 0.0020949.
+Elapsed time is 314.840768 seconds.
+New minimal TV12:1e-06           9 with value 0.033918
+Parameters: \alpha=1e-06 \beta=9 yield 0.033918.
+1000 F: 24.7597 last change: 0.010238.
+2000 F: 15.7028 last change: 0.0048937.
+3000 F: 12.8987 last change: 0.0032458.
+4000 F: 11.4801 last change: 0.0020758.
+Elapsed time is 293.734664 seconds.
+New minimal TV12:0.25           9 with value 0.032249
+Parameters: \alpha=0.25 \beta=9 yield 0.032249.
+1000 F: 27.0846 last change: 0.01077.
+2000 F: 17.0344 last change: 0.0049257.
+3000 F: 14.6212 last change: 0.0031833.
+4000 F: 12.6246 last change: 0.0022493.
+Elapsed time is 287.388609 seconds.
+New minimal TV12:0.45           9 with value 0.032011
+Parameters: \alpha=0.45 \beta=9 yield 0.032011.
+1000 F: 29.0448 last change: 0.010598.
+2000 F: 18.7323 last change: 0.0046734.
+3000 F: 15.6594 last change: 0.0031863.
+4000 F: 14.2759 last change: 0.002444.
+Elapsed time is 293.605938 seconds.
+Parameters: \alpha=0.65 \beta=9 yield 0.032345.
+1000 F: 28.9268 last change: 0.010091.
+2000 F: 20.1913 last change: 0.0048016.
+3000 F: 17.1777 last change: 0.003129.
+4000 F: 15.5968 last change: 0.0022842.
+Elapsed time is 314.971092 seconds.
+Parameters: \alpha=0.85 \beta=9 yield 0.033112.
+1000 F: 70.9777 last change: 0.019991.
+2000 F: 39.6688 last change: 0.0099747.
+3000 F: 27.6682 last change: 0.0068247.
+4000 F: 22.2585 last change: 0.0052073.
+Elapsed time is 336.613140 seconds.
+Parameters: \alpha=1e-06 \beta=18 yield 0.034911.
+1000 F: 77.5322 last change: 0.020707.
+2000 F: 42.1247 last change: 0.010315.
+3000 F: 29.7956 last change: 0.0068642.
+4000 F: 24.2896 last change: 0.005072.
+Elapsed time is 333.958480 seconds.
+Parameters: \alpha=0.25 \beta=18 yield 0.032818.
+1000 F: 81.0774 last change: 0.01947.
+2000 F: 43.6948 last change: 0.010173.
+3000 F: 32.4147 last change: 0.0067427.
+4000 F: 26.1801 last change: 0.0051605.
+Elapsed time is 289.787519 seconds.
+Parameters: \alpha=0.45 \beta=18 yield 0.032173.
+1000 F: 84.721 last change: 0.02107.
+2000 F: 44.8361 last change: 0.010445.
+3000 F: 32.0603 last change: 0.0065431.
+4000 F: 28.1585 last change: 0.00514.
+Elapsed time is 286.220255 seconds.
+Parameters: \alpha=0.65 \beta=18 yield 0.032263.
+1000 F: 83.6618 last change: 0.020168.
+2000 F: 46.5654 last change: 0.0099133.
+3000 F: 33.7249 last change: 0.0068376.
+4000 F: 29.8039 last change: 0.0053706.
+Elapsed time is 282.912276 seconds.
+Parameters: \alpha=0.85 \beta=18 yield 0.032786.
+Minimum: Parameter: \alpha=0.65 yields minimal value 0.044977.
+Minimum: Parameters: \alpha=0.45 \beta=9 yields minimal value 0.032011.
+ --- Logfile of Experiment >Lemniscate< ended 26-Feb-2018 07:45:58 ---

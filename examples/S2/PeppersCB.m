@@ -95,7 +95,7 @@ problem.M = Sn(2);
 problem.M.steps = 5;
 problem.f = permute(VC,[3,1,2]); 
 %
-problemR.M = S1mRn(0,1);
+problemR.M = Rn(1);
 problemR.f = permute(VB,[3,1,2]);
 
 % Search for best
