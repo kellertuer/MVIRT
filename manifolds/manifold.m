@@ -501,8 +501,8 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
             %   identity, hence the last term, that for d==0 we have just 1
             addParameter(ip,'weights', @(k,t,d) (k==0).*ones(size(k.*t.*d)).*(1-t) + ...
                 (k>0).*sin(sqrt(k).*(1-t).*d)./(sin(sqrt(k).*d) + (k==0)  + (d==0)) + ... %last term avoids division by zero
-                (k<0).*sinh(sqrt(-k).*d.*(1-t))./(sinh(sqrt(-k).*d) + (k==0) + (d==0)) + ...
-                (d==0).*ones(size(k.*t.*d)) );
+                (k<0).*sinh(sqrt(-k).*d.*(1-t))./(sinh(sqrt(-k).*d) + (k==0) + (d==0)) ...
+            );
             parse(ip, varargin{:});
             vars = ip.Results;
             dDim = (length(this.ItemSize)+1); %dimension where the data lives
@@ -629,8 +629,8 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
             %   identity, hence the last term, that for d==0 we have just 1
             addParameter(ip,'weights', @(k,t,d) (k==0).*ones(size(k.*t.*d)).*(1-t) + ...
                 (k>0).*sin(sqrt(k).*(1-t).*d)./(sin(sqrt(k).*d) + (k==0)  + (d==0)) + ... %last term avoids division by zero
-                (k<0).*sinh(sqrt(-k).*d.*(1-t))./(sinh(sqrt(-k).*d) + (k==0) + (d==0)) + ...
-                (d==0).*ones(size(k.*t.*d)) );
+                (k<0).*sinh(sqrt(-k).*d.*(1-t))./(sinh(sqrt(-k).*d) + (k==0) + (d==0)) ...
+            );
             parse(ip, varargin{:});
             vars = ip.Results;
             dDim = (length(this.ItemSize)+1); %dimension where the data lives
