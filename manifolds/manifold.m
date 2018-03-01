@@ -459,7 +459,7 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
             v = 1/(num_el-1)*sum(this.dist(repmat(mean_f,[ones(1,mD),num_el]),f).^2)/this.Dimension;
         end
         function xi = JacobiField(this,varargin)
-            % JacobiField(x,y,t,eta) - evaluate a Jacobi field
+            % xi = JacobiField(x,y,t,eta) - evaluate a Jacobi field
             %    along the geodesic geo(x,y) at point t, where the
             %    'weight'-function f(k,t,d) determines the boundary
             %    conditions of the field and hence the meaning of eta,
@@ -546,7 +546,7 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
             end
         end
         function xi = DxGeo(this,x,y,t,eta)
-            % DxGeo(x,y,t,eta) - Compute the Derivative D_xGeo(t; x,y)[eta]
+            % xi = DxGeo(x,y,t,eta) - Compute the Derivative D_xGeo(t; x,y)[eta]
             %    i.e. of geo(x,y,t) with respect to the start point x.
             %
             %    For a function f: M \mapsto R and fixed y,t we have for the
@@ -571,7 +571,7 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
             xi = this.JacobiField(x,y,t,eta);
         end
         function xi = DyGeo(this,x,y,t,eta)
-            % DxGeo(x,y,t,eta) Derivative of the geodesic(x,y,t) wrt y.
+            % xi = DxGeo(x,y,t,eta) Derivative of the geodesic(x,y,t) wrt y.
             %
             %
             %    INPUT
@@ -586,6 +586,78 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
             % ---
             % MVIRT R. Bergmann, 2017-12-04
             xi = this.JacobiField(y,x,1-t,eta);
+        end
+        function nu = DxExp(this,x,xi,eta)
+            % nu = AdjDxExp(x,xi,eta) - Derivative of Exp w.r.t. base point x
+            %    INPUT
+            %      x   : base point of the exponential
+            %      xi  : direction of the exponential
+            %     eta  : (in TxM) direction to take the derivative at.
+            %
+            %    OUTPUT
+            %     nu   : ( in TExp(x,xi)M ) - the DxExp with respect to eta
+            % ---
+            % MVIRT R. Bergmann, 2017-12-04
+            f = @(k,t,d) (k==0).*ones(size(k.*t.*d)) + ...
+                (k>0).*cos(sqrt(k).*d.*t) + ...
+                (k<0).*cosh(sqrt(-k).*d.*t);
+            nu = this.JacobiField(x,this.exp(x,xi),1,eta,'weights',f);
+        end
+        function nu = DxiExp(this,x,xi,eta)
+            % nu = DxExp(x,xi,eta) - Derivative of Exp w.r.t. xi
+            %   INPUT
+            %      x   : base point of the exponential
+            %      xi  : direction of the exponential
+            %     eta  : (in Txi(TxM)=TxM direction to take the derivative at.
+            %
+            %    OUTPUT
+            %     nu   : ( in TExp(x,xi)M) ) - the adjoint of DxExp with respect to eta
+            % ---
+            % MVIRT R. Bergmann, 2017-12-04
+            f = @(k,t,d) (k==0).*ones(size(k.*t.*d)) + ...
+                (k>0).*sin(sqrt(k).*d)./(sqrt(k).*d + (d==0) + (k==0) ) + ... % last terms are again for avoiding division by zero
+                (k<0).*sinh(sqrt(-k).*d)./(sqrt(-k).*d + (d==0) + (k==0) );
+            nu = this.JacobiField(x,this.exp(x,xi),1,eta,'weights',f);
+        end
+        function xi = DxLog(this,x,y,eta)
+            %   nu = AdjDxLog(x,y,eta) - Adjoint of the Derivative of Log
+            %       with respect to the basis point x.
+            %   INPUT
+            %      x   : base point of the logarithm
+            %      y   : argument of the logarithm
+            %     eta  : (in TxM) direction to take the derivative at.
+            %
+            %    OUTPUT
+            %     nu   : ( in TxM ) - DxLog with respect to eta
+            % ---
+            % MVIRT R. Bergmann, 2017-12-04
+
+            % the following weights of the Jacobi field are derived in
+            % [Bredies, Holler, Storath, Weinmann, 2017, Lemma 4.5]
+            f = @(k,t,d) -(k==0).*ones(size(k.*t.*d)) + ...
+                (k>0).*sqrt(k).*(-d).*cos(sqrt(k).*d)./(sin(sqrt(k).*d) + (d==0) + (k==0) ) + ... % last terms are again for avoiding division by zero
+                (k<0).*sqrt(-k).*(-d).*cosh(sqrt(-k).*d)./(sinh(sqrt(-k).*d) + (d==0) + (k==0) );
+            xi = this.JacobiField(x,y,0,eta,'weights',f);
+        end
+        function xi = DyLog(this,x,y,eta)
+            %   nu = DyLog(x,y,eta) - Adjoint of the Derivative of Log
+            %       with respect to y.
+            %   INPUT
+            %      x   : base point of the logarithm
+            %      y   : argument of the logarithm
+            %     eta  : (in TyM) direction to take the derivative at.
+            %
+            %    OUTPUT
+            %     nu   : ( in TxM ) - the adjoint of DxLog with respect to eta
+            % ---
+            % MVIRT R. Bergmann, 2017-12-04
+
+            % the following weights of the Jacobi field are derived in
+            % [Bredies, Holler, Storath, Weinmann, 2017, Lemma 4.3]
+            f = @(k,t,d) (k==0).*ones(size(k.*t.*d)) + ...
+                (k>0).*sqrt(k).*d./(sin(sqrt(k).*d) + (d==0) + (k==0) ) + ... % last terms are again for avoiding division by zero
+                (k<0).*sqrt(-k).*d./(sinh(sqrt(-k).*d) + (d==0) + (k==0) );
+            xi = this.JacobiField(y,x,1,eta,'weights',f);
         end
         function xi = AdjJacobiField(this,varargin)
             % AdjJacobiField(x,y,t,eta) - evaluate a adjoint of a Jacobi field
@@ -738,10 +810,10 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
             f = @(k,t,d) (k==0).*ones(size(k.*t.*d)) + ...
                 (k>0).*cos(sqrt(k).*d.*t) + ...
                 (k<0).*cosh(sqrt(-k).*d.*t);
-            nu = this.AdjJacobiField(x,this.exp(x,xi),1,eta,'weights',f);
+            nu = this.JacobiField(x,this.exp(x,xi),1,eta,'weights',f);
         end
         function nu = AdjDxiExp(this,x,xi,eta)
-            %   nu = AdjDxExp(x,xi,eta) - Adjoint of the Derivative of Exp with
+            % nu = AdjDxExp(x,xi,eta) - Adjoint of the Derivative of Exp with
             %   respect to the tangential vector xi
             %   INPUT
             %      x   : base point of the exponential
@@ -755,7 +827,7 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
             f = @(k,t,d) (k==0).*ones(size(k.*t.*d)) + ...
                 (k>0).*sin(sqrt(k).*d)./(sqrt(k).*d + (d==0) + (k==0) ) + ... % last terms are again for avoiding division by zero
                 (k<0).*sinh(sqrt(-k).*d)./(sqrt(-k).*d + (d==0) + (k==0) );
-            nu = this.AdjJacobiField(x,this.exp(x,xi),1,eta,'weights',f);
+            nu = this.JacobiField(x,this.exp(x,xi),1,eta,'weights',f);
         end
         function xi = AdjDxLog(this,x,y,eta)
             %   nu = AdjDxLog(x,y,eta) - Adjoint of the Derivative of Log
@@ -783,10 +855,10 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
             %   INPUT
             %      x   : base point of the logarithm
             %      y   : argument of the logarithm
-            %     eta  : (in TyM) direction to take the Adjoint derivative at.
+            %     eta  : (in TxM) direction to take the Adjoint derivative at.
             %
             %    OUTPUT
-            %     nu   : ( in TxM ) - the adjoint of DxLog with respect to eta
+            %     nu   : ( in TyM ) - the adjoint of DxLog with respect to eta
             % ---
             % MVIRT R. Bergmann, 2017-12-04
 
@@ -795,7 +867,7 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
             f = @(k,t,d) (k==0).*ones(size(k.*t.*d)) + ...
                 (k>0).*sqrt(k).*d./(sin(sqrt(k).*d) + (d==0) + (k==0) ) + ... % last terms are again for avoiding division by zero
                 (k<0).*sqrt(-k).*d./(sinh(sqrt(-k).*d) + (d==0) + (k==0) );
-            xi = this.JacobiField(y,x,1,eta,'weights',f);
+            xi = this.AdjJacobiField(y,x,1,eta,'weights',f);
         end
     end
 end
