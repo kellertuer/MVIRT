@@ -103,8 +103,8 @@ problem.stoppingCriterion = stopCritMaxIterEpsilonCreator(problem.M,800,0);
 problem.Debug = 100;
 problem.lambda = pi/2;
 
-alpha = [0 0.22];
-beta = [0 29.5];
+alpha = [0 1/3];
+beta = [0, 2/3];
 disp(['Parameter range alpha (',num2str(length(alpha)),' values): ',regexprep(num2str(alpha,5), '\s*', ','),'.']);
 disp(['Parameter range beta  (',num2str(length(beta)),' values): ',regexprep(num2str(beta,5), '\s*', ','),'.']);
 
@@ -121,14 +121,14 @@ for i=1:length(alpha)*length(beta)
     Lfr = CPP_AdditiveTV12(problem);
     mResults(:,:,:,i) = Lfr;
     mDist(i) = 1/pts^2* sum(sum(problem.M.dist(f,Lfr)));
-    if minDist(i) < minTV12
+    if mDist(i) < minTV12
         minTV12p = [problem.alpha,problem.beta];
-        minTV2 = mDist(i);
+        minTV12 = mDist(i);
         minTV12F = Lfr;
     end
     if mDist(i) < minTV && problem.beta==0
         minTVp = problem.alpha;
-        minTV = minDist(i);
+        minTV = mDist(i);
         minTVF = Lfr;
     end
     if writeImages
@@ -153,7 +153,7 @@ if showFigures
     axis image; daspect([1,1,20/pts]); axis off
 end
 %% End logfile
-if getDebugLevel('logfile')
+if useLogfile
     disp([' --- Logfile of Experiment ',name,'; ended ',datestr(datetime),' ---']);
     diary off;
 end
