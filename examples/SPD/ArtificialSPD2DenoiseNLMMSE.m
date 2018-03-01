@@ -15,21 +15,22 @@
 % Manifold-valued Image Restoration Toolbox 1.2
 %  J. Persch | R. Bergmann ~ 2017-01-25
 % see LICENSE.txt
+start = pwd;
+if ~isempty(fileparts(which(mfilename)))
+    cd(fileparts(which(mfilename)));
+end
 run('../../initMVIRT.m')
-%% Debug
-setDebugLevel('LevelMin',0);
-setDebugLevel('LevelMax',100);
-setDebugLevel('text',3);
-setDebugLevel('time',3);
-setDebugLevel('LoadData',1);
-setDebugLevel('WriteImages',1);
-setDebugLevel('Figures',1);
+
+loadData = true;
+writeImages = true;
+showFigures = true;
+
 % Parameters for image and noise
 sigma = 0.2;
 pts = 65;
 M = SymPosDef(2);
 resultsFolder = ['ArtificialSPD2',filesep];
-if getDebugLevel('NewNoise') == 1
+if ~loadData
     T_orig = ArtificialSPD2Image(pts);
     T = M.addNoise(T_orig,sigma,'Distribution','Gaussian');
 else
@@ -75,7 +76,7 @@ SPD2_mean_err_final = sum(sum(M.dist(T_orig,u_final).^2))/pts^2;
 SPD2_mean_err_oracle_sw = sum(sum(M.dist(T_orig,u_oracle_sw).^2))/pts^2;
 SPD2_mean_err_final_sw = sum(sum(M.dist(T_orig,u_final_sw).^2))/pts^2;
 %% Display Resutls
-if getDebugLevel('Figures') == 1
+if showFigures
     figure(1)
     plotSPD2(T,'GridDistance',4);
     title('Orinial/noisy data');
@@ -93,7 +94,7 @@ if getDebugLevel('Figures') == 1
     title('TV regularization');
 end
 %% Export Results
-if getDebugLevel('WriteImages') ==1
+if writeImages
    exportEllipses2Tikz(T_orig,'File',[resultsFolder,'SPD2orig.tex'],'ExportHeader',true,'GridDistance',4);
    exportEllipses2Tikz(T,'File',[resultsFolder,'SPD2noisy.tex'],'ExportHeader',true,'GridDistance',4);
    exportEllipses2Tikz(u_oracle,'File',[resultsFolder,'SPD2oracle.tex'],'ExportHeader',true,'GridDistance',4);
