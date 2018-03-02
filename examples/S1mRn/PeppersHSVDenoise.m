@@ -25,16 +25,11 @@ if ~isempty(fileparts(which(mfilename)))
 end
 run('../../initMVIRT.m')
 %% Settings & Variables
-setDebugLevel('LevelMin',0);        % Minimal Value of all global Values
-setDebugLevel('LevelMax',1000);     % Maximal Value ...
-setDebugLevel('text',3);            % quite verbose text, but...
-setDebugLevel('IterationStep',100); % only every Xth iteration
-setDebugLevel('WriteImages',1);     % 0: no file writing, 1: file writing
-setDebugLevel('LoadData',1);        % 0: generate new data 1: load existing data (if it exists), (other wise it is generated)
-setDebugLevel('WriteData',0);       % 0: do not write data to file 1: write data to file (overwrites last experiment data!)
-setDebugLevel('time',3);            % verbose time
-setDebugLevel('Figures',1);         % 0: no figure display, 1: figures are displayed
-setDebugLevel('logfile',1);         % 0: no logfile 1: logfile
+writeImages = true;
+loadData = true;
+showFigures = true;
+useLogfile = true;
+
 format compact
 
 folder = ['examples',filesep,'S1mRn',filesep];
@@ -43,7 +38,7 @@ dataFolder = ['..',filesep,'..',filesep,'data',filesep];
 dataName = 'peppers';
 name = 'PeppersHSVDenoise';
 
-if getDebugLevel('logfile')
+if useLogfile
     clc
     if exist([results,name,'.log'],'file')
         delete([results,name,'.log'])
@@ -52,26 +47,21 @@ if getDebugLevel('logfile')
     disp([' --- Logfile of Experiment ',name,' started ',datestr(datetime),' ---']);
 end
 Vrgb = double(imread([dataFolder,dataName,'.jpg']))/255;
-if getDebugLevel('LoadData') && exist([results,dataName,'-data.mat'],'file')
-    load([results,dataName,'-data.mat']);
-    metaData = dir([results,dataName,'-data.mat']);
+if loadData && exist([dataFolder,dataName,'-data.mat'],'file')
+    load([dataFolder,dataName,'-data.mat']);
+    metaData = dir([dataFolder,dataName,'-data.mat']);
     disp(['Using File Data generated ',datestr(metaData.date),'.']);
 else
-    %Create Data
-    sigma = 0.1; %Paper Grohs
+    sigma = 0.1;
     Vrgbn = max(min(Vrgb + sigma*randn(size(Vrgb)),1),0); %How does Grohs handle this?
     disp(['Using _new_ Data generated ',datestr(datetime),'.']);
-    % never write here
-    if getDebugLevel('WriteData')>0 %Write this version to file
-        save([results,dataName,'-data.mat'],'Vrgbn','sigma')
-    end
 end
     
-if getDebugLevel('Figures')
+if showFigures
     figure(1); imagesc(Vrgb); axis image; axis off; title('Original');
     figure(2); imagesc(Vrgbn); axis image; axis off; title(['noisy, \sigma=',num2str(sigma),'.']);
 end
-if getDebugLevel('WriteImages')
+if writeImages
     imwrite(Vrgb,[results,name,'-original.png'],'png');
     imwrite(Vrgbn,[results,name,'-noisy-sigma',num2str(sigma),'.png'],'png');
 end
@@ -81,15 +71,14 @@ Vhsvn = rgb2hsv(Vrgbn);
 Vhsvs = 2*pi*Vhsvn;
 Vhsvs(:,:,1) = symMod(Vhsvs(:,:,1),2 * pi);
 
-%% Parameters
-alphas = [1/16 3/32] * 2*pi;
-betas = [0 1/32] * 2*pi;
-problem.stoppingCriterion = stopCritMaxIterEpsilonCreator(problem.M, 400,10^(-9));
+%% Parameters ? rescaled to rescaled phase image
+alphas = ( 0:1/32:3/32 ) * 2*pi;
+betas = ( 0:1/32:3/32 ) * 2*pi;
 %
 problem.M = S1mRn(1,2);
+problem.stoppingCriterion = stopCritMaxIterEpsilonCreator(problem.M,800,0);
 problem.f = permute(Vhsvs,[3,1,2]); 
-
-% Search for best
+problem.Debug = 100;
 
 % Search for best
 bestPSNR = 0;
@@ -98,7 +87,7 @@ bestParams = [0,0];
 bestPSNRTV1 = 0;
 bestParamTV1 = 0;
 
-if getDebugLevel('logfile') %display parameters
+if useLogfile
     problem
     problem.M
 end
@@ -119,30 +108,30 @@ for beta = betas
             if psnrV > bestPSNR
                 bestPSNR = psnrV;
                 bestParams = [alpha,beta];
-                disp(['New optimal PSNR:',num2str(psnrV),'.']);
+                disp(['New optimal PSNR: ',num2str(psnrV),'.']);
             else
-                disp(['PSNR:',num2str(psnrV),'.']);
+                disp(['PSNR: ',num2str(psnrV),'.']);
             end
             if (beta==0) && (psnrV > bestPSNRTV1)
                 bestPSNRTV1 = psnrV;
                 bestParamTV1 = alpha;
-                disp(['New optimal PSNR for TV1:',num2str(psnrV),'.']);
+                disp(['New optimal PSNR for TV1: ',num2str(psnrV),'.']);
             end
-            if getDebugLevel('Figures')>0
+            if showFigures
                 figure(3); imagesc(Vrgbr); axis image; axis off; title(['Denoised, \alpha=',num2str(alpha),' \beta=',num2str(beta),'.']);
                 pause(0.02);
             end
-            if getDebugLevel('WriteImages')>0
+            if writeImages
                 imwrite(Vrgbr,[results,name,'-denoised-alpha',num2str(alpha),'-beta',num2str(beta),'.png'],'png');
             end
         end
     end
 end
-disp(['Best PSNR',num2str(bestPSNR),' obtained for ',num2str(bestParams),'.']); 
+disp(['Best PSNR ',num2str(bestPSNR),' obtained for ',num2str(bestParams),'.']); 
 if bestPSNRTV1 > 0
     disp(['Best PSNR for TV1 ',num2str(bestPSNRTV1),' obtained for ',num2str(bestParamTV1),'.']); 
 end
-if getDebugLevel('logfile')
+if useLogfile
     diary off;
 end
 cd(start)

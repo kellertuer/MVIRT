@@ -19,12 +19,8 @@
 % see LICENSE.txt
 run('../../initMVIRT.m')
 %% Debug
-setDebugLevel('LevelMin',0);
-setDebugLevel('LevelMax',100);
-setDebugLevel('text',3);
-setDebugLevel('time',3);
-setDebugLevel('LoadData',1);
-setDebugLevel('WriteImages',1);
+loadData = true;
+writeImages = true;
 %
 M = Sn(2);
 sigma = 0.3;
@@ -32,7 +28,7 @@ pts = 64;
 %
 % Get data
 resultsFolder = ['S2WhirlImage',filesep];
-if getDebugLevel('LoadData')
+if loadData
     load([resultsFolder,'S2Whirl.mat'],'u_noisy_S2','u_0_S2');
 else    
     u_0_S2 = S2WhirlImage;
@@ -55,6 +51,7 @@ problem.patch_size_2 = 5;
 problem.window_size_2 = 127;
 problem.K_2 = 54;
 % Parameters for TV1&2 CPPA TV 1/100 N TV2 1/10N
+problem.stoppingCriterion = stopCritMaxIterEpsilonCreator(problem.M,800,0);
 problem.lambda = pi/2;
 problem.alpha = 0.18;
 problem.beta = 2.6;
@@ -64,10 +61,10 @@ tic
 % patch+neighbor on N, sigmas on 1/10N
 u_nl = NL_Mean(M,u_noisy_S2,23,127,104,1.5,.2);
 toc
-u_tv12 = cppa_ad_2D(problem);
+u_tv12 = CPP_AdditiveTV12(problem);
 problem.beta = 0;
 problem.alpha = 0.24;
-u_tv1 = cppa_ad_2D(problem);
+u_tv1 = CPP_AdditiveTV12(problem);
 
 % Parameters for no update
 problem.K_1 = 6;
@@ -85,7 +82,7 @@ arts2_mean_err_tv12 = sum(sum(M.dist(u_0_S2,u_tv12).^2))/pts^2;
 arts2_mean_err_tv1 = sum(sum(M.dist(u_0_S2,u_tv1).^2))/pts^2;
 arts2_mean_err_no_update = sum(sum(M.dist(u_0_S2,u_no_update).^2))/pts^2;
 %%
-if getDebugLevel('WriteImages') == 1
+if writeImages
     exportSphere2Asymptote(u_0_S2,'ExportHeader',true,'File',[resultsFolder,'arts2_orig.asy']);
     exportSphere2Asymptote(u_noisy_S2,'ExportHeader',true,'File',[resultsFolder,'arts2_noisy.asy']);
     exportSphere2Asymptote(u_oracle,'ExportHeader',true,'File',[resultsFolder,'arts2_oracle.asy']);

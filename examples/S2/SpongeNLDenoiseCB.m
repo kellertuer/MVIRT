@@ -17,13 +17,9 @@
 % see LICENSE.txt
 run('../../initMVIRT.m')
 %% Debug
-setDebugLevel('LevelMin',0);
-setDebugLevel('LevelMax',100);
-setDebugLevel('text',3);
-setDebugLevel('time',3);
-setDebugLevel('LoadData',1);
-setDebugLevel('WriteImages',1);
-setDebugLevel('Figures',true);
+loadData = true;
+writeImages = true;
+showFigures = true;
 
 resultsFolder = ['Sponge',filesep];
 % Parameters for noise and import image
@@ -32,7 +28,7 @@ M = Sn(2);
 sponge = double(imread('sponges.png'))/255;
 B = sqrt(sum(sponge.^2,3));
 C = sponge./repmat(B,1,1,3);
-if getDebugLevel('LoadData')
+if loadData
     C_noisy_S2 = M.addNoise(permute(C,[3,1,2]),sigma);
 else
     load([resultsFolder,'S2Sponge.mat'],'u_noisy_Sn2') ;
@@ -43,6 +39,7 @@ u_orig = permute(C,[3,1,2]);
 % Initialize problem
 clear problem
 problem.M = M;
+problem.stoppingCriterion = stopCritMaxIterEpsilonCreator(problem.M,800,0);
 problem.f = C_noisy_S2;
 problem.sigma =sigma;
 problem.gamma = 1;
@@ -61,7 +58,7 @@ problem.alpha = 0.21;
 problem.beta = 0;
 %% NL MMSE Denoising
 [u_final,u_oracle] = NL_MMSE_2D(problem);
-u_tv = cppa_ad_2D(problem);
+u_tv = CPP_AdditiveTV12(problem);
 %% Get Images
 noisy_corals = permute(C_noisy_S2,[2,3,1]).*repmat(B,1,1,3);
 sponge_s2psnr_noisy = psnr(noisy_corals,sponge);
@@ -76,7 +73,7 @@ tv_corals = permute(u_tv,[2,3,1]).*repmat(B,1,1,3);
 sponge_s2psnr_tv = psnr(tv_corals,sponge);
 sponge_s2mse_tv = sum(sum(M.dist(u_tv,u_orig).^2))/(numel(sponge)/3);
 %% Show Results
-if getDebugLevel('Figures') == 1
+if showFigures
     figure
     imagesc(sponge)
     title('Original sponges');
@@ -94,7 +91,7 @@ if getDebugLevel('Figures') == 1
     title(['Denoised Corals TV: ',num2str(sponge_s2psnr_tv)]);
 end
 %% Export Results
-if getDebugLevel('WriteImages') == 1
+if writeImages
     imwrite(sponge,[resultsFolder,'S2corals_orig.png']);
     imwrite(noisy_corals,[resultsFolder,'S2corals_noisy.png']);
     imwrite(denoised_corals,[resultsFolder,'S2corals_ora.png']);
