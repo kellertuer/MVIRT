@@ -1,0 +1,125 @@
+ --- Logfile of Experiment DenoisePeppers_RGB started 02-Mar-2018 06:06:56 ---
+Using File Data generated 31-Jan-2017 21:58:36.
+problem = 
+  <a href="matlab:helpPopup struct" style="font-weight:bold">struct</a> with fields:
+
+               lambda: 1.5708
+                    M: [1×1 Rn]
+    stoppingCriterion: [function_handle]
+                Debug: 100
+                    f: [3×512×512 double]
+                alpha: [0.0500 0.0500 0 0]
+                 beta: 0
+ans = 
+  <a href="matlab:helpPopup Rn" style="font-weight:bold">Rn</a> with properties:
+
+         type: 'R3'
+     ItemSize: 3
+    Dimension: 3
+      allDims: {':'}
+       useMex: 1
+ans =
+     0     0
+ans =
+    0.0500         0
+100 F: 3459.6381 last change: 0.042632.
+200 F: 3457.4268 last change: 0.01134.
+300 F: 3456.8977 last change: 0.0051655.
+400 F: 3456.6758 last change: 0.0029458.
+500 F: 3456.557 last change: 0.0019023.
+600 F: 3456.4839 last change: 0.0013296.
+700 F: 3456.4347 last change: 0.00098156.
+800 F: 3456.3995 last change: 0.00075438.
+Elapsed time is 162.326358 seconds.
+PSNR: 27.8016.
+New optimal PSNR for TV1: 27.8016.
+New optimal PSNR for TV1&2: 27.8016.
+ans =
+    0.1000         0
+100 F: 4425.4397 last change: 0.033214.
+200 F: 4416.2202 last change: 0.0091637.
+300 F: 4413.379 last change: 0.004252.
+400 F: 4412.027 last change: 0.002454.
+500 F: 4411.2436 last change: 0.0015987.
+600 F: 4410.7348 last change: 0.0011252.
+700 F: 4410.3789 last change: 0.00083553.
+800 F: 4410.1163 last change: 0.00064543.
+Elapsed time is 188.785177 seconds.
+PSNR: 30.6472.
+New optimal PSNR for TV1: 30.6472.
+New optimal PSNR for TV1&2: 30.6472.
+ans =
+         0    0.0312
+100 F: 3052.4471 last change: 0.040333.
+200 F: 3033.2626 last change: 0.011786.
+300 F: 3026.2029 last change: 0.0056291.
+400 F: 3022.4957 last change: 0.0033057.
+500 F: 3020.2004 last change: 0.002178.
+600 F: 3018.6355 last change: 0.0015442.
+700 F: 3017.4986 last change: 0.0011528.
+800 F: 3016.6341 last change: 0.00089389.
+Elapsed time is 255.714497 seconds.
+PSNR: 29.0595.
+ans =
+    0.0500    0.0312
+100 F: 4141.8889 last change: 0.041056.
+200 F: 4130.1069 last change: 0.011894.
+300 F: 4125.7042 last change: 0.0055728.
+400 F: 4123.3753 last change: 0.0032173.
+500 F: 4121.925 last change: 0.0020884.
+600 F: 4120.9328 last change: 0.0014631.
+700 F: 4120.2099 last change: 0.0010821.
+800 F: 4119.6592 last change: 0.00083227.
+Elapsed time is 328.839884 seconds.
+PSNR: 30.901.
+New optimal PSNR for TV1&2: 30.901.
+ans =
+    0.1000    0.0312
+100 F: 4692.9445 last change: 0.053184.
+200 F: 4679.3602 last change: 0.016724.
+300 F: 4674.4131 last change: 0.0082208.
+400 F: 4671.8282 last change: 0.0048976.
+500 F: 4670.2317 last change: 0.0032546.
+600 F: 4669.1467 last change: 0.0023193.
+700 F: 4668.3609 last change: 0.0017358.
+800 F: 4667.766 last change: 0.0013472.
+Elapsed time is 310.899733 seconds.
+PSNR: 29.9759.
+ans =
+         0    0.0625
+100 F: 3668.0876 last change: 0.070084.
+200 F: 3664.8167 last change: 0.021603.
+300 F: 3663.7842 last change: 0.010639.
+400 F: 3663.2498 last change: 0.0064118.
+500 F: 3662.9028 last change: 0.0043213.
+600 F: 3662.6559 last change: 0.0031273.
+700 F: 3662.4695 last change: 0.0023777.
+800 F: 3662.3238 last change: 0.0018761.
+Elapsed time is 226.179674 seconds.
+PSNR: 30.296.
+ans =
+    0.0500    0.0625
+100 F: 4338.8609 last change: 0.065349.
+200 F: 4330.241 last change: 0.021155.
+300 F: 4327.3668 last change: 0.010557.
+400 F: 4325.9371 last change: 0.0063588.
+500 F: 4325.0752 last change: 0.0042564.
+600 F: 4324.4975 last change: 0.0030526.
+700 F: 4324.0832 last change: 0.0022983.
+800 F: 4323.7707 last change: 0.0017942.
+Elapsed time is 308.211009 seconds.
+PSNR: 30.0366.
+ans =
+    0.1000    0.0625
+100 F: 4829.8585 last change: 0.063284.
+200 F: 4817.3519 last change: 0.021556.
+300 F: 4812.9864 last change: 0.011144.
+400 F: 4810.7663 last change: 0.0068877.
+500 F: 4809.4244 last change: 0.0047104.
+600 F: 4808.5241 last change: 0.0034355.
+700 F: 4807.8776 last change: 0.0026214.
+800 F: 4807.3923 last change: 0.0020691.
+Elapsed time is 308.319075 seconds.
+PSNR: 29.1567.
+Best PSNR 30.901 obtained for 0.05     0.03125.
+Best PSNR for TV1 30.6472 obtained for 0.1           0.

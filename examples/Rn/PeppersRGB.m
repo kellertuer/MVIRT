@@ -67,8 +67,8 @@ if writeImages
 end
 
 %% Parameters
-alphas = 0:0.2:1
-betas = 0:0.2:1;
+alphas = 0:0.05:0.1;
+betas = 0:1/32:1/16;
 
 problem.lambda = pi/2;
 problem.M = Rn(3);
