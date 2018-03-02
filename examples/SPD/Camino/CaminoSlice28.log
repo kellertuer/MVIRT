@@ -1,0 +1,29 @@
+ --- Logfile of Experiment CaminoSlice28 started 01-Mar-2018 19:28:29 ---
+problem = 
+  <a href="matlab:helpPopup struct" style="font-weight:bold">struct</a> with fields:
+
+                    M: [1×1 SymPosDef]
+                    f: [3×3×112×112 double]
+    stoppingCriterion: [function_handle]
+               lambda: 1.5708
+                Debug: 100
+                alpha: 0.0500
+                 beta: 0.1000
+ans = 
+  <a href="matlab:helpPopup SymPosDef" style="font-weight:bold">SymPosDef</a> with properties:
+
+         type: 'symmetric positive definite 3x3 matrices'
+          tau: 1
+        steps: 10
+     ItemSize: [3 3]
+    Dimension: 6
+      allDims: {':'  ':'}
+       useMex: 1
+100 F: 407.1828 last change: 4.2594.
+200 F: 415.4475 last change: 0.30169.
+300 F: 416.2636 last change: 0.1345.
+400 F: 416.744 last change: 0.036314.
+500 F: 416.8671 last change: 0.0051699.
+600 F: 416.9092 last change: 0.0063603.
+700 F: 416.9272 last change: 0.00099287.
+ --- Logfile of Experiment CaminoSlice28; ended 02-Mar-2018 01:32:21 ---

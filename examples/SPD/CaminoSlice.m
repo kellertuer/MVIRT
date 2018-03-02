@@ -29,16 +29,12 @@ run('../../initMVIRT.m')
 %
 %
 %% Settings & Variables
-setDebugLevel('LevelMin',0);        % Minimal Value of all global Values
-setDebugLevel('LevelMax',1000);     % Maximal Value ...
-setDebugLevel('text',3);            % quite verbose text, but...
-setDebugLevel('IterationStep',1);   % only every Xth iteration
-setDebugLevel('WriteImages',1);     % 0: no file writing, 1: file writing
-setDebugLevel('LoadData',1);        % 0: generate new data 1: load existing data (if it exists), (other wise it is generated)
-setDebugLevel('WriteData',0);       % 0: do not write data to file 1: write data to file (overwrites last experiment data!)
-setDebugLevel('time',3);            % verbose time
-setDebugLevel('Figures',1);         % 0: no figure display, 1: figures are displayed
-setDebugLevel('logfile',1);         % 0: no logfile 1: logfile
+writeImages = true;
+loadData = true;
+writeData = false;
+showFigures = true;
+useLogfile = true;
+
 format compact
 %% Strings
 dataFolder = ['..',filesep,'..',filesep,'data',filesep];
@@ -57,7 +53,7 @@ subRangeY = 34:73;
 fn = [];
 
 %% Initialization
-if getDebugLevel('logfile')
+if useLogfile
     clc
     if exist([resultsFolder,name,'.log'],'file')
         delete([resultsFolder,name,'.log'])
@@ -65,7 +61,7 @@ if getDebugLevel('logfile')
     diary([resultsFolder,name,'.log']);
     disp([' --- Logfile of Experiment ',name,' started ',datestr(datetime),' ---']);
 end
-if getDebugLevel('WriteData') % recreate data from original data and save
+if writeData % recreate data from original data and save
     %% Load and reformate Data
     % Open Camino Data file from the tutorial at http://cmic.cs.ucl.ac.uk/camino/index.php?n=Tutorials.DTI
     if ~(exist([dataFolder,'Caminodt.Bdouble'],'file')==2) %Original file missing
@@ -106,14 +102,14 @@ if getDebugLevel('WriteData') % recreate data from original data and save
     l = length(rangeX); m = length(rangeY);
     save([resultsFolder,dataName,'.mat'],'fn','l','m');
 end
-if getDebugLevel('LoadData')
+if loadData
     load([resultsFolder,dataName,'.mat'],'fn','l','m');
 end
 if sum(size(fn))==0
     error('Both Writing and Loading Data are disabled, no data was loaded.');
 end
 rM = ~permute(all(reshape(fn,9,l,m)==0,1),[2,3,1]);
-if getDebugLevel('Figures')
+if showFigures
     figure(1);
     plotSPD(fn/max(fn(:)),'GridDistance',0.25,'EllipsoidPoints',20);
     title('Original data.');
@@ -123,7 +119,7 @@ if getDebugLevel('Figures')
     pause(0.02);
 end
 %Export original data
-if getDebugLevel('WriteImages')
+if writeImages
     exportSPD2Asymptote(fn/max(fn(:)),'File',[resultsFolder,name,'-original.asy'],'GridDistance',0.25,'ExportHeader',true);
     exportSPD2Asymptote(fn(:,:,subRangeX,subRangeY)/max(fn(:)),'File',[resultsFolder,name,'-original-sub.asy'],'GridDistance',0.25,'ExportHeader',true);
 end
@@ -135,23 +131,24 @@ problem.M = M;
 problem.f = fn;
 problem.stoppingCriterion = stopCritMaxIterEpsilonCreator(problem.M,800,10^(-5));
 problem.lambda = pi/2;
+problem.Debug = 100;
 problem.alpha = 0.05;
 problem.beta = 0.1;
-if getDebugLevel('logfile') %display parameters in logfile
+if useLogfile %display parameters in logfile
     problem     %#ok<NOPTS>
     problem.M   
 end
 %% CPPA
 fr = CPP_AdditiveTV12(problem);
 %% Export Results
-if getDebugLevel('WriteImages')>0
+if writeImages
     fileStr = [resultsFolder,name,'-p-',num2str(problem.alpha),'-',num2str(problem.beta)];
     fileStr(fileStr=='.') = [];
     exportSPD2Asymptote(fr/max(fr(:)),'File',[fileStr,'.asy'],'GridDistance',0.25,'ExportHeader',true);
     exportSPD2Asymptote(fr(:,:,subRangeX,subRangeY)/max(fr(:)),'File',[fileStr,'sub.asy'],'GridDistance',0.25,'ExportHeader',true);
     save([fileStr,'.mat'],'fr')
 end
-if getDebugLevel('Figures')
+if showFigures
     figure(3);
     plotSPD(fr/max(fr(:)),'GridDistance',0.25,'EllipsoidPoints',20);
     title(['Denoised Data. Parameters: \alpha=',num2str(problem.alpha),' \beta=',num2str(problem.beta),'.']);
@@ -160,7 +157,7 @@ if getDebugLevel('Figures')
     title(['Denoised part. Parameters: \alpha=',num2str(problem.alpha),' \beta=',num2str(problem.beta),'.']);
 end
 %% End logfile
-if getDebugLevel('logfile')
+if useLogfile
     disp([' --- Logfile of Experiment ',name,'; ended ',datestr(datetime),' ---']);
     diary off;
 end

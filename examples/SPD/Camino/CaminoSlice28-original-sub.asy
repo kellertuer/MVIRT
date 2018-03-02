@@ -24,7 +24,7 @@
 	real gDy=0.25;
 	real gDz=0.25;
 
-	currentprojection=perspective( camera=(gDx*29.5,gDy*19.5,60),up=Y, target=(gDx*29.5,gDy*19.5,gDz*-0.5));
+	currentprojection=perspective( camera=(gDx*29.5,gDy*19.5,60),up=Y, target=(gDx*29.5,gDy*19.5,gDz*0));
 		draw(
 			ellipsoid( (0.17527,0.97916,-0.10261), (-0.971,0.18913,0.14626), (0.16262,0.074003,0.98391), 0.38519, 0.39336, 0.4106, (gDx*0,gDy*0,gDz*0)),rgb(1,0.28125,0));
 		draw(
