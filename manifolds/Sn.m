@@ -111,7 +111,8 @@ classdef Sn < manifold & handle
             % OUTPUT
             %     v : resulting distances of each column pair of p,q.
             % ---
-            % Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann ~ 2014-10-19 | 2015-03-30
+            % Manifold-Valued Image Restoration Toolbox 1.0
+            % R. Bergmann ~ 2014-10-19 | 2015-03-30
 
             % Lofgile
             %   2015-03-30 Changed dist to work to collapse first dim
@@ -123,6 +124,17 @@ classdef Sn < manifold & handle
             end
         end
         function fn = addNoise(this,f,sigma)
+            % addNoise(f,sigma) add Gaussian tangential noise to f with deviation sigma
+            %
+            % INPUT
+            %   f   : data on Sn
+            % sigma : standard deviation
+            %
+            % OUTPUT
+            %  fn  : noisy data
+            % ---
+            % Manifold-Valued Image Restoration Toolbox 1.0
+            % R. Bergmann ~ 2018-03-03            
             fs = size(f);
             if fs(1) ~= this.ItemSize
                 error('Wrong data size');
