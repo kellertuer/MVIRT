@@ -197,7 +197,6 @@ classdef Hn < manifold & handle
                 ds = this.localDot(V,W);
             end
         end
-
         function Y = addNoise(~,X,sigma)
             sizes = size(X);
             error('This method is not yet implemented.');
