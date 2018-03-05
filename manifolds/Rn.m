@@ -16,16 +16,16 @@ classdef Rn < manifold & handle
             obj.Dimension = n;
             obj.allDims = repelem({':'},length(obj.ItemSize));
         end
-        function q = exp(this,p,v,t)
+        function q = exp(this,x,xi,t)
             % exp(p,v) - Exponential map at the point p with respect to v in
             % TpM.
             %
             % INPUT
-            %   p : a point or set (columns) of points on the manifold Rn
-            %   v : a point or set (columns) of point in the tangential spaces TpM
+            %   x : a point or set (columns) of points on the manifold Rn
+            %   xi : a point or set (columns) of point in the tangential spaces TxM
             %
             % OUTPUT
-            %   q : resulting point(s) on Rn
+            %   y : resulting point(s) on Rn
             % ---
             %  % Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann ~ 2014-10-26
             %               J. Persch ~ 2016-10-26
@@ -33,39 +33,38 @@ classdef Rn < manifold & handle
                 t=1;
             end
             if isscalar(t)
-                q = p+t*v;
+                q = x+t*xi;
             else
                 if isvector(t)
                     s=[this.ItemSize,length(t)];
                 else
                     s = [this.ItemSize,size(t)];
                 end
-                assert(all(s == size(v)),'t should be scalar or match dimension of v');
-                q = p+repmat(permute(t,[length(size(t))+1,1:length(size(t))]),[this.ItemSize,ones(size(size(t)))]).*v;
+                assert(all(s == size(xi)),'t should be scalar or match dimension of v');
+                q = x+repmat(permute(t,[length(size(t))+1,1:length(size(t))]),[this.ItemSize,ones(size(size(t)))]).*xi;
             end
         end
-        function v = log(~,p,q)
-            % log(q,p) - Inverse Exponential Map at p of q.
+        function xi = log(~,x,y)
+            % log(q,p) - Inverse Exponential Map at x of y.
             %
             % INPUT
-            %    p : point or set of (column) points indicating the
+            %    x : point or set of (column) points indicating the
             %        tangential base points (in Rn)
-            %    q : point(s) on Rn being put into the
+            %    x : point(s) on Rn being put into the
             %        tangential plane at their corresponding p
             %
             % OUTPUT
-            %    v : points on the tangential plane at point(s) p
+            %    xi : points on the tangential plane at point(s) p
             % ---
             % Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann ~ 2014-10-22
-            assert(all(size(p)==size(q)),'p and q have to be of same size');
-            v = q-p;
+            assert(all(size(x)==size(y)),'p and q have to be of same size');
+            xi = y-x;
         end
-        function d = dist(this,p,q,norm)
-            % dist(a,b) computes the length of the smaller arc of a,b on
-            % SnRm and returns the vector of distances. If n is specified,
-            % the n-norm of these distances is computed
+        function d = dist(this,x,y,norm)
+            % dist(x,y) computes the length of vector x-y
+            %
             %    INPUT
-            %        p,q    : 2 point sets (columns) on the SnRm data
+            %        x,y    : 2 point sets (columns) on the SnRm data
             %    
             %    OPTIONAL
             %       norm     : (2) norm to use (0 to disable, i.e. stay elementwise)
@@ -74,11 +73,11 @@ classdef Rn < manifold & handle
             %        d      : lengths of the shorter arcs between on S components and abs on R, then the norm
             % ---
             % Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann ~ created 2013-10-25 ~ last edited 2014-10-22
-            assert(all(size(p)==size(q)), ...
+            assert(all(size(x)==size(y)), ...
                 'Distances can only be computed for equal length vectors p and q');
-            assert((size(p,1)==this.ItemSize) && (size(q,1)==this.ItemSize), ...
+            assert((size(x,1)==this.ItemSize) && (size(y,1)==this.ItemSize), ...
                 'The manifold dimension of either p or q is wrong');
-            d = abs(p-q);
+            d = abs(x-y);
             if (nargin < 4)
                 norm = 2;
             end
@@ -86,21 +85,18 @@ classdef Rn < manifold & handle
                 d = shiftdim(sum( d.^norm, 1).^(1/norm),1); %eliminate leading zeros
             end
         end
-        function W = parallelTransport(~,~,~,V)
-            % W = parallelTransport(X,Y,V) parallel transport a tangential
-            % vector V at X along a geodesic from X to Y to Y
+        function eta = parallelTransport(~,~,~,xi)
+            % W = parallelTransport(x,y,xi) parallel transport a tangential
+            % vector xi at x along a geodesic from x to y
             %
             % INPUT
-            %    X : a point( set) on P(m)
-            %    Y : a point( set) on P(m)
-            %    V : a tangential vector( set, one) at (each) X
+            %    x : a point( set) on P(m)
+            %    y : a point( set) on P(m)
+            %    xi : a tangential vector( set, one) at (each) X
             %
-            % OPTIONAL
-            %    t : value or vector to only take a fraction along the
-            %    geodesic(s)
             %
             % OUTPUT
-            %    W : tangential vector( set, one) at (each) Y
+            %    eta : tangential vector( set, one) at (each) Y
             %
             % ---
             % ManImRes 1.0, R. Bergmann ~ 2015-01-29 | 2015-04-10
@@ -112,7 +108,7 @@ classdef Rn < manifold & handle
             elseif nargin< 4
                 error('Not enough input arguments for parallelTransport');
             end
-            W = V;
+            eta = xi;
         end
         function [V,k] = TpMONB(this,p,~)
            dimen = size(p);

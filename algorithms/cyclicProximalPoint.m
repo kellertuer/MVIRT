@@ -1,36 +1,40 @@
 function [y,recData] = cyclicProximalPoint(varargin)
-% CyclicProximalPoint(M, f, proximalMaps, stoppingCriterion)
+% CyclicProximalPoint(M,f,proximalMaps,stoppingCriterion)
 %    Compute the cyclic proximal point algorithm starting with data f,
 %    cyclic through the proximal points
 %  Input
 %   M                 : a manifold
 %   x                 : given (initial) data
-%   proximalMaps      : cell arrays of functionals computing the proximal maps,
-%                         i.e. can be called as prox = @(x,lambda)
+%   proximalMaps      : cell arrays of functionals computing the proximal
+%                       maps, i.e. can be called as prox = @(x,lambda)
 %   stoppingCriterion : a functional @(x,xold,lambda,iter) as a stopping
 %                       criterion based on x, the last iterate xold,
 %                       lambda,
 %                       that indicates, then to stop, i.e., is 1 for stops.
 %
 % OPTIONAL
-%   lambdaIterate     : (@ (iter)) a functional @(lambda,iter) computing the iterates value of lambda
-%   Order       : ('') while the standard order is ascending in proximalMaps,
-%                'random' takes a random proximal map in each iteration
-%                   (note that then one iteration is only _one_ proximal map
-%                   evaluated)
-%                 'permute' : keeps a cyclic manner but permutes the order
-%                             for each cycle anew.
-%   Debug             : ([]) a function @ (x,xold,iter) producing debug
-%                          output
-%   Record            : (@(x,iter)) a function returning a column vector,
-%                       if there's a second return value and this function
-%                       is given, data is recorded in an array and returned
+%  'lambdaIterate' : (@ (iter)) a functional @(iter) computing the
+%                        iterates value of lambda
+%  'lambda'        : if no iterate (see above) is given, this value is used
+%                        to set the iterate to @(iter) lambda/iter
+%  'Order'         : ('') the standard order is ascending in proximalMaps,
+%                      'random' takes a random proximal map each iteration
+%                       (note that then one iteration is only _one_
+%                       proximal map evaluated)
+%                      'permute' keeps a cyclic manner but permutes the
+%                       order for each cycle anew.
+%   Debug          : ([]) a function @ (x,xold,iter) producing debug
+%                       output
+%   Record         : (@(x,iter)) a function returning a column vector, if
+%                       there's a second return value and this function is
+%                       given, data is recorded in an array and returned
 %
 % OUTPUT
 %   y       : result of the CPP algorithm
 %   recData : recorded data array of the by the record-function
 % ---
-% R. Bergmann | MVIRT | 2018-01-22
+% Manifold-Valued Image Restoration Toolbox 1.0
+% R. Bergmann ~ 2018-01-22 | 2018-03-04
 
 if (length(varargin)==1 && isstruct(varargin{1})) % as struct
     % short hand call to surpass parser

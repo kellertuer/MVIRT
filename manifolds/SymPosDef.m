@@ -2,25 +2,12 @@ classdef SymPosDef < manifold & handle
     % The manifold of m-by-m symmetric positive definite matrices
     %   which is denoted P(m) for short
     %
-    % Additionally provides
-    %
-    % PROPERTIES
-    %    tau   : stepsize in the subgradient descent inside each of the
-    %            proximal mappings of the second order differences
-    %    steps : number of steps in the just mentioned subgradient descent.
-    %
     % FUNCTIONS
-    %    parallelTransport(X,Z) : Compute the mid point on the geodesic
-    %    dot(X,V,W)             : Riemannian dot product of V,W in TXS(m)
-    %    JacobianEigenFrame(X,V): A frame for TXP(m) based on (but not
-    %                             including) V.
     %
     % ---
     % Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann ~ 2015-01-28
     properties
         type = 'SymPosDef';
-        tau = 1;
-        steps = 10;
         ItemSize;
         Dimension;
         allDims;
@@ -113,13 +100,12 @@ classdef SymPosDef < manifold & handle
                 x = SPDMean(f,w,epsilon,iter);
             end
         end
-        function Y = exp(this,X,V,t)
-            % exp(X,V) - Exponential map at the point(s) P with respect to
-            %    the direction(s) V in TXP(m)
+        function Y = exp(this,x,xi,t)
+            % y = exp(x,xi) exponential map at x from P(n) towards xi in TxP(n)
             %
             % INPUT
-            %   X : a point or set of points on the manifold P(m)
-            %   V : a point or set of point in the tangential spaces TpM
+            %   x : a point or set of points on the manifold P(n)
+            %   xi : a point or set of point in the tangential spaces TxM
             %
             % OPTIONAL
             %   t : shorten vectors V by factor t
@@ -136,9 +122,9 @@ classdef SymPosDef < manifold & handle
                 t=1;
             end
             if this.useMex
-                Y = SPDExp(X,V,t);
+                Y = SPDExp(x,xi,t);
             else
-                Y = this.localExp(X,V,t);
+                Y = this.localExp(x,xi,t);
             end
         end
         function W = geopoint(this,X,Y,t)
@@ -162,64 +148,59 @@ classdef SymPosDef < manifold & handle
                 W = this.exp(X,this.log(X,Y),t);
             end
       end
-        function V = log(this,X,Y)%,verifyFlag)
-            % log(X,Y) - Exponential map at the point(s) X of points(s) Y
-            %      in TXP(m)
+        function xi = log(this,x,y)
+            % xi = log(x,y) logarithmic map at the point(s) x of points(s) y
             %
             % INPUT
-            %   X : a point or set of points on the manifold P(m)
-            %   Y : a point or set of points on the manifold P(m)
+            %   x : a point or set of points on the manifold P(m)
+            %   y : a point or set of points on the manifold P(m)
             %
             % OUTPUT
-            %   V : resulting point(s) of X(i) to Y(i) elementwise
+            %   xi : resulting point(s) of X(i) to Y(i) elementwise
             %
             % ---
-            % Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann ~ 2015-01-20 | 2015-04-10
+            % Manifold-Valued Image Restoration Toolbox 1.0
+            % R. Bergmann ~ 2015-01-20 | 2015-04-10
             
             % Changelog
             % 2015-04-10 Changed to Mex.
             if this.useMex
-                V =  SPDLog(X,Y);
+                xi =  SPDLog(x,y);
             else
-                V = this.localLog(X,Y);
+                xi = this.localLog(x,y);
             end
         end
-        function d = dist(this,X,Y)
-            % d = dist(X,Y) - Compute the distance between points or
-            % two sets of points on the manifold P(m).
+        function d = dist(this,x,y)
+            % d = dist(x,y) compute the distance between x,y from P(n).
             %
             % INPUT
-            %   X,Y : two points (matrices) or sets of points (matrices)
+            %   y,x : two points (matrices) or sets of points (matrices)
             %         on P(m)
             %
             % OUTPUT
             %     d : resulting distances of each pair of points of p,q.
             % ---
-            % Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann ~ 2014-10-19 | 2015-04-11
+            % Manifold-Valued Image Restoration Toolbox 1.0
+            % R. Bergmann ~ 2014-10-19 | 2015-04-11
             
             % Changelog
             %   2015-04-11 Added mex-file version
             if this.useMex
-                d = SPDDist(X,Y);
+                d = SPDDist(x,y);
             else
-                d = this.localDist(X,Y);
+                d = this.localDist(x,y);
             end
         end
-        function W = parallelTransport(this,X,Y,V)
-            % W = parallelTransport(X,Y,V) parallel transport a tangential
-            % vector V at X along a geodesic from X to Y to Y
+        function eta = parallelTransport(this,x,y,xi)
+            % eta = parallelTransport(x,y,xi) parallel transport xi along g(.,x,y)
             %
             % INPUT
-            %    X : a point( set) on P(m)
-            %    Y : a point( set) on P(m)
-            %    V : a tangential vector( set, one) at (each) X
-            %
-            % OPTIONAL
-            %    t : value or vector to only take a fraction along the
-            %    geodesic(s)
+            %    x : a point( set) on P(m)
+            %    y : a point( set) on P(m)
+            %   xi : a tangential vector( set, one) at (each) X
             %
             % OUTPUT
-            %    W : tangential vector( set, one) at (each) Y
+            %  eta : tangential vector( set, one) at (each) Y
             %
             % ---
             % ManImRes 1.0, R. Bergmann ~ 2015-01-29 | 2015-04-10
@@ -232,35 +213,47 @@ classdef SymPosDef < manifold & handle
                 error('Not enough input arguments for parallelTransport');
             end
             if this.useMex
-                W = SPDParallelTransport(X,Y,V);
+                eta = SPDParallelTransport(x,y,xi);
             else
-                W = this.localParallelTransport(X,Y,V);
+                eta = this.localParallelTransport(x,y,xi);
             end
         end
-        function ds = dot(this,X,V,W)
-            % PnDot(X,V,W)
-            %     Compute the inner product of two tangent vectors in TXP(m)
+        function ds = dot(this,x,xi,nu)
+            % dot(x,xi,nu) inner product of two tangent vectors in TxP(m)
             %
             % INPUT
-            %     X  : a point(Set) in P(n)
-            %     V  : a first tangent vector( set) to (each) X
-            %     W  : a secod tangent vector( set) to (each) X
+            %     x  : a point(Set) in P(n)
+            %     xi : a first tangent vector( set) to (each) x
+            %     xu : a secod tangent vector( set) to (each) x
             %
             % OUTPUT
             %     ds : the corresponding value(s) of the inner product of (each triple) V,W at X
             %
             % ---
-            % Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann ~ 2015-01-29 | 2015-04-11
+            % Manifold-Valued Image Restoration Toolbox 1.0
+            % R. Bergmann ~ 2015-01-29 | 2015-04-11
             
             % Changelog
             %   2015-04-11 Created Mex-File
             if this.useMex
-                ds = SPDDot(X,V,W);
+                ds = SPDDot(x,xi,nu);
             else
-                ds = this.localDot(X,V,W);
+                ds = this.localDot(x,xi,nu);
             end
         end
         function Y = addNoise(this,X,sigma,varargin)
+        % addNoise(x,sigma) add (Rician or Gaussian) noise to data x
+        %
+        % INPUT
+        %   x    : data from P(n)
+        %  sigma : standard deviation
+        %
+        % OPTIONAL
+        %  'Distribution' : ('Rician') whether to add Rician or 'Gaussian'
+        %                    noise
+        % ---
+        % Manifold-Valued Image Restoration Toolbox 1.0
+        % R. Bergmann ~ 2018-03-04
             ip = inputParser;
             addParameter(ip,'Distribution','Rician');
             parse(ip,varargin{:});
@@ -280,7 +273,6 @@ classdef SymPosDef < manifold & handle
                 end
                 Y = reshape(Y,sizes);
             elseif strcmp(vars.Distribution,'Gaussian')
-                % Should be done in C
                 ONB_Id = zeros([this.ItemSize,this.Dimension]);
                 n = this.ItemSize(1);
                 n_sq = n^2;
@@ -297,9 +289,9 @@ classdef SymPosDef < manifold & handle
                 Y = X;
             end
         end
-        function [W,k] = TpMONB(this,Xp,Yp)
-            % V = TpMONB(p)
-            % Compute an ONB in TpM
+        function [Xi,k] = TpMONB(this,x,y)
+            % [Xi,k] = TpMONB(x,y) Compute an ONB in TpM and curvature
+            % coefficients corresponding to the transported frame along g(.,x,y)
             %
             % INPUT
             %     p : base point( sets)
@@ -311,21 +303,22 @@ classdef SymPosDef < manifold & handle
             % ---
             % MVIRT R. Bergmann, 2017-12-03
             n = this.Dimension;  
-            dataDim  =size(Xp);
+            dataDim  =size(x);
             dataDim = dataDim(length(this.ItemSize)+1:end);  
             if isempty(dataDim)
                 dataDim = 1;
             end
-            X = reshape(Xp,[this.ItemSize,prod(dataDim)]);
+            % Vectorize
+            X = x(this.allDims{:},:);
             m = size(X,3);
             dimen = size(X);
             if nargin < 3
-               V = repmat(eye(dimen(1)),[1,1,dimen(3:end)]);
+               V = repmat(eye(dimen(1)),[1,1,dataDim]);
             else
-               Y = reshape(Yp,[this.ItemSize,prod(dataDim)]);
+               Y = y(this.allDims{:},:);
                V = this.log(X,Y);
             end
-            W = zeros(this.ItemSize(1),this.ItemSize(2),m,n);
+            Xi = zeros([this.ItemSize,m,n]);
             k = zeros(m,n);
             for l=1:m
                 [U,S,~]=svd(X(this.allDims{:},l));
@@ -345,13 +338,13 @@ classdef SymPosDef < manifold & handle
                                 t = sqrt(t);
                             end
                             thisV = t*( cpointV(:,i)*cpointV(:,j)' + cpointV(:,j)*cpointV(:,i)');
-                            W(:,:,l,s) =  sX*(thisV)*sX;
+                            Xi(:,:,l,s) =  sX*(thisV)*sX;
                             s = s+1; %also lazy
                         end
                     end
                 end
             end
-            W = reshape(W,[this.ItemSize,dataDim,this.Dimension]);
+            Xi = reshape(Xi,[this.ItemSize,dataDim,this.Dimension]);
         end
     end
     methods (Access = private)

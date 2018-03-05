@@ -24,16 +24,10 @@ run('../../initMVIRT.m')
 %
 %
 %% Settings & Variables
-setDebugLevel('LevelMin',0);        % Minimal Value of all global Values
-setDebugLevel('LevelMax',1000);     % Maximal Value ...
-setDebugLevel('text',3);            % quite verbose text, but...
-setDebugLevel('IterationStep',100); % only every Xth iteration
-setDebugLevel('WriteImages',1);     % 0: no file writing, 1: file writing
-setDebugLevel('LoadData',1);        % 0: generate new data 1: load existing data (if it exists), (other wise it is generated)
-setDebugLevel('WriteData',0);       % 0: do not write data to file 1: write data to file (overwrites last experiment data!)
-setDebugLevel('time',3);            % verbose time
-setDebugLevel('Figures',1);         % 0: no figure display, 1: figures are displayed
-setDebugLevel('logfile',1);         % 0: no logfile 1: logfile
+writeImages = true;
+loadData = true;
+showFigures = true;
+useLogfile = true;
 format compact
 %
 folder = ['examples',filesep,'SPD',filesep];
@@ -48,7 +42,7 @@ gS = 4; %GridDistance for all plots to have the same presentation
 %
 %
 %% Initialization
-if getDebugLevel('logfile')
+if useLogfile
     if exist([results,name,'.log'],'file')
         delete([results,name,'.log'])
     end
@@ -59,7 +53,7 @@ M = SymPosDef(3);
 %
 %
 % Loading or creating and saving data
-if getDebugLevel('LoadData') && exist([results,dataName,'-data.mat'],'file')
+if loadData && exist([results,dataName,'-data.mat'],'file')
     load([results,dataName,'-data.mat']); %loads f and fn, sigma and pts
     metaData = dir([results,dataName,'-data.mat']);
     disp(['Using File Data generated ',datestr(metaData.date),'.']);
@@ -69,13 +63,13 @@ else
     fn = M.addNoise(f,sigma);
     %%
     disp(['Using Data generated ',datestr(datetime),'.']);
-    if getDebugLevel('WriteData') %Write this version to file
+    if writeData %Write this version to file
         save([results,dataName,'-data.mat'],'f','fn','sigma','pts');
     end
 end
 %
 % Plotinitial data
-if getDebugLevel('Figures')
+if showFigures
     figure(1);
     plotSPD(f,'GridDistance',gS,'EllipsoidPoints',20);
     title('Original Data');
@@ -83,7 +77,7 @@ if getDebugLevel('Figures')
     plotSPD(fn,'GridDistance',gS,'EllipsoidPoints',20)
     title('Noisy Data as Input');
 end
-if getDebugLevel('WriteImages')
+if writeImages
     exportSPD2Asymptote(fn,'GridDistance',gS,'ExportHeader',true,'File',[results,name,'-noisy.asy']);
     exportSPD2Asymptote(f,'GridDistance',gS,'ExportHeader',true,'File',[results,name,'-original.asy']);
 end
@@ -93,13 +87,14 @@ M = SymPosDef(3);
 problem.M = M;
 problem.f = fn;
 problem.lambda = .1;
-problem.stoppingCriterion = stopCritMaxIterEpsilonCreator(problem.M,400,0);
-if getDebugLevel('logfile')
-    problem
-    M
+problem.stoppingCriterion = stopCritMaxIterEpsilonCreator(problem.M,800,0);
+problem.Debug = 100;
+if useLogfile
+    problem %#ok<NOPTS>
+    M       %#ok<NOPTS>
 end
-alpha = 0:1/10:1;
-beta = 0:1/10:1;
+alpha = [0,0.2,0.4];
+beta = [0,0.7, 1.4];
 disp(['Parameter range alpha (',num2str(length(alpha)),' values): ',regexprep(num2str(alpha,5), '\s*', ','),'.']);
 disp(['Parameter range beta  (',num2str(length(beta)),' values): ',regexprep(num2str(beta,5), '\s*', ','),'.']);
 
@@ -124,17 +119,17 @@ for i=1:length(alpha)*length(beta)
     if problem.beta==0 && t < minTV
         minTV = t;
         minTVa = problem.alpha;
-        disp('Min TV!')
+        disp(['Min TV ',num2str(t),'.']);
         TVsig = fr;
     end
     if t < minTV12
         minTV12 = t;
         minTV12a = problem.alpha;
         minTV121b = problem.beta;
-        disp('Min TV12!');
+        disp(['Min TV12 ',num2str(t),'.']);
         TV12sig = fr;
     end
-    if getDebugLevel('WriteImages')
+    if writeImages
         fileStr = [results,name,'-p-',num2str(alpha(j1)),'-',num2str(beta(j2))];
         fileStr(fileStr=='.') = [];
         exportSPD2Asymptote(fr,'GridDistance',gS,'ExportHeader',true,'File',[fileStr,'.asy']);
@@ -142,7 +137,7 @@ for i=1:length(alpha)*length(beta)
     disp(['Parameters: \alpha=',num2str(alpha(j1)),' \beta=',num2str(beta(j2)),' yield ',num2str(mDists(i)),'.']);
 end
 
-if getDebugLevel('WriteImages') %Write this version to file
+if writeImages %Write this version to file
     save([results,dataName,'-results.mat'],'mResults','mDists','f','fn','sigma','pts');
 end
     
@@ -150,7 +145,7 @@ end
 disp(['Minimum: Parameters: \alpha=',num2str(minTV12a),' \beta=',num2str(minTV12b),' yields minimal value ',num2str(minTV12),'.']);
 disp(['Minimum: Parameter: \alpha=',num2str(minTVa),' yields minimal value ',num2str(minTV),'.']);
 %% Plot Results
-if getDebugLevel('Figures')
+if showFigures
     figure(3);
     plotSPD(TVsig,'GridDistance',gS,'EllipsoidPoints',12);
     title(['Best TV1&2 Result having E=',num2str(minValue)]);
@@ -159,7 +154,7 @@ if getDebugLevel('Figures')
     title(['Best TV Result having E=',num2str(minValueTV)]);
 end
 %% End logfile
-if getDebugLevel('logfile')
+if useLogfile
     disp([' --- Logfile of Experiment ',name,'; ended ',datestr(datetime),' ---']);
     diary off;
 end
