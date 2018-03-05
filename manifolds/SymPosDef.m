@@ -309,13 +309,13 @@ classdef SymPosDef < manifold & handle
                 dataDim = 1;
             end
             % Vectorize
-            X = x(M.allDims{:},:);
+            X = x(this.allDims{:},:);
             m = size(X,3);
             dimen = size(X);
             if nargin < 3
                V = repmat(eye(dimen(1)),[1,1,dataDim]);
             else
-               Y = y(M.allDims{:},:);
+               Y = y(this.allDims{:},:);
                V = this.log(X,Y);
             end
             Xi = zeros([this.ItemSize,m,n]);

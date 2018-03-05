@@ -93,8 +93,8 @@ if useLogfile
     problem %#ok<NOPTS>
     M       %#ok<NOPTS>
 end
-alpha = 0:1/10:1;
-beta = 0:1/10:1;
+alpha = [0,0.2,0.4];
+beta = [0,0.7, 1.4];
 disp(['Parameter range alpha (',num2str(length(alpha)),' values): ',regexprep(num2str(alpha,5), '\s*', ','),'.']);
 disp(['Parameter range beta  (',num2str(length(beta)),' values): ',regexprep(num2str(beta,5), '\s*', ','),'.']);
 
