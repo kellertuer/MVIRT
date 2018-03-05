@@ -16,9 +16,6 @@ classdef Sn < manifold & handle
     % Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann ~ 2015-01-29
     properties
         type = '';
-        tau = 0.01;
-        steps = 10;
-        one = NaN;
         ItemSize;
         Dimension;
         allDims;
@@ -29,36 +26,33 @@ classdef Sn < manifold & handle
             obj.ItemSize = n+1;
             obj.Dimension = n;
             obj.type = ['The ',num2str(n),'-sphere in R',num2str(n+1)];
-            if n == 3
-                obj.one = [1;0;0;0];
-            end
             obj.allDims = repelem({':'},length(obj.ItemSize));
         end
-        function q = exp(this,p,v,t)
-            % exp(p,v) - Exponential map at the point p with respect to v in
-            % TpM
+        function y = exp(this,x,xi,t)
+            % exp(x,xi) - Exponential map at x with direction xi in TxM
             %
             % INPUT
-            %   p : a point or set of points on the manifold S2
-            %   v : a point or set of point in the tangential spaces TpM
+            %   x : a point or set of points on the manifold S2
+            %   xi : a point or set of point in the tangential spaces TxM
+            %
             % OPTIONAL:
             %   t : [] following the geodesics for one time step
             %       a scalar following the geodesics for time t
             %       a set of t following each geodesic_i for time t_i
             %
             % OUTPUT
-            %   q : resulting point(s) on S2
+            %   y : resulting point(s) on S2
             % ---
             % Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann ~ 2014-10-19
-            if isrow(p)
-                p_=p';
+            if isrow(x)
+                p_=x';
             else
-                p_=p;
+                p_=x;
             end
-            if isrow(v)
-                v_=v';
+            if isrow(xi)
+                v_=xi';
             else
-                v_=v;
+                v_=xi;
             end
             if nargin < 4
                 t=1;
@@ -66,50 +60,50 @@ classdef Sn < manifold & handle
                 t = t.';
             end
             if this.useMex
-                q = SnExp(p_,v_,t);
+                y = SnExp(p_,v_,t);
             else
-                q = this.localExp(p_,v_,t);
+                y = this.localExp(p_,v_,t);
             end
         end
-        function v = log(this,p,q)
-            % log(q,p) - Inverse Exponential Map at p of q.
+        function xi = log(this,x,y)
+            % log(x,y) - Inverse Exponential Map at x of y.
             %
             % INPUT
-            %    p : point or set of (column) points indicating the
+            %    x : point or set of (column) points indicating the
             %    tangential base points
-            %    q : point(s) on S2 being put into the tangential plane at
+            %    y : point(s) on S2 being put into the tangential plane at
             %    their corresponding p
             %
             % OUTPUT
-            %    v : points on the tangential plane at point(s) p
+            %    xi : points on the tangential plane at point(s) p
             % ---
             % Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann ~ 2014-10-19
-            if isrow(p)
-                p_=p';
+            if isrow(x)
+                p_=x';
             else
-                p_=p;
+                p_=x;
             end
-            if isrow(q)
-                q_=q';
+            if isrow(y)
+                q_=y';
             else
-                q_=q;
+                q_=y;
             end
             if this.useMex
-                v = SnLog(p_,q_);
+                xi = SnLog(p_,q_);
             else
-                v = this.localLog(p_,q_);
+                xi = this.localLog(p_,q_);
             end
         end
-        function d = dist(this,p,q)
+        function d = dist(this,x,y)
             % dist(p,q) - Compute the distance between points or a set of
             % points on the manifold S2.
             %
             % INPUT
-            %   p,q : a (column) vector from S2 (embd. in R3) or a set of
+            %   x,y : a (column) vector from S2 (embd. in R3) or a set of
             %   column vectors
             %
             % OUTPUT
-            %     v : resulting distances of each column pair of p,q.
+            %     d : resulting distances of each column pair of p,q.
             % ---
             % Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann ~ 2014-10-19 | 2015-03-30
 
@@ -117,9 +111,9 @@ classdef Sn < manifold & handle
             %   2015-03-30 Changed dist to work to collapse first dim
             %   2015-04-11 Extracted to Mex
             if this.useMex
-                d = SnDist(p,q);
+                d = SnDist(x,y);
             else
-                d = this.localDist(p,q);
+                d = this.localDist(x,y);
             end
         end
         function fn = addNoise(this,f,sigma)
@@ -135,102 +129,114 @@ classdef Sn < manifold & handle
             end
             fn = reshape(fn,fs);
         end
-        function W = parallelTransport(this,X,Y,V)
+        function eta = parallelTransport(this,x,y,xi)
+        % eta = parallelTransport(x,y,xi) transport xi from TxM parallel to TyM
+        %
+        % INPUT
+        %   x,y : two (sets of) points on the manifold
+        %   xi  : a (set of) vectors from TxM
+        %
+        % OUTPUT
+        %   eta : the parallel transported vectors in TyM
+        % ---
+        % Manifold-valued Image Restoration Toolbox 1.2
+        % R. Bergmann | 2018-03-01
             if this.useMex
-                W = SnParallelTransport(X,Y,V);
+                eta = SnParallelTransport(x,y,xi);
             else
                 % Parallel Transport the vector V from TxM to TyM
                 %
                 % directional part that changes
-                sV = size(V);
-                dir = this.log(X,Y);
+                sXi = size(xi);
+                dir = this.log(x,y);
                 norms = sqrt(sum(dir.^2,1));
-                norm_dir = repmat(norms,[this.ItemSize,ones(1,length(sV(2:end)))]);
-                normMask = repmat(norms==0,[this.ItemSize,ones(1,length(sV(2:end)))]);
+                norm_dir = repmat(norms,[this.ItemSize,ones(1,length(sXi(2:end)))]);
+                normMask = repmat(norms==0,[this.ItemSize,ones(1,length(sXi(2:end)))]);
                 dir = dir./norm_dir;
-                scp = sum(dir.*V,1);
+                scp = sum(dir.*xi,1);
                 % substract V-part (scp*dir) and add the negative direction
-                W = V - repmat(scp,[this.ItemSize,ones(1,length(sV(2:end)))]).*(dir+this.log(Y,X)./norm_dir);
-                W(normMask) = V(normMask); %those that need not to be transported
+                eta = xi - repmat(scp,[this.ItemSize,ones(1,length(sXi(2:end)))]).*(dir+this.log(y,x)./norm_dir);
+                eta(normMask) = xi(normMask); %those that need not to be transported
             end
         end
-        function [V,k] = TpMONB(this,p,q)
-        % V = TpMONB(p,q)
+        function [xi,k] = TpMONB(this,x,y)
+        % xi = TpMONB(x,y)
         % Compute an ONB in TpM, where the first vector points to q,
         % whin given.
         %
         % INPUT
-        %     p : base point( sets)
+        %     x : base point( sets)
         %
         % OPTIONAL:
-        %     q : directional indicator( sets) for the first vector(s).
+        %     y : directional indicator( sets) for the first vector(s).
         %
         % OUTPUT
-        %    V : basiscolumn matrice(s)
+        %    xi : basiscolumn matrice(s) for each TpM
         %    k : (optional) curvature coefficients, here
         %           all are 1 except the first which is 0
         % ---
-        % MVIRT 1.0, R. Bergmann ~ 2014-10-19 | 2014-10-23
-            if isrow(p)
-                p_=p';
+        % MVIRT 1.0, R. Bergmann ~ 2014-10-19 | 2018-03-01
+            if isrow(x)
+                p_=x';
             else
-                p_=p;
+                p_=x;
             end
             q_given = 0;
             if nargin < 3
-                q=p;
+                y=x;
             else
                 q_given=1;
             end
-            pS = size(p);
+            pS = size(x);
             p_ = reshape(p_,pS(1),[]);
-            q_ = reshape(q, pS(1),[]);
+            q_ = reshape(y, pS(1),[]);
             if q_given && max(this.dist(q_,p_)) > eps
-                V = zeros(this.ItemSize,size(p_,2),this.ItemSize-1);
-                V(:,:,1) = this.log(p_,q_);
-                normsv = sqrt(sum(V(:,:,1).^2,1));
+                xi = zeros(this.ItemSize,size(p_,2),this.ItemSize-1);
+                xi(:,:,1) = this.log(p_,q_);
+                normsv = sqrt(sum(xi(:,:,1).^2,1));
                 if ~all(normsv<=eps)
-                    V(:,normsv>eps,1) = V(:,normsv>eps,1)./repmat(normsv(normsv>eps),[this.ItemSize,1,1]);
+                    xi(:,normsv>eps,1) = xi(:,normsv>eps,1)./repmat(normsv(normsv>eps),[this.ItemSize,1,1]);
                 end
             else
-                V = zeros(this.ItemSize,size(p_,2),this.ItemSize-1);
+                xi = zeros(this.ItemSize,size(p_,2),this.ItemSize-1);
             end
             if this.ItemSize==3 && q_given == 1%S2 -> cross
-                V(:,:,2) = cross( squeeze(V(:,:,1)), p_);
+                xi(:,:,2) = cross( squeeze(xi(:,:,1)), p_);
             else
-                for col=1:size(V,2)
+                for col=1:size(xi,2)
                     if ~q_given || (normsv(col)>eps)
                         % The remaining Tangential vectors are the orthogonal
                         % to p(:,col) and V(:,col,1), i.e. the nullspace of the
                         % matrix p V V ... V
-                        V(:,col,1+q_given:this.Dimension) = null([p_(:,col), V(:,col,1)].');
+                        xi(:,col,1+q_given:this.Dimension) = null([p_(:,col), xi(:,col,1)].');
                     end
                 end
             end
-            V = reshape(V,[pS,this.ItemSize-1]);
+            xi = reshape(xi,[pS,this.ItemSize-1]);
             if nargout > 1
                 k = ones(size(p_,2),this.ItemSize-1);
                 k(:,1)=0;
                 k = reshape(k,[pS(2:end),this.ItemSize-1]);
             end
         end
-        function ds = dot(~,P,V,W)
-            % Sn.dot(P,V,W)
-            %     Compute the inner product of two tangent vectors in T_P M
+        function ds = dot(~,x,xi,nu)
+            % dot(x,xi,nu)
+            %     Compute the inner product of two tangent vectors in T_xM
             %
             % INPUT
-            %     X  : a point(Set) in P(n)
-            %     V  : a first tangent vector( set) to (each) X
-            %     W  : a secod tangent vector( set) to (each) X
+            %     x  : a point(Set) in P(n)
+            %     xi  : a first tangent vector( set) to (each) x
+            %     nu  : a secod tangent vector( set) to (each) x
             %
             % OUTPUT
-            %     ds : the corresponding value(s) of the inner product of (each triple) V,W at X
+            %     ds : the corresponding value(s) of the inner product of
+            %     (each triple) xi,nu at x
             %
             % ---
             % MVIRT 1.0 ~ J. Persch 2016-06-13
-            dimen = size(P);
-            if all(size(V) == dimen & size(W) == dimen)
-                ds = permute(sum(V.*W,1),[2:length(dimen),1]);
+            dimen = size(x);
+            if all(size(xi) == dimen & size(nu) == dimen)
+                ds = permute(sum(xi.*nu,1),[2:length(dimen),1]);
             else
                 error('Dimensions of Input must coincide')
             end
