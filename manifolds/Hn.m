@@ -14,69 +14,56 @@ classdef Hn < manifold & handle
     
     methods
         function obj = Hn(n)
-            % Create a Manifold for teh n-dimensional hyperbolic manifold
+            % Create a Manifold for thh n-dimensional hyperbolic manifold
             obj.type = ['hyperbolic manifold of dimension ',num2str(n)];
             obj.ItemSize = n+1;
             obj.Dimension = n;
             obj.allDims = repelem({':'},length(obj.ItemSize));
         end
-        function Y = exp(this,X,V,t)
-            % exp(P,V) - Exponential map at the point(s) P with respect to
-            %    the direction(s) V in TXHn
+        function y = exp(this,x,xi,t)
+            % exp(x,xi) exponential map at the point(s) x towards xi in T_xHn
             %
             % INPUT
-            %   X : a point or set of points on the manifold Hn
-            %   V : a point or set of point in the tangential spaces TXHn
+            %   x : a point or set of points on the manifold Hn
+            %  xi : a point or set of point in the tangential spaces TxHn
             %
             % OPTIONAL
-            %   t : shorten vectors V by factor t
-            %   (given as one value or an array of same length as number of Vs)
+            %   t : shorten vectors xi by factor t
+            %   (given as one value or an array of same length as number of xis)
             %
             % OUTPUT
-            %   Y : resulting point(s) on Hn
+            %   y : resulting point(s) on Hn
             % ---
             % Manifold-Valued Image Restoration Toolbox 1.1, R. Bergmann ~ 2015-01-20 | 2015-10-20
             if nargin<4 % define t
                 t=1;
             end
             if this.useMex
-                Y = HnExp(X,V,t);                
+                y = HnExp(x,xi,t);                
             else
-                Y = this.localExp(X,V,t);
+                y = this.localExp(x,xi,t);
             end
         end
-        function V = log(this,X,Y)
-            % log(X,Y) - Exponential map at the point(s) X of points(s) Y
-            %      in TXHn
+        function xi = log(this,x,y)
+            % xi = log(x,y) logarithmic map the point(s) x from y
             %
             % INPUT
-            %   X : a point or set of points on the manifold Hn
-            %   Y : a point or set of points on the manifold Hn
+            %   x : a point or set of points on the manifold Hn
+            %   y : a point or set of points on the manifold Hn
             %
             % OUTPUT
-            %   V : resulting point(s) of X(i) to Y(i) elementwise
+            %   xi : resulting point(s) of x(i) to y(i) elementwise
             %
             % ---
-            % Manifold-Valued Image Restoration Toolbox 1.1, R. Bergmann ~ 2015-10-20
+            % Manifold-Valued Image Restoration Toolbox 1.1
+            % R. Bergmann ~ 2015-10-20
 
             % computes v = (y+x*<x,y>)/sqrt(<x,y>^-1)*d(x,y)
             if this.useMex
-                V = HnLog(X,Y);
+                xi = HnLog(x,y);
             else
-                V = this.localLog(X,Y);
+                xi = this.localLog(x,y);
             end
-        end
-        function W = parallelTransport(this,X,Y,V)
-                % Parallel Transport the vector V from TxM to TyM
-                %
-                % directional part that changes
-                sV = size(V);
-                dir = this.log(X,Y);
-                norm_dir = repmat(sqrt(sum(dir.^2,1)),[this.ItemSize,ones(1,length(sV(2:end)))]);
-                dir = dir./norm_dir;
-                scp = sum(dir.*V,1);
-                % substract V-part (scp*dir) and add the negative direction
-                W = V - repmat(scp,[this.ItemSize,ones(1,sV(2:end))]).*(dir+this.log(Y,X)./norm_dir);
         end
         function x = mean(this,varargin)
             % mean(f) calculates the mean of the input data with a gradient
@@ -155,50 +142,48 @@ classdef Hn < manifold & handle
             x = HnMean(f,w,epsilon,iter);
             end            
         end
-        function d = dist(this,X,Y)
-            % d = dist(X,Y) - Compute the distance between points or
-            % two sets of points on the manifold H(n).
+        function d = dist(this,x,y)
+            % d = dist(x,y) distance between points x and y on Hn
             %
             % INPUT
-            %   X,Y : two points (matrices) or sets of points (matrices)
-            %         on P(m)
+            %   x,y : two points or sets of points on Hn
             %
             % OUTPUT
             %     d : resulting distances of each pair of points of p,q.
             % ---
-            % Manifold-Valued Image Restoration Toolbox 1.1, R. Bergmann ~ 2014-10-19 | 2015-04-11
+            % Manifold-Valued Image Restoration Toolbox 1.1
+            % R. Bergmann ~ 2014-10-19 | 2015-04-11
             if this.useMex
-                d = HnDist(X,Y);
+                d = HnDist(x,y);
             else
-                d = this.localDist(X,Y);
+                d = this.localDist(x,y);
             end
         end
-        function ds = dot(this,X,V,W)
-            % dot(V,W)
-            %     Compute the inner product of two tangent vectors in TXHn
+        function ds = dot(this,x,xi,nu)
+            % ds = dot(x,xi,nu) inner product of two tangent vectors in TxHn
             %
             % INPUT
-            %     X  : base point (optional because all TXM are equal)
-            %     V  : a first tangent vector( set)
-            %     W  : a secod tangent vector( set)
+            %     x  : base point (optional because all TXM are equal)
+            %    xi  : a first tangent vector( set)
+            %    nu  : a secod tangent vector( set)
             %
             % OUTPUT
             %     ds : the corresponding value(s) of the inner product of (each triple) V,W at X
             %
             % ---
-            % Manifold-Valued Image Restoration Toolbox 1.1, R. Bergmann ~ 2015-10-20
+            % Manifold-Valued Image Restoration Toolbox 1.1
+            % R. Bergmann ~ 2015-10-20
             if nargin < 4 
-                W = V;
-                V = X;
+                nu = xi;
+                xi = x;
             end
             if this.useMex
-                ds = HnDot(V,W);
+                ds = HnDot(xi,nu);
             else
-                ds = this.localDot(V,W);
+                ds = this.localDot(xi,nu);
             end
         end
-        function Y = addNoise(~,X,sigma)
-            sizes = size(X);
+        function addNoise(~,~,~)
             error('This method is not yet implemented.');
         end
     end

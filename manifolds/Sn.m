@@ -29,7 +29,7 @@ classdef Sn < manifold & handle
             obj.allDims = repelem({':'},length(obj.ItemSize));
         end
         function y = exp(this,x,xi,t)
-            % exp(x,xi) - Exponential map at x with direction xi in TxM
+            % y = exp(x,xi) exponential map at x with direction xi in TxM
             %
             % INPUT
             %   x : a point or set of points on the manifold S2
@@ -66,7 +66,7 @@ classdef Sn < manifold & handle
             end
         end
         function xi = log(this,x,y)
-            % log(x,y) - Inverse Exponential Map at x of y.
+            % xi = log(x,y) logarithmic map at x of y.
             %
             % INPUT
             %    x : point or set of (column) points indicating the
@@ -95,8 +95,7 @@ classdef Sn < manifold & handle
             end
         end
         function d = dist(this,x,y)
-            % dist(p,q) - Compute the distance between points or a set of
-            % points on the manifold S2.
+            % d = dist(p,q) distance between x,y on the manifold Sn.
             %
             % INPUT
             %   x,y : a (column) vector from S2 (embd. in R3) or a set of
@@ -118,7 +117,7 @@ classdef Sn < manifold & handle
             end
         end
         function fn = addNoise(this,f,sigma)
-            % addNoise(f,sigma) add Gaussian tangential noise to f with deviation sigma
+            % fn = addNoise(f,sigma) add Gaussian tangential noise to f w/ deviation sigma
             %
             % INPUT
             %   f   : data on Sn
@@ -172,9 +171,7 @@ classdef Sn < manifold & handle
             end
         end
         function [xi,k] = TpMONB(this,x,y)
-        % xi = TpMONB(x,y)
-        % Compute an ONB in TpM, where the first vector points to q,
-        % whin given.
+        % xi = TpMONB(x,y) compute an ONB in TpM, with first pointing to q
         %
         % INPUT
         %     x : base point( sets)
@@ -232,8 +229,7 @@ classdef Sn < manifold & handle
             end
         end
         function ds = dot(~,x,xi,nu)
-            % dot(x,xi,nu)
-            %     Compute the inner product of two tangent vectors in T_xM
+            % ds = dot(x,xi,nu) inner product of two tangent vectors in T_xSn
             %
             % INPUT
             %     x  : a point(Set) in P(n)
