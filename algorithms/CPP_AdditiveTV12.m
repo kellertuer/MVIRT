@@ -1,12 +1,13 @@
 function [x,recData] = CPP_AdditiveTV12(varargin)
-%   CPP_AddiviteTV12(M,f,alpha,beta)
+%   CPP_AddiviteTV12(M,f,alpha,beta,stoppincCriterion)
 % Compute the CPP of the first and second order TV with additive coupling
 % can also be called with a struct with the corresponding fields, i.e. as
 %   CPP_AdditiveTV12(problem).
 % 
 % INPUT
 %   M                 : a manifold.
-%   f                 : an image from M^{m_1,m_2,...,m_n} of manifold-valued data
+%   f                 : an image from M^{m_1,m_2,...,m_n} of
+%                           manifold-valued data
 %   alpha             : weight(s) for first order absolute difference terms
 %                       either a number or one for each dimension.
 %   beta              : weight(s) for each weight for second order absolute
@@ -21,25 +22,26 @@ function [x,recData] = CPP_AdditiveTV12(varargin)
 %
 %   OPTIONAL PARAMETERS
 %
-%   lambdaIterate     : (@ (iter) lambda/iter) a functional @(iter) computing the iterates value of lambda
-%   Debug             : ([]) a function @ (x,xold,iter) producing debug
-%                          output
-%   Record            : ([]) a function @(x,iter)) a function returning a column vector,
-%                       if there's a second return value and this function
-%                       is given, data is recorded in an array and returned
-%
-% 'UnknownMask'       : ([]) Specify a mask the same size as the data, i.e.,
+%  'UnknownMask'   : ([]) Specify a mask the same size as the data, i.e.,
 %                        m_1xm_2x...xm_nw, which are labeled as unknown
 %                        they are initialized in the cycles, when possible.
-%
-% 'FixedMask'         : ([]) Specify a binary mask (m_y1xm_2x...xm_n) for
+%  'FixedMask'     : ([]) Specify a binary mask (m_y1xm_2x...xm_n) for
 %                       values that are fixed. They are fixed on a 'poor
 %                       mans method', i.e. reset after each step
+%  'lambdaIterate' : (@ (iter)) a functional @(iter) computing the
+%                        iterates value of lambda
+%  'lambda'        : if no iterate (see above) is given, this value is used
+%                        to set the iterate to @(iter) lambda/iter
+%   Debug          : ([]) a function @ (x,xold,iter) producing debug
+%                       output
+%   Record         : (@(x,iter)) a function returning a column vector, if
+%                       there's a second return value and this function is
+%                       given, data is recorded in an array and returned
 %
 % R. Bergmann, M. Bacak, G. Steidl, A. Weinmann,
 %     A second order non-smooth variational model for restoring
 %     manifold-valued images,
-%     SIAM Journal on Scientific Computing, 38, (1), A567?A597, 2016.
+%     SIAM Journal on Scientific Computing, 38, (1), A567-A597, 2016.
 % ---
 % MVIRT | R. Bergmann | 2018-01-22
 if (length(varargin)==1 && isstruct(varargin{1})) % as struct
