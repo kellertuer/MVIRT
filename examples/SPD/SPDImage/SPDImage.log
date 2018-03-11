@@ -1,0 +1,161 @@
+ --- Logfile of Experiment SPDImage started 07-Mar-2018 23:23:30 ---
+Using File Data generated 31-Jan-2017 21:58:36.
+ans = 
+  <a href="matlab:helpPopup matlab.ui.Figure" style="font-weight:bold">Figure</a> (2) with properties:
+
+      Number: 2
+        Name: ''
+       Color: [0.9400 0.9400 0.9400]
+    Position: [560 528 560 420]
+       Units: 'pixels'
+
+  Show <a href="matlab:if exist('ans', 'var'), matlab.graphics.internal.getForDisplay('ans', ans, 'matlab.ui.Figure'), else, matlab.graphics.internal.getForDisplay('ans'), end">all properties</a>
+problem = 
+  <a href="matlab:helpPopup struct" style="font-weight:bold">struct</a> with fields:
+
+                    M: [1×1 SymPosDef]
+                    f: [3×3×25×25 double]
+               lambda: 0.1000
+    stoppingCriterion: [function_handle]
+                Debug: 100
+M = 
+  <a href="matlab:helpPopup SymPosDef" style="font-weight:bold">SymPosDef</a> with properties:
+
+         type: 'symmetric positive definite 3x3 matrices'
+     ItemSize: [3 3]
+    Dimension: 6
+      allDims: {':'  ':'}
+       useMex: 1
+Parameter range alpha (4 values): 0,0.1,0.2,0.4.
+Parameter range beta  (3 values): 0,1,2.
+100 F: 0 last change: 0.
+200 F: 0 last change: 0.
+300 F: 0 last change: 0.
+400 F: 0 last change: 0.
+500 F: 0 last change: 0.
+600 F: 0 last change: 0.
+700 F: 0 last change: 0.
+800 F: 0 last change: 0.
+Min TV 0.60969.
+Min TV12 0.60969.
+Parameters: \alpha=0 \beta=0 yield 0.60969.
+100 F: 89.0699 last change: 0.27367.
+200 F: 88.173 last change: 0.12594.
+300 F: 87.7114 last change: 0.079998.
+400 F: 87.4093 last change: 0.057976.
+500 F: 87.1886 last change: 0.045165.
+600 F: 87.0166 last change: 0.03683.
+700 F: 86.8767 last change: 0.030995.
+800 F: 86.7596 last change: 0.026694.
+Min TV 0.51464.
+Min TV12 0.51464.
+Parameters: \alpha=0.1 \beta=0 yield 0.51464.
+100 F: 153.1763 last change: 0.48494.
+200 F: 150.3491 last change: 0.21917.
+300 F: 148.9319 last change: 0.13774.
+400 F: 148.0193 last change: 0.099116.
+500 F: 147.3599 last change: 0.076797.
+600 F: 146.8507 last change: 0.062352.
+700 F: 146.4397 last change: 0.052283.
+800 F: 146.0976 last change: 0.044887.
+Min TV 0.44664.
+Min TV12 0.44664.
+Parameters: \alpha=0.2 \beta=0 yield 0.44664.
+100 F: 232.9888 last change: 0.71732.
+200 F: 226.7107 last change: 0.31355.
+300 F: 223.7075 last change: 0.19402.
+400 F: 221.8215 last change: 0.13825.
+500 F: 220.4816 last change: 0.10638.
+600 F: 219.4594 last change: 0.085922.
+700 F: 218.6422 last change: 0.071752.
+800 F: 217.9673 last change: 0.061396.
+Min TV 0.39538.
+Min TV12 0.39538.
+Parameters: \alpha=0.4 \beta=0 yield 0.39538.
+100 F: 287.5902 last change: 0.66808.
+200 F: 271.9401 last change: 0.28454.
+300 F: 264.5444 last change: 0.17261.
+400 F: 259.9262 last change: 0.12126.
+500 F: 256.6551 last change: 0.092451.
+600 F: 254.1631 last change: 0.074285.
+700 F: 252.1728 last change: 0.061616.
+800 F: 250.5293 last change: 0.052621.
+Min TV12 0.38313.
+Parameters: \alpha=0 \beta=1 yield 0.38313.
+100 F: 296.4631 last change: 0.68325.
+200 F: 281.9949 last change: 0.2899.
+300 F: 275.1883 last change: 0.17725.
+400 F: 270.9405 last change: 0.12547.
+500 F: 267.9313 last change: 0.09607.
+600 F: 265.638 last change: 0.077527.
+700 F: 263.8061 last change: 0.064075.
+800 F: 262.2928 last change: 0.05468.
+Min TV12 0.37774.
+Parameters: \alpha=0.1 \beta=1 yield 0.37774.
+100 F: 306.8528 last change: 0.70873.
+200 F: 293.0741 last change: 0.30432.
+300 F: 286.5656 last change: 0.18684.
+400 F: 282.4905 last change: 0.13239.
+500 F: 279.5968 last change: 0.10155.
+600 F: 277.3881 last change: 0.082031.
+700 F: 275.6211 last change: 0.068302.
+800 F: 274.1601 last change: 0.058288.
+Parameters: \alpha=0.2 \beta=1 yield 0.38409.
+100 F: 327.0859 last change: 0.78461.
+200 F: 313.4723 last change: 0.34144.
+300 F: 307.0162 last change: 0.21076.
+400 F: 302.9779 last change: 0.14972.
+500 F: 300.1154 last change: 0.1152.
+600 F: 297.9331 last change: 0.092692.
+700 F: 296.1893 last change: 0.077647.
+800 F: 294.7489 last change: 0.06621.
+Parameters: \alpha=0.4 \beta=1 yield 0.41736.
+100 F: 328.7924 last change: 0.68149.
+200 F: 313.1101 last change: 0.29107.
+300 F: 305.7121 last change: 0.18031.
+400 F: 301.0649 last change: 0.12778.
+500 F: 297.7592 last change: 0.098742.
+600 F: 295.2339 last change: 0.080304.
+700 F: 293.2077 last change: 0.066889.
+800 F: 291.5279 last change: 0.056496.
+Parameters: \alpha=0 \beta=2 yield 0.39267.
+100 F: 336.2971 last change: 0.7108.
+200 F: 320.8314 last change: 0.30918.
+300 F: 313.4677 last change: 0.19349.
+400 F: 308.8344 last change: 0.13509.
+500 F: 305.5262 last change: 0.10274.
+600 F: 302.9956 last change: 0.084094.
+700 F: 300.9642 last change: 0.069962.
+800 F: 299.2821 last change: 0.060422.
+Parameters: \alpha=0.1 \beta=2 yield 0.40548.
+100 F: 343.3922 last change: 0.74927.
+200 F: 327.8462 last change: 0.32457.
+300 F: 320.4169 last change: 0.20229.
+400 F: 315.7412 last change: 0.14504.
+500 F: 312.4101 last change: 0.10951.
+600 F: 309.8623 last change: 0.089507.
+700 F: 307.8195 last change: 0.073903.
+800 F: 306.1278 last change: 0.064691.
+Parameters: \alpha=0.2 \beta=2 yield 0.42217.
+100 F: 355.3444 last change: 0.82395.
+200 F: 339.3954 last change: 0.35903.
+300 F: 331.8177 last change: 0.22215.
+400 F: 327.0658 last change: 0.1573.
+500 F: 323.6923 last change: 0.12323.
+600 F: 321.1187 last change: 0.09742.
+700 F: 319.0627 last change: 0.083986.
+800 F: 317.3663 last change: 0.070905.
+Parameters: \alpha=0.4 \beta=2 yield 0.46139.
+Minimum: Parameters: \alpha=0.1         0.1           0           0 \beta=1 yields minimal value 0.37774.
+Minimum: Parameter: \alpha=0.4         0.4           0           0 yields minimal value 0.39538.
+ans = 
+  <a href="matlab:helpPopup matlab.ui.Figure" style="font-weight:bold">Figure</a> (4) with properties:
+
+      Number: 4
+        Name: ''
+       Color: [0.9400 0.9400 0.9400]
+    Position: [560 528 560 420]
+       Units: 'pixels'
+
+  Show <a href="matlab:if exist('ans', 'var'), matlab.graphics.internal.getForDisplay('ans', ans, 'matlab.ui.Figure'), else, matlab.graphics.internal.getForDisplay('ans'), end">all properties</a>
+ --- Logfile of Experiment SPDImage; ended 08-Mar-2018 08:22:52 ---

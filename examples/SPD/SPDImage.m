@@ -93,8 +93,8 @@ if useLogfile
     problem %#ok<NOPTS>
     M       %#ok<NOPTS>
 end
-alpha = [0,0.2,0.4];
-beta = [0,0.7, 1.4];
+alpha = [0,0.1,0.2,0.4];
+beta = [0,1,2];
 disp(['Parameter range alpha (',num2str(length(alpha)),' values): ',regexprep(num2str(alpha,5), '\s*', ','),'.']);
 disp(['Parameter range beta  (',num2str(length(beta)),' values): ',regexprep(num2str(beta,5), '\s*', ','),'.']);
 
@@ -125,7 +125,7 @@ for i=1:length(alpha)*length(beta)
     if t < minTV12
         minTV12 = t;
         minTV12a = problem.alpha;
-        minTV121b = problem.beta;
+        minTV12b = problem.beta;
         disp(['Min TV12 ',num2str(t),'.']);
         TV12sig = fr;
     end
@@ -148,10 +148,10 @@ disp(['Minimum: Parameter: \alpha=',num2str(minTVa),' yields minimal value ',num
 if showFigures
     figure(3);
     plotSPD(TVsig,'GridDistance',gS,'EllipsoidPoints',12);
-    title(['Best TV1&2 Result having E=',num2str(minValue)]);
+    title(['Best TV1&2 Result having E=',num2str(minTV)]);
     figure(4);
     plotSPD(TV12sig,'GridDistance',gS,'EllipsoidPoints',12)
-    title(['Best TV Result having E=',num2str(minValueTV)]);
+    title(['Best TV Result having E=',num2str(minTV12)]);
 end
 %% End logfile
 if useLogfile
