@@ -1,4 +1,4 @@
-function fileStr = exportSpherePtsCrvTVec2Asy(varargin)
+function fileStr = exportSpherePCT2Asy(varargin)
 % fileStr = exportSphereSignals2Asymptote(pts,curves,xi,colors)
 % Export a onedimensional signal of spherical data to points on the sphere
 %

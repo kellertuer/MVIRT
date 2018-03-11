@@ -1,11 +1,13 @@
 function [x1,x2,x3,x4] = proxAbsoluteSecondOrderMixedDifference(M,f1,f2,f3,f4,lambda)
 % proxAbsoluteSecondOrderMixedDifference(M,f1,f2,f3,f4,lambda)
 % Compute the second order mixed difference based on the mid point model
-% employing a gradient descent
-%  INPUT
+% employing a sub gradient descent
+%
+% INPUT
 %    M          : a manifold
 %   f1,f2,f3,f4 : Data items from a 2x2 matrix each
 %   lambda      : parameter of the proximal map
+%
 % OUTPUT
 %  x1,x2,x3,x4 : result of the proximal map
 % ---

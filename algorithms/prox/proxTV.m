@@ -1,35 +1,34 @@
 function y = proxTV(varargin)
-% proxTV(M,x,lambda) - compute all proxima of the finite differences within
-% the TV term in a cyclic manner (even/odd). Items containing a NaN will
-% be initalized with their first prox call.
+% proxTV(M,x,lambda) compute all proxima of TV in a cyclic manner.
+% Items containing a NaN will be initalized with their first prox call.
+%
 % INPUT
 %     M         : a manifold
 %     x         : data (manifold-valued)
-%   lambda      : parameter of the prox ? given as a vector, an entry for
-%   each dimension, or a matrix, the diagonal for the TV terms, the
-%   offdiagonals for diagonal differences.
+%   lambda      : parameter of the prox
+%                   if given as a vector, an entry for each dimension,
+%                   or a matrix, the diagonal for the TV terms,
+%                   the offdiagonals for diagonal differences.
 %
 % OPTIONAL
 %   'FixedMask' : binary mask the size of data items in x to indicate fixed
 %   data items
 %   'DifferenceProx' : (@(x1,x2,lambda)
-%   proxAbsoluteDifference(M,x1,x2,lambda))
+%                                   proxAbsoluteDifference(M,x1,x2,lambda))
 %                      specify a prox for the even/odd TV term proxes, i.e.
 %                      switch the classical TV by Huber.
 %
 % OUTPUT
 %     y     : result of the (iterated) proximal maps)
 % ---
-% MVIRT ? R. Bergmann ~ 2017-12-11
+% Manifold-valued Image Restoration Toolbox 1.2 | R. Bergmann | 2018-02-09
 
-% TODO
-% Diagonals?
 ip = inputParser();
 addRequired(ip,'M', @(x) validateattributes(x,{'manifold'},{}))
 addRequired(ip,'x');
 addRequired(ip,'lambda');
-addOptional(ip,'FixedMask',[]);
-addOptional(ip,'DifferenceProx',[]);
+addParameter(ip,'FixedMask',[]);
+addParameter(ip,'DifferenceProx',[]);
 parse(ip, varargin{:});
 vars = ip.Results;
 if isempty(vars.DifferenceProx)

@@ -1,8 +1,8 @@
 function [x1,x2] = proxAbsoluteDifference(M,f1,f2,lambda)
-% proxAbsoluteDifference(M,f1,f2,lambda)
-% Proximal steps for the absolute difference (TV summand) of f1 and f2 with
-% parameter lambda on an arbitrary manifold. This is
-% the proximal map of the piointwise distance function d(f1,f2).
+% proxAbsoluteDifference(M,f1,f2,lambda) prox of d_M(f1,f2) in both args
+% with parameter lambda on an arbitrary manifold. Values containing NaN
+% are initialized to the other argument, which is the minimizer.
+%
 %
 % INPUT
 %   M         : A manifold

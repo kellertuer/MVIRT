@@ -1,17 +1,15 @@
 function [y,w] = proxParallelTV(varargin)
-% proxTV(M,x,lambda) - compute all proxima of the finite differences within
-% the TV term in a cyclic manner (even/odd). Items containing a NaN will
-% be initalized with their first prox call.
+% proxParallelTV(M,x,lambda) compute all proxima the tv prior in parallel
+% Items containing a NaN will be initalized with their first prox call.
 % and the results saved in indepentend arrays concatenated at the first
 % signular dimension.
+%
 % INPUT
 %     M         : a manifold
-%     x         : an dataset from M^{m_1,m_2,...,m_n,K} of manifold-valued,
-%                 data, where k equals 2*sum(lambda>0), i.e. the number of
-%                  parallel proxes this term evaluates
+%     x         : an dataset from M^{n_1,m_2,...,n_m} = M^n
 %   lambda      : parameter of the proxes given as a vector, an entry for
-%   each dimension, or a matrix, the diagonal for the TV terms, the
-%   offdiagonals for diagonal differences.
+%                 each dimension, or a matrix, the diagonal for the TV
+%                 terms, the offdiagonals for diagonal differences.
 %
 % OPTIONAL
 %   'FixedMask' : binary mask the size of data items in x to indicate fixed
@@ -22,12 +20,12 @@ function [y,w] = proxParallelTV(varargin)
 %                      switch the classical TV by Huber.
 %
 % OUTPUT
-%     y     : result of the (parallel) proximal maps
+%     y     : result of the (parallel) proximal maps, i,e, of size M^m,L,
+%             where L is 2*sum(lambda>0), i.e. the number of parallel
+%             proxes this term evaluates
 % ---
-% MVIRT ? R. Bergmann ~ 2017-12-11
+% Manifold-valued Image Restoration Toolbox 1.2 | R. Bergmann | 2018-02-09
 
-% TODO
-% Diagonals?
 ip = inputParser();
 addRequired(ip,'M', @(x) validateattributes(x,{'manifold'},{}))
 addRequired(ip,'x');

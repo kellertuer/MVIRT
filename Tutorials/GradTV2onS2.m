@@ -34,13 +34,17 @@ vecs = -cat(2,gradX,gradY,gradZ);
 
 %first the vecors
 quiver3(pts(1,:),pts(2,:),pts(3,:),vecs(1,:),vecs(2,:),vecs(3,:));
+vecs1 = permute(cat(3,pts,vecs),[1,3,2]);
 hold on
 %Then the 4 points
 plotS2(cat(2,x,y,z,c),'o','MarkerSize',3);
+pts1 = cat(2,x,y,z,c);
 %xz for help where the mid points at
 plotS2(M.geodesic(x,z,'t',0:1/100:1),'-');
+geo1 = M.geodesic(x,z,'t',0:1/100:1);
 %Dashed line indicating the length computed above
 plotS2(M.geodesic(y,c,'t',0:1/100:1),'--b');
+geo2 = M.geodesic(y,c,'t',0:1/100:1);
 hold off
 
 %we do a step in gradient direction, just with step size 1
@@ -54,8 +58,15 @@ M.dist(yN,M.midPoint(xN,zN))
 hold on
 % as one can see, printing them again into the sphere.
 plotS2(cat(2,xN,yN,zN,M.midPoint(xN,zN)),'o','MarkerSize',3);
+pts2 = cat(2,xN,yN,zN,M.midPoint(xN,zN));
 plotS2(M.geodesic(xN,zN,'t',0:1/100:1),'-');
+geo3 = M.geodesic(xN,zN,'t',0:1/100:1);
 plotS2(M.geodesic(yN,M.midPoint(xN,zN),'t',0:1/100:1),'--k');
+geo4 = M.geodesic(yN,M.midPoint(xN,zN),'t',0:1/100:1);
 hold off
 
-
+exportSpherePCT2Asy({pts1,pts2},{geo1,geo2,geo3,geo4},{vecs1},...
+{[0;0;.66],[.33;0;.66],...
+    [0;0;0],[0;0;0],[0;.5;0],[0;.5;0],...
+    [0;0.5;1]},...
+    'File','gradTV2onS2/grad.asy','DotSize',[5,5,1,1,1,1,2],'Camera',[1,.8,.6],'ArrowHead',10);

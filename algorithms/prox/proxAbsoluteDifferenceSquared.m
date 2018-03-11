@@ -1,10 +1,8 @@
 function [x1,x2] = proxAbsoluteDifferenceSquared(M,f1,f2,lambda)
-% proxTV(f,lambda)
-% Proximal steps of the discrete total variation squared of
-% f1 and f2 with parameter lambda on an arbitrary manifold.
-% This is the proximal map of
-% the piointwise distance function squared d^2(f1,f2). Terms with one
-% unknown (NaN) entry are inpainted).
+% proxAbsoluteDifference(M,f1,f2,lambda) prox of d^2_M(f1,f2) in both args
+% with parameter lambda on an arbitrary manifold. Values containing NaN
+% are initialized to the other argument, which is the minimizer.
+%
 % INPUT
 %   M       : A manifold
 %  f1,f2    : data columns
@@ -13,7 +11,7 @@ function [x1,x2] = proxAbsoluteDifferenceSquared(M,f1,f2,lambda)
 % OUTPUT
 %  x1,x2    : resulting columns of the proximal map
 % ---
-% ManImRes 1.0, R. Bergmann ~ 2014-10-19
+% Manifold-valued Image Restoration Toolbox 1.0 ~ R. Bergmann, 2014-10-19
 sizef = size(f1);
 mD = sizef(1:length(M.ItemSize));
 dD = sizef(length(M.ItemSize)+1:end);

@@ -1,4 +1,33 @@
-function [x1,x2,x3] = proxAbsoluteSecondOrderDifference(M,f1,f2,f3,lambda)
+function [x1,x2,x3] = proxAbsoluteSecondOrderDifference(M,f1,f2,f3,lambda,stepSize,stopCrit)
+% proxAbsoluteSecondOrderDifference(M,f1,f2,f3,lambda) prox d2(f1,f2,f3)
+% Compute the proximal map of a second order difference (mid point model)
+% by a subgradient descent. This formula was derived in
+%
+% R. Bergmann, M. Bacak, G. Steidl, A. Weinmann,
+%     A second order non-smooth variational model for restoring
+%     manifold-valued images,
+%     SIAM Journal on Scientific Computing, 38, (1), A567?A597, 2016.
+%
+% INPUT
+%   M        : a manifold
+%   f1,f2,f3 : three point(sets)
+%   lambda   : prox paramater
+%
+% OPTIONAL
+%    stepSize : (@(x,eta,iter,old_step) 1/iter) a functional determining
+%               the step size of the subgradient algorithm.
+%    stopCrit : (stopCritMaxIterEpsilonCreator(M,3,10^(-9))) a stopping
+%               criterion functional ( @(x,xold,lambda,iter) )
+% ---
+% Manifold-valued Image Restoration Toolbox 1.0
+% R. Bergmann ~ 2015-04-22 | 2018-03-08
+% see LICENSE.txt
+if nargin < 7
+   stopCrit = stopCritMaxIterEpsilonCreator(M,3,10^(-9)); %
+end 
+if nargin < 6
+  stepSize = @(x,eta,iter,old_step) 1/iter;
+end
 sizef = size(f1);
 mD = sizef(1:length(M.ItemSize));
 mL = length(mD);
@@ -74,8 +103,6 @@ if any(mask(:)) % we have equal nonequal values -> compute proxes
             M.dist(x(M.allDims{:},2,:),t2).^2 + ...
             M.dist(x(M.allDims{:},3,:),t3).^2 + ...
             lambda*M.dist(x(M.allDims{:},2,:),M.midPoint(x(M.allDims{:},1,:),x(M.allDims{:},3,:)));
-        stepSize = @(x,eta,iter,old_step) 1/iter;
-        stopCrit = stopCritMaxIterEpsilonCreator(M,3,10^(-9)); %
         xt = subGradientDescent(M,xInit,F,gradF,stepSize,stopCrit);
     end
     x1(M.allDims{:},mask) = xt(M.allDims{:},1,:);

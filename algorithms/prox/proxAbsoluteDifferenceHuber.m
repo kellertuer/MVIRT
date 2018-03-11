@@ -1,11 +1,11 @@
 function [x1,x2] = proxAbsoluteDifferenceHuber(M,f1,f2,lambda,tau,omega)
-% proxTV(f,lambda)
-% Proximal steps for the absolute difference (TV summand) coupled with a
-% Huber function,
+% proxAbsoluteDifferenceHuber(M,f1,f2,lambda,tau,omega) prox d(x,y) relaxed
+% Given the Huber function
 % h(t) = tau^2t^2 for t< omega/(sqrt(2)tau), omega*sqrt(2)*tau*t - omega^2/2
 % i.e. for small t a suqared function (steered by tau) and for large t a
 % linear part with ascent omega.
-% As usual lambda is the prox parameter and this prox works on arbitrary manifolds
+% lambda is the prox parameter, as for the absolute difference, this
+% function inpaints NaN values and works on arbitrary manifolds
 %
 % INPUT
 %   M         : A manifold

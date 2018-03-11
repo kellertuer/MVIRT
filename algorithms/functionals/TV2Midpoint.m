@@ -1,4 +1,4 @@
-function d = proxTV2midpoint(varargin)
+function d = TV2Midpoint(varargin)
 % proxTV(M,x,lambda) : compute the second order TV term value
 %
 % INPUT
