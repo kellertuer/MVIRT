@@ -8,7 +8,7 @@ function [x,recData] = subGradientDescent(varargin)
 %
 %   Ferreira, O.P.; Oliverira, P.R. ? Subgradient Algorithm on Riemannian
 %       manifolds
-%       Journal of Optimization Theory and Applications 97.1, 93?104, 1998.
+%       Journal of Optimization Theory and Applications 97.1, 93-104, 1998.
 %
 % INPUT
 %    M                : a manifold M
@@ -82,9 +82,9 @@ s = 1;
 while ~vars.stoppingCriterion(x,xold,s,iter)
     iter=iter+1;
     xold = x;
-    descentDir = vars.gradF(x);
+    descentDir = -vars.gradF(x);
     s = vars.stepSize(x,descentDir,iter,s);
-    x = vars.M.exp(x,-s.*descentDir);
+    x = vars.M.exp(x,s.*descentDir);
     if parallel
         update = vars.F(x)<vars.F(xOpt);
         xOpt(vars.M.allDims{:},dataF{:},update) = x(vars.M.allDims{:},dataF{:},update);

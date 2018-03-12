@@ -1,14 +1,18 @@
 function fct = stopCritMaxIterEpsilonCreator(M,maxIter, epsilon)
-% stopCritMaxIterEpsilonCreator(M,maxIter,epsilon)
-% Cearet a stopping Criterion function for a maximal number of iterations
-%   or a minimal maximal change, whichever hits first.
+% stopCritMaxIterEpsilonCreator(M,maxIter,epsilon) create a stopping
+% criterion based on a maximal number of iterations or a minimal
+% maximal change per element
 %
 % INPUT
 %   M      : the manifold the data lives on
 %  maxIter : the maximal number of iterations
 % epsilon  : the maximal change within an iteration
+%
+% OUTPUT
+%   fct : a functional @(x,xold,s,iter) suitable for both (sub) gradient
+%           descent or cyclic proximal point
 % ---
-% MVIRT 1.1 | R. Bergmann | 2018-01-25
+% MVIRT 1.1 | R. Bergmann | 2018-01-25
 fct = @(x,xold,~,iter) ...
     (max(M.dist(...
         x(M.allDims{:},...
@@ -18,6 +22,5 @@ fct = @(x,xold,~,iter) ...
             reshape(any(reshape(~isnan(xold)&~isnan(x),prod(M.ItemSize),[]),1),[],1)...
         )...
         )) < epsilon ...
-    || (iter > maxIter) ) && iter>1 && ~isnan(any(x(:))) && ~isnan(any(xold(:)));
+    || (iter >= maxIter) ) && iter>1 && ~isnan(any(x(:))) && ~isnan(any(xold(:)));
 end
-

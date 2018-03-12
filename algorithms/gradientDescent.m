@@ -1,23 +1,28 @@
 function [x,recData] = gradientDescent(varargin)
-% gradientDescent(M,x,gradF,stepSizeRule,stoppingCriterion) - compute a
-% gradient descent based on
+% gradientDescent(M,x,gradF,stepSizeRule,stoppingCriterion)
+%    compute a gradient descent based on
 %
 % INPUT
 %    M                : a manifold M
 %    x                : initial data
 %    gradF            : a function @(x) returning the gradient of F at x
-%    stepSize         : a function @(x,eta,iter,initial) returning the stepsize at x
-%                           with direction eta corresponding to a certain
-%                           rule (e.g. Amijo) based on iterate point x,
-%                           descent direction eta, iteration iter and initial stepsize initial.
+%    stepSize         : a function @(x,eta,iter,initial) returning the
+%                       stepsize at x with direction eta corresponding to a
+%                       certain rule (e.g. Amijo) based on iterate point x,
+%                       descent direction eta, iteration iter and initial
+%                       stepsize initial.
 %   stoppingCriterion : a function @(x,xold,iter) determining whether to
-%   stop or not
+%                       stop or not
+%
 % OPTIONAL
 %   Debug             : ([]) a function @ (x,xold,iter) producing debug
 %                          output
 %   Record            : (@(x,iter)) a function returning a column vector,
 %                       if there's a second return value and this function
 %                       is given, data is recorded in an array and returned
+% ---
+% MVIRT | R. Bergmann | 2018-01-22
+
 ip = inputParser();
 addRequired(ip,'M', @(x) validateattributes(x,{'manifold'},{}))
 addRequired(ip,'x');
@@ -45,9 +50,9 @@ s = 1;
 while ~vars.stoppingCriterion(x,xold,s,iter)
     iter=iter+1;
     xold = x;
-    descentDir = vars.gradF(x);
+    descentDir = -vars.gradF(x);
     s = vars.stepSize(x,descentDir,iter,s);
-    x = vars.M.exp(x,-s.*descentDir);
+    x = vars.M.exp(x,s.*descentDir);
     if record
         recData = cat(2,recData,vars.Record(x,xold,iter));
     end
