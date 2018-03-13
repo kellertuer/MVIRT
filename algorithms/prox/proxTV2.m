@@ -37,7 +37,7 @@ if isempty(vars.SecDiffProx)
 end
 if isempty(vars.SecDiffMixProx)
     vars.SecDiffMixProx = @(x1,x2,x3,x4,lambda) ...
-        proxAbsoluteSecondOrderMixedDifference(vars.M,x1,x2,x3,,x4,lambda);
+        proxAbsoluteSecondOrderMixedDifference(vars.M,x1,x2,x3,x4,lambda);
 end
 sX = size(vars.x);
 dataDims = sX( (length(vars.M.ItemSize)+1):end );

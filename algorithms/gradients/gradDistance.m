@@ -19,8 +19,8 @@ if p ~= 2
     eta = eta.*shiftdim(d.^(p-2),-mD);
     % securly avoid division by zero
     if any(d(:)<eps)
-        warning('gradDist returns an element from the subdifferential only.');
-        eta(M.manDims{:},d<eps) = 0;
+       % warning('gradDist returns an element from the subdifferential only.');
+        eta(M.allDims{:},d<eps) = 0;
     end
 else
     eta = -M.log(x,y);

@@ -1,25 +1,26 @@
 function eta = gradTV2Midpoint(varargin)
-% gradTV2Log ? compute the second order Log model ||Log_y x + Log_y z ||
-% for all 3 successive terms in x.
-%
+% gradTV2Midpoint(M,x) compute gradient of the second order mid point model
 % INPUT
-% M : Manifold
-% x : data to evaluate the gradient at
-%
+%   M      :  a manifold
+%   x      : data (size [manDims,dataDims])
+%   
 % OPTIONAL
-%   'p       : (p=1) compute TV with p-norm coupling in the dimensions of the
-%             data, i.e. anisotropic TV for p=1 and isotropic for p=2
-%  epsilon   : compute the gradient of the epsilon-relaxed TV
-%  weights   : (ones(dataDims) exclude certain data points from all gradient terms
+%   'p'       : (p=1) compute TV with p-norm coupling in the dimensions of
+%               the data, i.e. anisotropic TV for p=1 and isotropic for p=2
+%  'epsilon'  : compute the gradient of the epsilon-relaxed TV
+%  'weights'  : (ones(dataDims)) exclude certain data points from all
+%               gradient terms
 %
 % OUTPUT
 %   eta : the gradient
+% ---
+% MVIRT, R. Bergmann, 2017-12-08
 ip = inputParser();
 addRequired(ip,'M', @(x) validateattributes(x,{'manifold'},{}))
 addRequired(ip,'x');
-addOptional(ip,'p',1);
-addOptional(ip,'Epsilon',0);
-addOptional(ip,'Weights',[]);
+addParameter(ip,'p',1);
+addParameter(ip,'Epsilon',0);
+addparameter(ip,'Weights',[]);
 parse(ip, varargin{:});
 vars = ip.Results;
 sX = size(vars.x);

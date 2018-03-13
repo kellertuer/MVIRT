@@ -1,0 +1,258 @@
+ --- Logfile of Experiment DenoisePeppers_RGB started 10-Mar-2018 07:56:29 ---
+Using File Data generated 31-Jan-2017 21:58:36.
+problem = 
+  <a href="matlab:helpPopup struct" style="font-weight:bold">struct</a> with fields:
+
+                    M: [1×1 Rn]
+                    f: [3×512×512 double]
+               lambda: 1.5708
+    stoppingCriterion: [function_handle]
+                Debug: 100
+                alpha: [0.0500 0.0500 0 0]
+                 beta: 0
+ans = 
+  <a href="matlab:helpPopup Rn" style="font-weight:bold">Rn</a> with properties:
+
+         type: 'R3'
+     ItemSize: 3
+    Dimension: 3
+      allDims: {':'}
+       useMex: 1
+ans =
+     0     0
+ans =
+    0.0500         0
+{Operation terminated by user during <a href="matlab:matlab.internal.language.introspective.errorDocCallback('TV', '/Users/ronny/Repositories/MVIRT/algorithms/functionals/TV.m', 40)" style="font-weight:bold">TV</a> (<a href="matlab: opentoline('/Users/ronny/Repositories/MVIRT/algorithms/functionals/TV.m',40,0)">line 40</a>)
+
+In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('SecondOrderMidpointModel', '/Users/ronny/Repositories/MVIRT/algorithms/functionals/SecondOrderMidpointModel.m', 30)" style="font-weight:bold">SecondOrderMidpointModel</a> (<a href="matlab: opentoline('/Users/ronny/Repositories/MVIRT/algorithms/functionals/SecondOrderMidpointModel.m',30,0)">line 30</a>)
+    + TV(vars.M,vars.x,'Epsilon',vars.Epsilon,'Weights',vars.alpha) ...
+In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('CPP_AdditiveTV12>@(x)SecondOrderMidpointModel(vars.M,vars.f,x,vars.alpha,vars.beta,1,0)')" style="font-weight:bold">CPP_AdditiveTV12>@(x)SecondOrderMidpointModel(vars.M,vars.f,x,vars.alpha,vars.beta,1,0)</a>
+In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('createDebugFct>@(x,xold,iter)dispIf(mod(iter,modIter)==0,[num2str(iter),'' F: '',num2str(F(x)),'' last change: '',num2str(sum(reshape(M.dist(x(M.allDims{:},:),xold(M.allDims{:},:)),[],1))*prod(M.ItemSize)/size(x,2)),''.''])', '/Users/ronny/Repositories/MVIRT/debug/createDebugFct.m', 24)" style="font-weight:bold">createDebugFct>@(x,xold,iter)dispIf(mod(iter,modIter)==0,[num2str(iter),' F: ',num2str(F(x)),'
+last change:
+',num2str(sum(reshape(M.dist(x(M.allDims{:},:),xold(M.allDims{:},:)),[],1))*prod(M.ItemSize)/size(x,2)),'.'])</a>
+(<a href="matlab: opentoline('/Users/ronny/Repositories/MVIRT/debug/createDebugFct.m',24,0)">line 24</a>)
+        [num2str(iter),' F: ',num2str(F(x)),...
+In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('cyclicProximalPoint', '/Users/ronny/Repositories/MVIRT/algorithms/cyclicProximalPoint.m', 112)" style="font-weight:bold">cyclicProximalPoint</a> (<a href="matlab: opentoline('/Users/ronny/Repositories/MVIRT/algorithms/cyclicProximalPoint.m',112,0)">line 112</a>)
+        vars.Debug(x,xold,iter);
+In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('CPP_AdditiveTV12', '/Users/ronny/Repositories/MVIRT/algorithms/CPP_AdditiveTV12.m', 101)" style="font-weight:bold">CPP_AdditiveTV12</a> (<a href="matlab: opentoline('/Users/ronny/Repositories/MVIRT/algorithms/CPP_AdditiveTV12.m',101,0)">line 101</a>)
+    x = cyclicProximalPoint(vars.M,f,proximalMaps,vars.stoppingCriterion,...
+In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('PeppersRGB', '/Users/ronny/Repositories/MVIRT/examples/Rn/PeppersRGB.m', 98)" style="font-weight:bold">PeppersRGB</a> (<a href="matlab: opentoline('/Users/ronny/Repositories/MVIRT/examples/Rn/PeppersRGB.m',98,0)">line 98</a>)
+            Rrgb = permute(CPP_AdditiveTV12(problem),[2,3,1]);} 
+GradTV2onS2
+ --- Initializing the Manifold-valued Image Restoration Toolbox --- 
+ans =
+    1.4923
+ans =
+    0.3873
+A = M.mean(permute(x,[1,2,4,3]))
+A =
+     1
+     0
+     0
+A = M.mean(permute(x,[1,2,4,3]))
+A =
+     1
+     0
+     0
+GradTV2onS2
+{Error: <a href="matlab: opentoline('/Users/ronny/Repositories/MVIRT/Tutorials/GradTV2onS2.m',68,63)">File: GradTV2onS2.m Line: 68 Column: 63
+</a>Expression or statement is incorrect--possibly unbalanced (, {, or [.} 
+GradTV2onS2
+ --- Initializing the Manifold-valued Image Restoration Toolbox --- 
+ans =
+    1.4923
+{Undefined function or variable 'premute'.
+Error in <a href="matlab:matlab.internal.language.introspective.errorDocCallback('GradTV2onS2', '/Users/ronny/Repositories/MVIRT/Tutorials/GradTV2onS2.m', 37)" style="font-weight:bold">GradTV2onS2</a> (<a href="matlab: opentoline('/Users/ronny/Repositories/MVIRT/Tutorials/GradTV2onS2.m',37,0)">line 37</a>)
+vecs1 = premute(cat(3,pts,vecs),[1,3,2]);} 
+GradTV2onS2
+ --- Initializing the Manifold-valued Image Restoration Toolbox --- 
+ans =
+    1.4923
+ans =
+    0.3873
+{Error using <a href="matlab:matlab.internal.language.introspective.errorDocCallback('exportSpherePCT2Asy', '/Users/ronny/Repositories/MVIRT/helpers/export/exportSpherePCT2Asy.m', 52)" style="font-weight:bold">exportSpherePCT2Asy</a> (<a href="matlab: opentoline('/Users/ronny/Repositories/MVIRT/helpers/export/exportSpherePCT2Asy.m',52,0)">line 52</a>)
+Wrong color dimensions 8 (data requires7)
+Error in <a href="matlab:matlab.internal.language.introspective.errorDocCallback('GradTV2onS2', '/Users/ronny/Repositories/MVIRT/Tutorials/GradTV2onS2.m', 68)" style="font-weight:bold">GradTV2onS2</a> (<a href="matlab: opentoline('/Users/ronny/Repositories/MVIRT/Tutorials/GradTV2onS2.m',68,0)">line 68</a>)
+exportSpherePCT2Asy({pts1,pts2},{geo1,geo2,geo3,geo4},{vecs1},...} 
+GradTV2onS2
+ --- Initializing the Manifold-valued Image Restoration Toolbox --- 
+ans =
+    1.4923
+ans =
+    0.3873
+{Error using <a href="matlab:matlab.internal.language.introspective.errorDocCallback('fprintf')" style="font-weight:bold">fprintf</a>
+Invalid file identifier. Use fopen to generate a valid file identifier.
+Error in <a href="matlab:matlab.internal.language.introspective.errorDocCallback('exportSpherePCT2Asy', '/Users/ronny/Repositories/MVIRT/helpers/export/exportSpherePCT2Asy.m', 72)" style="font-weight:bold">exportSpherePCT2Asy</a> (<a href="matlab: opentoline('/Users/ronny/Repositories/MVIRT/helpers/export/exportSpherePCT2Asy.m',72,0)">line 72</a>)
+        fprintf(fID,header);
+Error in <a href="matlab:matlab.internal.language.introspective.errorDocCallback('GradTV2onS2', '/Users/ronny/Repositories/MVIRT/Tutorials/GradTV2onS2.m', 68)" style="font-weight:bold">GradTV2onS2</a> (<a href="matlab: opentoline('/Users/ronny/Repositories/MVIRT/Tutorials/GradTV2onS2.m',68,0)">line 68</a>)
+exportSpherePCT2Asy({pts1,pts2},{geo1,geo2,geo3,geo4},{vecs1},...} 
+GradTV2onS2
+ --- Initializing the Manifold-valued Image Restoration Toolbox --- 
+ans =
+    1.4923
+ans =
+    0.3873
+{Cell contents reference from a non-cell array object.
+Error in <a href="matlab:matlab.internal.language.introspective.errorDocCallback('exportSpherePCT2Asy', '/Users/ronny/Repositories/MVIRT/helpers/export/exportSpherePCT2Asy.m', 76)" style="font-weight:bold">exportSpherePCT2Asy</a> (<a href="matlab: opentoline('/Users/ronny/Repositories/MVIRT/helpers/export/exportSpherePCT2Asy.m',76,0)">line 76</a>)
+    lColor = vars.colors{i};
+Error in <a href="matlab:matlab.internal.language.introspective.errorDocCallback('GradTV2onS2', '/Users/ronny/Repositories/MVIRT/Tutorials/GradTV2onS2.m', 68)" style="font-weight:bold">GradTV2onS2</a> (<a href="matlab: opentoline('/Users/ronny/Repositories/MVIRT/Tutorials/GradTV2onS2.m',68,0)">line 68</a>)
+exportSpherePCT2Asy({pts1,pts2},{geo1,geo2,geo3,geo4},{vecs1},...} 
+GradTV2onS2
+ --- Initializing the Manifold-valued Image Restoration Toolbox --- 
+ans =
+    1.4923
+ans =
+    0.3873
+GradTV2onS2
+ --- Initializing the Manifold-valued Image Restoration Toolbox --- 
+ans =
+    1.4923
+ans =
+    0.3873
+GradTV2onS2
+ --- Initializing the Manifold-valued Image Restoration Toolbox --- 
+ans =
+    1.4923
+ans =
+    0.3873
+GradTV2onS2
+ --- Initializing the Manifold-valued Image Restoration Toolbox --- 
+ans =
+    1.4923
+ans =
+    0.3873
+vecs1
+vecs1(:,:,1) =
+    1.0000         0
+         0    0.0000
+         0    0.7071
+vecs1(:,:,2) =
+    0.0555    0.7049
+    0.0555    0.7049
+    0.9969   -0.0785
+vecs1(:,:,3) =
+         0   -0.0000
+    1.0000         0
+         0    0.7071
+cat(3,pts,vecs)
+ans(:,:,1) =
+    1.0000    0.0555         0
+         0    0.0555    1.0000
+         0    0.9969         0
+ans(:,:,2) =
+         0    0.7049   -0.0000
+    0.0000    0.7049         0
+    0.7071   -0.0785    0.7071
+pts
+pts =
+    1.0000    0.0555         0
+         0    0.0555    1.0000
+         0    0.9969         0
+cat(3,pts,vecs)
+ans(:,:,1) =
+    1.0000    0.0555         0
+         0    0.0555    1.0000
+         0    0.9969         0
+ans(:,:,2) =
+         0    0.7049   -0.0000
+    0.0000    0.7049         0
+    0.7071   -0.0785    0.7071
+permute(cat(3,pts,vecs),[1,3,2])
+ans(:,:,1) =
+    1.0000         0
+         0    0.0000
+         0    0.7071
+ans(:,:,2) =
+    0.0555    0.7049
+    0.0555    0.7049
+    0.9969   -0.0785
+ans(:,:,3) =
+         0   -0.0000
+    1.0000         0
+         0    0.7071
+x
+x =
+     1
+     0
+     0
+y
+y =
+    0.0555
+    0.0555
+    0.9969
+z
+z =
+     0
+     1
+     0
+vecs
+vecs =
+         0    0.7049   -0.0000
+    0.0000    0.7049         0
+    0.7071   -0.0785    0.7071
+vecs
+vecs =
+         0    0.7049   -0.0000
+    0.0000    0.7049         0
+    0.7071   -0.0785    0.7071
+GradTV2onS2
+ --- Initializing the Manifold-valued Image Restoration Toolbox --- 
+ans =
+    1.4923
+ans =
+    0.3873
+GradTV2onS2
+ --- Initializing the Manifold-valued Image Restoration Toolbox --- 
+ans =
+    1.4923
+ans =
+    0.3873
+GradTV2onS2
+ --- Initializing the Manifold-valued Image Restoration Toolbox --- 
+ans =
+    1.4923
+ans =
+    0.3873
+GradTV2onS2
+ --- Initializing the Manifold-valued Image Restoration Toolbox --- 
+ans =
+    1.4923
+ans =
+    0.3873
+GradTV2onS2
+ --- Initializing the Manifold-valued Image Restoration Toolbox --- 
+ans =
+    1.4923
+ans =
+    0.3873
+pts1
+pts1 =
+    1.0000    0.0555         0    0.7071
+         0    0.0555    1.0000    0.7071
+         0    0.9969         0         0
+pts2
+pts2 =
+    0.7602    0.6232   -0.0000    0.4508
+    0.0000    0.6232    0.7602    0.4508
+    0.6496    0.4726    0.6496    0.7704
+GradTV2onS2
+ --- Initializing the Manifold-valued Image Restoration Toolbox --- 
+ans =
+    1.4923
+ans =
+    0.3873
+GradTV2onS2
+ --- Initializing the Manifold-valued Image Restoration Toolbox --- 
+ans =
+    1.4923
+ans =
+    0.3873
+GradTV2onS2
+ --- Initializing the Manifold-valued Image Restoration Toolbox --- 
+ans =
+    1.4923
+ans =
+    0.3873
+doc addOptional
+S2Image
+ --- Initializing the Manifold-valued Image Restoration Toolbox --- 

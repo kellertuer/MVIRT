@@ -1,43 +1,43 @@
- --- Logfile of Experiment S2Image started 01-Mar-2018 18:21:10 ---
+ --- Logfile of Experiment S2Image started 12-Mar-2018 21:56:55 ---
 Using loaded Data generated 31-Jan-2017 21:58:36.
 Parameter range alpha (2 values): 0,0.33333.
 Parameter range beta  (2 values): 0,0.66667.
-100 F: 2.3037e-13 last change: 1.1094e-06.
-200 F: 2.3037e-13 last change: 1.1094e-06.
-300 F: 2.3037e-13 last change: 1.1094e-06.
-400 F: 2.3037e-13 last change: 1.1094e-06.
-500 F: 2.3037e-13 last change: 1.1094e-06.
-600 F: 2.3037e-13 last change: 1.1094e-06.
-700 F: 2.3037e-13 last change: 1.1094e-06.
-800 F: 2.3037e-13 last change: 1.1094e-06.
+100 | F: 2.3037e-13 last change: 1.1094e-06.
+200 | F: 2.3037e-13 last change: 1.1094e-06.
+300 | F: 2.3037e-13 last change: 1.1094e-06.
+400 | F: 2.3037e-13 last change: 1.1094e-06.
+500 | F: 2.3037e-13 last change: 1.1094e-06.
+600 | F: 2.3037e-13 last change: 1.1094e-06.
+700 | F: 2.3037e-13 last change: 1.1094e-06.
+800 | F: 2.3037e-13 last change: 1.1094e-06.
 Parameters: \alpha=0 \beta=0 yield 0.3543.
-100 F: 799.0156 last change: 0.012734.
-200 F: 798.2277 last change: 0.0033117.
-300 F: 797.9896 last change: 0.0014986.
-400 F: 797.8756 last change: 0.00085289.
-500 F: 797.8089 last change: 0.00055035.
-600 F: 797.7652 last change: 0.00038454.
-700 F: 797.7344 last change: 0.00028385.
-800 F: 797.7114 last change: 0.00021815.
+100 | F: 799.0156 last change: 0.012734.
+200 | F: 798.2277 last change: 0.0033117.
+300 | F: 797.9896 last change: 0.0014986.
+400 | F: 797.8756 last change: 0.00085289.
+500 | F: 797.8089 last change: 0.00055035.
+600 | F: 797.7652 last change: 0.00038454.
+700 | F: 797.7344 last change: 0.00028385.
+800 | F: 797.7114 last change: 0.00021815.
 Parameters: \alpha=0.33333 \beta=0 yield 0.18819.
-100 F: 506.3273 last change: 0.17966.
-200 F: 504.0634 last change: 0.08316.
-300 F: 503.5471 last change: 0.055088.
-400 F: 503.3461 last change: 0.039518.
-500 F: 503.2503 last change: 0.032013.
-600 F: 503.1975 last change: 0.026711.
-700 F: 503.1694 last change: 0.022843.
-800 F: 503.1525 last change: 0.020065.
-Parameters: \alpha=0 \beta=0.66667 yield 0.13376.
-100 F: 1027.5471 last change: 0.15755.
-200 F: 1025.9974 last change: 0.071433.
-300 F: 1025.7156 last change: 0.046657.
-400 F: 1025.6335 last change: 0.033672.
-500 F: 1025.6114 last change: 0.025798.
-600 F: 1025.5963 last change: 0.021129.
-700 F: 1025.6067 last change: 0.018744.
-800 F: 1025.6053 last change: 0.016152.
-Parameters: \alpha=0.33333 \beta=0.66667 yield 0.17975.
-Minimum: Parameters: \alpha=0 \beta=0.66667 yields minimal value 0.13376.
+100 | F: 510.0752 last change: 0.17546.
+200 | F: 505.552 last change: 0.084799.
+300 | F: 504.4381 last change: 0.054113.
+400 | F: 503.9577 last change: 0.041185.
+500 | F: 503.7077 last change: 0.032135.
+600 | F: 503.5555 last change: 0.02673.
+700 | F: 503.4641 last change: 0.022439.
+800 | F: 503.3968 last change: 0.0198.
+Parameters: \alpha=0 \beta=0.66667 yield 0.13377.
+100 | F: 1030.2939 last change: 0.16742.
+200 | F: 1027.0313 last change: 0.07628.
+300 | F: 1026.338 last change: 0.050393.
+400 | F: 1026.0564 last change: 0.035573.
+500 | F: 1025.924 last change: 0.027296.
+600 | F: 1025.8534 last change: 0.022517.
+700 | F: 1025.8044 last change: 0.018692.
+800 | F: 1025.7806 last change: 0.016179.
+Parameters: \alpha=0.33333 \beta=0.66667 yield 0.17971.
+Minimum: Parameters: \alpha=0 \beta=0.66667 yields minimal value 0.13377.
 Minimum TV: Parameter: \alpha=0.33333 yields minimal value 0.18819.
- --- Logfile of Experiment S2Image; ended 01-Mar-2018 19:08:53 ---
+ --- Logfile of Experiment S2Image; ended 12-Mar-2018 22:23:18 ---

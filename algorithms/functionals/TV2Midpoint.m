@@ -1,12 +1,17 @@
 function d = TV2Midpoint(varargin)
-% proxTV(M,x,lambda) : compute the second order TV term value
+% proxTV(M,x,lambda) compute the second order TV mid point model value
 %
 % INPUT
 %     M       : a manifold
 %     x       : data (manifold-valued)
 %
 % OPTIONAL
-% 'Weights'   : weights of the summands
+%   'p'      : (p=1) compute TV2 with p-norm coupling in the dimensions of
+%              the data, i.e. anisotropic TV2 for p=1 and isotropic for p=2
+%  'epsilon' : compute the gradient of the epsilon-relaxed TV2
+%  'weights' : (ones(dataDims) exclude certain data points from all
+%                   gradient terms
+%  'Sum'     : (true) return a value (true) or a matrix of TV2 terms (false)
 %
 % OUTPUT
 %   d          : TV_2(x)
@@ -17,6 +22,7 @@ addRequired(ip,'M', @(x) validateattributes(x,{'manifold'},{}))
 addRequired(ip,'x');
 addParameter(ip,'Weights',[]);
 addParameter(ip,'Epsilon',0);
+addParameter(ip,'Sum',true);
 
 parse(ip, varargin{:});
 vars = ip.Results;
@@ -81,8 +87,10 @@ for i=1:n
         end
     end
 end
-    if vars.Epsilon > 0
-        d = sqrt(d+vars.Epsilon^2);
-    end
+if vars.Epsilon > 0
+    d = sqrt(d+vars.Epsilon^2);
+end
+if vars.Sum
     d = sum(d(:));
+end
 end

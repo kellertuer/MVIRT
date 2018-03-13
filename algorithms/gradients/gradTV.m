@@ -1,15 +1,19 @@
 function eta = gradTV(varargin)
-% gradTV(M,x) - compute the gradient of the manifold total variation
+% gradTV(M,x) compute the gradient of the manifold total variation
 %
 % INPUT
 %   M      :  a manifold
 %   x      : data (size [manDims,dataDims])
 %   
 % OPTIONAL
-%   'p       : (p=1) compute TV with p-norm coupling in the dimensions of the
-%             data, i.e. anisotropic TV for p=1 and isotropic for p=2
-%  epsilon  : compute the gradient of the epsilon-relaxed TV
-%  weights  : (ones(dataDims) exclude certain data points from all gradient terms
+%   'p'       : (p=1) compute TV with p-norm coupling in the dimensions of
+%               the data, i.e. anisotropic TV for p=1 and isotropic for p=2
+%  'epsilon'  : compute the gradient of the epsilon-relaxed TV
+%  'weights'  : (ones(dataDims)) exclude certain data points from all
+%               gradient terms
+%
+% OUTPUT
+%   eta : the gradient
 % ---
 % MVIRT, R. Bergmann, 2017-12-08
 ip = inputParser();
@@ -21,7 +25,8 @@ addOptional(ip,'Weights',[]);
 parse(ip, varargin{:});
 vars = ip.Results;
 sX = size(vars.x);
-dataDims = sX( (length(vars.M.ItemSize)+1):end );
+mD = length(vars.M.ItemSize);
+dataDims = sX( (mD+1):end );
 n = length(dataDims);
 if isempty(vars.Weights)
     weights = ones([dataDims,1]);
@@ -30,7 +35,7 @@ else
 end
 eta = zeros(size(vars.x));
 if vars.p>1
-    prefactors1 = TV(M,x,'Sum',false,'p',vars.p,'Epsilon',vars.Epsilon);
+    prefactors1 = TV(vars.M,vars.x,'Sum',false,'p',vars.p,'Epsilon',vars.Epsilon);
 end
 for i=1:n
     preFill = repelem({':'},i-1);
@@ -46,12 +51,11 @@ for i=1:n
     else
         prefactors2 = prefactors1(preFill{:},[1 1:(dataDims(i)-1)],postFill{:});
     end
-    w1 = permute(...
-            weights.*forwardweights.*(prefactors1~=0)./(vars.p*prefactors1+(prefactors1==0)),...
-        [(n+1):(n+length(vars.M.ItemSize)),1:n]);
-    w2 = permute(...
-            weights.*backwardweights.*(prefactors2~=0)./(vars.p*prefactors2+(prefactors2==0)),...
-        [(n+1):(n+length(vars.M.ItemSize)),1:n]);
-    eta = eta-vars.M.log(center,forward).*w1-vars.M.log(center,backward).*w2;
+    w1 = weights.*forwardweights.*double(prefactors1~=0)./(prefactors1+double(prefactors1==0));
+    w1(preFill{:},dataDims(i),postFill{:}) = 0;
+    w2 = weights.*backwardweights.*double(prefactors2~=0)./(prefactors2+double(prefactors2==0));
+    w2(preFill{:},1,postFill{:}) = 0;
+    eta = eta   - vars.M.log(center,forward).*shiftdim(w1,-mD)...
+                - vars.M.log(center,backward).*shiftdim(w2,-mD);
 end
 
