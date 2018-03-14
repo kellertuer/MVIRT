@@ -1,7 +1,5 @@
 function t = SecondOrderMidpointModel(varargin)
-%  gradientSecondOrderLog(M,f,alpha,beta) --- compute the gradient of
-% d(x,f)^2 + alpha*TV(x) + beta*TV2(x), where TV(x) is d(x_i,x_i+1) and
-% the second order terms are given by ||log_x_i x_i-1 + log_x_i x_i+1 ||
+%  gradientSecondOrderLog(M,f,alpha,beta) the l^2-TV-TV2 mid point model
 %
 % INPUT
 %    M : a manifold
@@ -11,7 +9,9 @@ function t = SecondOrderMidpointModel(varargin)
 %    beta : weight of TV2
 %
 % OPTIONAL
-% Epsilon: Relaxation
+%   'p'      : (p=1) compute TV with p-norm coupling in the dimensions of
+%              the data, i.e. anisotropic TV for p=1 and isotropic for p=2
+%  'epsilon' : compute the gradient of the epsilon-relaxed TV and TV2
 % ---
 % MVIRT - R. Bergmann, 2017-12-07
 ip = inputParser();
