@@ -1,6 +1,5 @@
 function eta = gradDistance(M,x,y,p)
-% gradData(M,x,y,p)
-% gradient of f(x) = 1/p d^p(x,y) on M.
+% gradDistance(M,x,y,p) gradient of f(x) = 1/p d^p(x,y)for fixed y in M.
 %
 % INPUT
 %  M   : a manfiold
@@ -19,7 +18,6 @@ if p ~= 2
     eta = eta.*shiftdim(d.^(p-2),-mD);
     % securly avoid division by zero
     if any(d(:)<eps)
-       % warning('gradDist returns an element from the subdifferential only.');
         eta(M.allDims{:},d<eps) = 0;
     end
 else

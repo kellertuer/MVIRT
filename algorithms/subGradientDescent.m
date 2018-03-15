@@ -1,12 +1,12 @@
 function [x,recData] = subGradientDescent(varargin)
 % subGradientDescent(M,x,F,gradF,stepSizeRule,stoppingCriterion)
-% compute a sub gradient descent on F using x as inital data and gradF
-% as the (sub)gradient. If F returns a number, the classical gradient descent
-% is performed; if it returs a vector or matrix; a parallel gradient descent
-% is computed, where the (last) data dimensions of x are handled in
-% parallel.
+% compute a sub gradient descent on F using x as inital data and subgradF
+% as the (sub)gradient. If F returns a number, the classical subgradient
+% descent is performed; if it returs a vector or matrix; a parallel
+% subgradient descent is computed, where the (last) data dimensions of x
+% are handled in parallel.
 %
-%   Ferreira, O.P.; Oliverira, P.R. ? Subgradient Algorithm on Riemannian
+%   Ferreira, O.P.; Oliverira, P.R.: Subgradient Algorithm on Riemannian
 %       manifolds
 %       Journal of Optimization Theory and Applications 97.1, 93-104, 1998.
 %
@@ -16,24 +16,28 @@ function [x,recData] = subGradientDescent(varargin)
 %    F                : the function F for the different gradients in
 %                       parallel or just a value for standard gradient
 %                       descent
-%    gradF            : a function @(x) returning the gradient of F at x
-%    stepSize         : a function @(x,eta,iter,initial) returning the stepsize at x
-%                           with direction eta corresponding to a certain
-%                           rule (e.g. Amijo) based on iterate point x,
-%                           descent direction eta, iteration iter and initial stepsize initial.
+%    subgradF         : a function @(x) returning the gradient of F at x
+%    stepSize         : a function @(x,eta,iter,initial) returning the
+%                       stepsize at x with direction eta corresponding to
+%                       a certain rule (e.g. Amijo) based on iterate point
+%                       x, descent direction eta, iteration iter and
+%                       initial stepsize initial.
 %   stoppingCriterion : a function @(x,xold,iter) determining whether to
-%   stop or not
+%                       stop or not
 % OPTIONAL
 %   Debug             : ([]) a function @ (x,xold,iter) producing debug
 %                          output
 %   Record            : (@(x,iter)) a function returning a column vector,
 %                       if there's a second return value and this function
 %                       is given, data is recorded in an array and returned
+% ---
+% MVIRT | R. Bergmann | 2018-03-15
+
 ip = inputParser();
 addRequired(ip,'M', @(x) validateattributes(x,{'manifold'},{}))
 addRequired(ip,'x');
 addRequired(ip,'F');
-addRequired(ip,'gradF');
+addRequired(ip,'subgradF');
 addRequired(ip,'stepSize');
 addRequired(ip,'stoppingCriterion');
 addOptional(ip,'Debug',[]);
@@ -82,7 +86,7 @@ s = 1;
 while ~vars.stoppingCriterion(x,xold,s,iter)
     iter=iter+1;
     xold = x;
-    descentDir = -vars.gradF(x);
+    descentDir = -vars.subgradF(x);
     s = vars.stepSize(x,descentDir,iter,s);
     x = vars.M.exp(x,s.*descentDir);
     if parallel
