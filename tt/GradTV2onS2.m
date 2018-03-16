@@ -3,7 +3,7 @@
 % mid point model for three points on the sphere
 %
 % ---
-% Manifold-valued Image Restoration Toolbox 1.2 | R. Bergmann | 2018-02-09
+% Manifold-valued Image Restoration Toolbox 1.2 | R. Bergmann | 2018-02-09
 start = pwd;
 if ~isempty(fileparts(which(mfilename)))
     cd(fileparts(which(mfilename)));
