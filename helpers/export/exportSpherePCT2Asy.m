@@ -3,24 +3,30 @@ function fileStr = exportSpherePCT2Asy(varargin)
 % Export a onedimensional signal of spherical data to points on the sphere
 %
 % INPUT
-%   pts    : data of 3xl in s cells, l data points on the sphere embedded in R3
-%   curves : data cell array of points, t cells, on S2 to be plotted as curves
+%   pts    : data of 3xl in s cells, l data points on the sphere embedded
+%            in R3
+%   curves : data cell array of points, t cells, on S2 to be plotted
+%            as curves
 %   xi     : 3x2xm arrays in cells, u cells 
 %   colors : 3x(s+t+u), i.e. columns of color values for the sets
 % OUTPUT
 %   fileStr : (if specified) string containing the file contents
 %
 % OPTIONAL PARAMETERS
-%   'DotSize': ('1pt') dot size for the data points
-%   'File' : ('') file name of the file to export to: If not specified,
-%             only the string will be generated.
+%   'ArrowHead'    : ('6') dot size for the Arrowheads of the tangent vecs
+%   'Camera'       : ([1,1,0]) position of the camera in Asymptote
+%
+%   'DotSize'      : ('1pt') dot size for the data points (may also be an
+%                    array of s+t+u
 %   'ExportHeader' : (true) whether to export the Header of the .asy-File
 %                    or just the drawing commands.
-%   'OpacityVector' : ([0.5,1,...,1], s+t+u entries Make some signals opaque.
-%                     The standard sets all to 1.
+%   'File'         : ('') file name of the file to export to: If not
+%                    specified, only the string will be generated.
+%   'OpacityVector': ([1,1,...,1], s+t+u entries make some signals opaque.
 %
 % ---
-% Manifold-Valued Image Restoration Toolbox 1.0, R. Bergmann ~ 2015-03-26 | 2015-04-08
+% Manifold-Valued Image Restoration Toolbox 1.0
+% R. Bergmann ~ 2015-03-26 | 2015-04-08
 
 % Lofgile
 % 2015-04-08 Added the optional parameter OpacityVector
