@@ -1,5 +1,5 @@
 function f = createDebugFct(M,F,modIter)
-% createDebufFct(M,F,modIter) ? creates a debug functional for algorithms
+% createDebugFct(M,F,modIter) - creates a debug functional for algorithms
 % using x,xold,iter as inputs, evaluating the function F to minimize,
 % displaying iteration, the value of F at the current iterate and last
 % change (w.r.t. distance on M). If modIter is given, only every modIters

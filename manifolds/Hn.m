@@ -210,7 +210,7 @@ classdef Hn < manifold & handle
             eta = xi - shiftdim(scp,-1).*(dir+this.log(y,x)./shiftdim(norms,-1));
             eta(normMask) = xi(normMask); %those that need not to be transported
         end
-        function Xi = TpMONB(this,x,y)
+        function [Xi,k] = TpMONB(this,x,y)
             % Xi = TpMONB(x,y)
             % Compute an ONB in TpM, where the first vector points to y,
             % whin given.
@@ -251,6 +251,11 @@ classdef Hn < manifold & handle
                     end
                     Xi(:,:,i) = Xi(:,:,i)./sqrt(repmat(permute(this.dot(Xi(:,:,i),Xi(:,:,i),Xi(:,:,i)),[2,1]),this.ItemSize,1,1));
                 end
+            end
+            if nargout > 1
+                k = -ones(size(p_,2),this.ItemSize-1);
+                k(:,1)=0;
+                k = reshape(k,[pS(2:end),this.ItemSize-1]);
             end
         end
         function y = addNoise(this,x,sigma)

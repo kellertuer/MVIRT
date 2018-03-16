@@ -1,12 +1,11 @@
 function fct = stopCritMaxIterEpsilonCreator(M,maxIter, epsilon)
-% stopCritMaxIterEpsilonCreator(M,maxIter,epsilon) create a stopping
-% criterion based on a maximal number of iterations or a minimal
-% maximal change per element
+% stopCritMaxIterEpsilonCreator(M,maxIter,epsilon) a maxIt minEps criterion
+% based on a maximal number of iterations or a minimal max-norm change
 %
 % INPUT
 %   M      : the manifold the data lives on
 %  maxIter : the maximal number of iterations
-% epsilon  : the maximal change within an iteration
+%  epsilon : the maximal change within an iteration
 %
 % OUTPUT
 %   fct : a functional @(x,xold,s,iter) suitable for both (sub) gradient

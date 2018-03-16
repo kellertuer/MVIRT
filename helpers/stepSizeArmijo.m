@@ -1,5 +1,19 @@
 function stepsize = stepSizeArmijo(varargin)
-
+% stepSizeAsrmijo(M,F,x,descentDir) compute the step size by Armijo's rule
+%
+% INPUT
+%   M          : a manifold
+%   F          : a functional @(x)
+%   x          : the current point
+%   descentDir : a descent direction
+%
+% OPTIONAL
+%   Gradient : (descentDir) gradient direction (if descentDir is not -grad)
+%    InitialStepSize : (1) initial step size as starting point for search
+%    rho     : (0.5) decrease factor x_next = (x)^rho
+%    c       : (0.0001) the factor in front of the norm
+% ---
+% MVIRT | R. Bergmann | 2018-03-15
 ip = inputParser();
 addRequired(ip,'M', @(x) validateattributes(x,{'manifold'},{}))
 addRequired(ip,'F');
