@@ -23,9 +23,9 @@ or by cloning the [git-repository](https://github.com/kellertuer/MVIRT) using
 
 Examples are
 [InSAR imaging](http://de.wikipedia.org/wiki/Interferometric_Synthetic_Aperture_Radar)
-or when working with phase data, i.e. on [the circle 𝕊¹](manifolds/S1.md), or [Diffusion Tensor Imaging](https://en.wikipedia.org/wiki/Diffusion_MRI) (DTI), where
+or when working with phase data, i.e. on [the circle 𝕊¹](http://ronnybergmann.net/mvirt/manifolds/S1.html), or [Diffusion Tensor Imaging](https://en.wikipedia.org/wiki/Diffusion_MRI) (DTI), where
 every data items are an n ⨉ n
-[symmetric positive definite matrices, 𝒫(n)](manifolds/SymPosDef).
+[symmetric positive definite matrices, 𝒫(n)](http://ronnybergmann.net/mvirt/manifolds/SymPosDef.html).
 
-see [ronnybergmann.net/mvirt/](http://ronnybergmann.net/mvirt) for the complete
+see [ronnybergmann.net/mvirt/](http://ronnybergmann.net/mvirt/) for the complete
 documentation.
