@@ -144,7 +144,7 @@ for i=1:prod(dataDim) %run through all matrices
             % Shift
             X=X+x*gD(1);
             Y=Y+y*gD(2); % invert y
-            Z=Z+y*gD(3);
+            Z=Z+z*gD(3);
             surf(X,Y,Z,'FaceColor',color,'EdgeColor','none','LineStyle','none','FaceLighting','phong');
         end
     end
