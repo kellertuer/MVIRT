@@ -138,7 +138,7 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
             % functional - dist collapses manifold dims, hence we sum over
             % the second dimension
             % F = @(yk) sum(w.*this.dist(repmat(yk,[ones(1,mD+1),n),x).^2,2);
-            gradF = @(yk) sum(shiftdim(w,-mD).*gradDistSquared(this,...
+            gradF = @(yk) sum(shiftdim(w,-mD).*gradDistance(M,...
                 repmat(yk,[ones(1,mD+1),n]),x),mD+2);
             if isnan(vars.InitVal) %no initial value given
                 yI = x(this.allDims{:},:,1); %take all first points
@@ -194,13 +194,13 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
             addParameter(ip,'StepSize',@(x,descentDir,iter,s) 1/iter);
             parse(ip, varargin{:});
             vars = ip.Results;
-            f = vars.f;
-            dims = size(f);
+            x = vars.x;
+            dims = size(x);
             mD = length(this.ItemSize);
             dD = dims((mD+1):end);
             if length(dD) ~= 2
-                if size(f,mD+2)==1 %only one median to compute
-                    x = f;
+                if size(x,mD+2)==1 %only one median to compute
+                    y = x;
                     return
                 end
                 error('f wrong size');
@@ -225,14 +225,14 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
                 w = w./repmat(sum(w,2),1,n);
             end
             if isnan(vars.InitVal)
-                x = f(this.allDims{:},:,1);
+                xInit = x(this.allDims{:},:,1);
             else
-                x = vars.InitVal;
-                if size(x,mD+1) == 1 || size(x,mD+2) == 1
-                    x = repmat(x,[ones(mD,1),m,1]);
-                elseif size(x,mD+1) ~= m || size(x,mD+2) ~= 1
+                xInit = vars.InitVal;
+                if size(xInit,mD+1) == 1 || size(xInit,mD+2) == 1
+                    xInit = repmat(xInit,[ones(mD,1),m,1]);
+                elseif size(xInit,mD+1) ~= m || size(xInit,mD+2) ~= 1
                     error(['too many initial points (expected ', ...
-                        num2str([M.ItemSize,m,1]),' but x is of size ',num2str(size(x)),'.']);
+                        num2str([M.ItemSize,m,1]),' but ''InitVal'' is of size ',num2str(size(xInit)),'.']);
                 end
             end
             if vars.Epsilon > 0
@@ -248,15 +248,15 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
                 iter = 1000;
             end
             stoppingCriterion = stopCritMaxIterEpsilonCreator(this,iter,epsilon);
-            F = @(p) sum( w.*this.dist(repmat(p,[ones(1,mD+1),n]),f),2);
+            F = @(p) sum( w.*this.dist(repmat(p,[ones(1,mD+1),n]),x),2);
             gradF = @(p) ...
                 sum(...
                     -shiftdim(w./(... %the following line avoids division by zero
-                        this.dist(repmat(p,[ones(1,mD+1),n]),f) ...
-                        + double(this.dist(repmat(p,[ones(1,mD+1),n]),f)==0)),-mD)...
-                          .*this.log(repmat(p,[ones(1,mD+1),n]),f),...
+                        this.dist(repmat(p,[ones(1,mD+1),n]),x) ...
+                        + double(this.dist(repmat(p,[ones(1,mD+1),n]),x)==0)),-mD)...
+                          .*this.log(repmat(p,[ones(1,mD+1),n]),x),...
                     mD+2);
-            y = subGradientDescent(this,x,F,gradF, ...
+            y = subGradientDescent(this,xInit,F,gradF, ...
                 vars.StepSize,stoppingCriterion);
         end
         function m = midPoint(this,x,z)
@@ -499,19 +499,23 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
             %   divide by zero.
             %   Furthermore for d==0 (hence x=y) the result is just the
             %   identity, hence the last term, that for d==0 we have just 1
-            addParameter(ip,'weights', @(k,t,d) (k==0).*ones(size(k.*t.*d)).*(1-t) + ...
+            addParameter(ip,'weights', @(k,t,d) (k==0).*(1-t).*ones(size(k.*t.*d)) + ...
                 (k>0).*sin(sqrt(k).*(1-t).*d)./(sin(sqrt(k).*d) + (k==0)  + (d==0)) + ... %last term avoids division by zero
                 (k<0).*sinh(sqrt(-k).*d.*(1-t))./(sinh(sqrt(-k).*d) + (k==0) + (d==0)) ...
             );
             parse(ip, varargin{:});
             vars = ip.Results;
+            sX = size(vars.x);
+            x = reshape(vars.x,this.ItemSize,[]);
+            y = reshape(vars.y,this.ItemSize,[]);
+            eta = reshape(vars.eta,this.ItemSize,[]);
+            t = vars.t(:);
             dDim = (length(this.ItemSize)+1); %dimension where the data lives
-            l = size(vars.x,dDim); % number of vectors
-            if (size(vars.y,dDim) ~= l)
+            l = size(x,dDim); % number of vectors
+            if (size(y,dDim) ~= l)
                 error(['The lengths of p (',num2str(l),') and q (',...
-                    num2str(size(vars.y,dDim)),') have to be the same']);
+                    num2str(size(y,dDim)),') have to be the same']);
             else
-                t=vars.t;
                 if sum(size(t))==2 % number ? extend to l
                     t = vars.t.*ones(l,1);
                 elseif (length(t) ~= l)
@@ -520,14 +524,14 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
                 end
             end
             myEps = 10^(-8);
-            d = this.dist(vars.x,vars.y);
-            xi = zeros(size(vars.eta));
-            xi(this.allDims{:},d<myEps) = vars.eta(this.allDims{:},d<myEps);
+            d = this.dist(x,y);
+            xi = zeros(size(eta));
+            xi(this.allDims{:},d<myEps) = eta(this.allDims{:},d<myEps);
             if sum(d(:)>myEps)>0
                 % only continue with large enough ones
-                x = vars.x(this.allDims{:},d>=myEps);
-                y = vars.y(this.allDims{:},d>=myEps);
-                eta = vars.eta(this.allDims{:},d>=myEps);
+                x = x(this.allDims{:},d>=myEps);
+                y = y(this.allDims{:},d>=myEps);
+                eta = eta(this.allDims{:},d>=myEps);
                 t = t(d>myEps);
                 dS = d(d>myEps);
                 p = this.geopoint(x,y,t);
@@ -542,8 +546,9 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
                     repmat(eta,[ones(1,dDim),this.Dimension]),V),-length(this.ItemSize));
                 % shift weights by mandim dims back such that .* work correctly
                 % - sum over all tangential vectors i.e. dataDim+1
-                xi(this.allDims{:},d>myEps) = sum(alpha.*W.*permute(weights,[3:(dDim+1),1,2]),(dDim+1));
+                xi(this.allDims{:},d>myEps) = sum(alpha.*W.*shiftdim(weights,-length(this.ItemSize)),(dDim+1));
             end
+            xi = reshape(xi,sX);
         end
         function xi = DxGeo(this,x,y,t,eta)
             % xi = DxGeo(x,y,t,eta) - Compute the Derivative D_xGeo(t; x,y)[eta]
@@ -672,7 +677,10 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
             %           (or a vector of values)
             %    eta : an initial condition of the Jacobi field, where the
             %           following weights determine the type of initial
-            %           condition.
+            %           condition (given at g(t; x,y).
+            %
+            % OUTPUT
+            %    xi : tangent vectors in TxM.
             %
             % OPTIONAL
             %    'weights' : [@(k,t,d) = (k==0)*t
@@ -699,24 +707,24 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
             %   divide by zero.
             %   Furthermore for d==0 (hence x=y) the result is just the
             %   identity, hence the last term, that for d==0 we have just 1
-            addParameter(ip,'weights', @(k,t,d) (k==0).*ones(size(k.*t.*d)).*(1-t) + ...
+            addParameter(ip,'weights', @(k,t,d) (k==0).*(1-t).*ones(size(k.*t.*d)) + ...
                 (k>0).*sin(sqrt(k).*(1-t).*d)./(sin(sqrt(k).*d) + (k==0)  + (d==0)) + ... %last term avoids division by zero
-                (k<0).*sinh(sqrt(-k).*d.*(1-t))./(sinh(sqrt(-k).*d) + (k==0) + (d==0)) ...
+                (k<0).*sinh(sqrt(-k).*(1-t).*d)./(sinh(sqrt(-k).*d) + (k==0) + (d==0)) ...
             );
             parse(ip, varargin{:});
             vars = ip.Results;
             dDim = (length(this.ItemSize)+1); %dimension where the data lives
-            xS = size(vars.x);
-            %internally reshape to a vector
-            x = reshape(vars.x,[this.ItemSize, prod(xS(dDim:end))]);
-            y = reshape(vars.y,[this.ItemSize, prod(xS(dDim:end))]);
-            eta = reshape(vars.eta,[this.ItemSize, prod(xS(dDim:end))]);
+            sX = size(vars.x);
+            dD = sX( (length(this.ItemSize)+1):end);
+            x = reshape(vars.x,[ this.ItemSize,prod(dD) ]);
+            y = reshape(vars.y,[ this.ItemSize,prod(dD) ]);
+            eta = reshape(vars.eta,[ this.ItemSize, prod(dD) ]);
+            t = vars.t(:);
             l = size(x,dDim); % number of vectors
             if (size(y,dDim) ~= l)
                 error(['The lengths of p (',num2str(l),') and q (',...
                     num2str(size(y,dDim)),') have to be the same']);
             else
-                t=vars.t;
                 if sum(size(t))==2 % number ? extend to l
                     t = vars.t.*ones(l,1);
                 elseif (length(t) ~= l)
@@ -743,9 +751,9 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
                     repmat(eta,[ones(1,dDim),this.Dimension]),W),-length(this.ItemSize));
                 % shift weights by mandim dims back such that .* work correctly
                 % - sum over all tangential vectors i.e. dataDim+1
-                xi = sum(alpha.*V.*permute(weights,[3:(dDim+1),1,2]),(dDim+1));
-                xi = reshape(xi,xS);
+                xi = sum(alpha.*V.*shiftdim(weights,-length(this.ItemSize)),(dDim+1));
             end
+            xi = reshape(xi,sX);
         end
         function xi = AdjDxGeo(this,x,y,t,eta)
             % AdjDxGeo(x,y,t,eta) Adjoint of the Derivative of geo(x,y,t) wrt x.
@@ -760,7 +768,7 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
             %
             %    INPUT
             %      x   : start point of a geodesic, g(x,y,0)=x
-            %      y   : end point of a geodesic, geo(x,y,1) = y
+            %      y   : end point of a geodesic, g(x,y,1) = y
             %      t   : [0,1] a point on the geodesic to be evaluated,
             %            may exceed [0,1] to leave the segment between x and y
             %     eta  : (in Tg(t,x,y)) direction to take the Adjoint derivative at.
@@ -810,7 +818,7 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
             f = @(k,t,d) (k==0).*ones(size(k.*t.*d)) + ...
                 (k>0).*cos(sqrt(k).*d.*t) + ...
                 (k<0).*cosh(sqrt(-k).*d.*t);
-            nu = this.JacobiField(x,this.exp(x,xi),1,eta,'weights',f);
+            nu = this.AdjJacobiField(x,this.exp(x,xi),1,eta,'weights',f);
         end
         function nu = AdjDxiExp(this,x,xi,eta)
             % nu = AdjDxExp(x,xi,eta) - Adjoint of the Derivative of Exp with
@@ -827,7 +835,7 @@ classdef (Abstract) manifold < handle & matlab.mixin.Heterogeneous
             f = @(k,t,d) (k==0).*ones(size(k.*t.*d)) + ...
                 (k>0).*sin(sqrt(k).*d)./(sqrt(k).*d + (d==0) + (k==0) ) + ... % last terms are again for avoiding division by zero
                 (k<0).*sinh(sqrt(-k).*d)./(sqrt(-k).*d + (d==0) + (k==0) );
-            nu = this.JacobiField(x,this.exp(x,xi),1,eta,'weights',f);
+            nu = this.AdjJacobiField(x,this.exp(x,xi),1,eta,'weights',f);
         end
         function xi = AdjDxLog(this,x,y,eta)
             %   nu = AdjDxLog(x,y,eta) - Adjoint of the Derivative of Log

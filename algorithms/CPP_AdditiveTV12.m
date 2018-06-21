@@ -76,7 +76,6 @@ else % parse Input
     ip = inputParser;
     addRequired(ip,'M', @(x) validateattributes(x,{'manifold'},{}))
     addRequired(ip,'f');
-    addRequired(ip,'proximalMaps');
     addRequired(ip,'alpha');
     addRequired(ip,'beta');
     addRequired(ip,'stoppingCriterion');
